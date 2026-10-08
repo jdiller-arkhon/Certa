@@ -8,4 +8,4 @@ process.env.PUBLIC_URL = 'http://localhost:3100';
 process.env.PORT = '4100';
 process.env.LOG_LEVEL = 'warn';
 process.env.SMTP_URL = 'smtp://localhost:1025';
-await import('../src/server.ts');
+await import('../src/server.js');

@@ -1,13 +1,22 @@
+import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+
+/**
+ * Default: starts a fresh API (:4100) and a production web build (:3100).
+ * E2E_BASE_URL=http://localhost:8080 runs the same tests against a running stack (Docker Compose).
+ */
+const external = process.env.E2E_BASE_URL;
+// Use a preinstalled Chromium when present (cloud dev containers); otherwise Playwright's own.
+const chromium = process.env.CHROMIUM_PATH ?? (existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined);
 
 export default defineConfig({
   testDir: './e2e',
   timeout: 60_000,
   fullyParallel: false,
   reporter: [['list']],
-  use: { baseURL: 'http://localhost:3100', trace: 'retain-on-failure' },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], launchOptions: { executablePath: process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium' } } }],
-  webServer: [
+  use: { baseURL: external ?? 'http://localhost:3100', trace: 'retain-on-failure' },
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], ...(chromium ? { launchOptions: { executablePath: chromium } } : {}) } }],
+  webServer: external ? [] : [
     { command: 'pnpm --filter @certa/api exec tsx scripts/e2e-server.ts', url: 'http://localhost:4100/readyz', timeout: 120_000, reuseExistingServer: false, stdout: 'pipe' },
     {
       command: 'API_ORIGIN=http://localhost:4100 npx next build && npx next start --port 3100',

@@ -40,7 +40,7 @@ test('signed-out visitors are sent to sign in, and sign in with a password works
   const email = `signin-${Date.now()}@example.com`;
   const res = await request.post('/api/v1/signup', {
     data: { name: 'Sam Patel', email, password: 'correct-horse-battery', organizationName: 'Patel Mapping', timezone: 'America/Chicago' },
-    headers: { origin: 'http://localhost:3100' },
+    headers: { origin: process.env.E2E_BASE_URL ?? 'http://localhost:3100' },
   });
   expect(res.status()).toBe(201);
 

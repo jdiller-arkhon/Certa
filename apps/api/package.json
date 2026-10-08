@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "dev": "tsx watch --env-file-if-exists=../../.env src/server.ts",
-    "dev:worker": "tsx watch --env-file-if-exists=../../.env src/worker.ts",
+    "dev": "PUBLIC_URL=http://localhost:3000 SMTP_URL=smtp://localhost:1025 tsx watch --env-file-if-exists=../../.env src/server.ts",
+    "dev:worker": "SMTP_URL=smtp://localhost:1025 tsx watch --env-file-if-exists=../../.env src/worker.ts",
     "start": "node dist/server.js",
     "test": "vitest run",
     "gen:openapi": "tsx scripts/gen-openapi.ts"

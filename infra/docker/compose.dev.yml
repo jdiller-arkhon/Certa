@@ -1,0 +1,10 @@
+# Development overlay: exposes Postgres, SMTP, and object storage on localhost so `pnpm dev`
+# (API and web running on the host) can use the same services.
+#   docker compose -f infra/docker/compose.yml -f infra/docker/compose.dev.yml --env-file .env up -d postgres mailpit objects migrate
+services:
+  postgres:
+    ports: ['5432:5432']
+  mailpit:
+    ports: ['1025:1025', '8025:8025']
+  objects:
+    ports: ['9000:9000']

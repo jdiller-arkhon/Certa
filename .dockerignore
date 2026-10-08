@@ -1,0 +1,10 @@
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/.expo
+**/test-results
+**/playwright-report
+.git
+.env
+apps/mobile

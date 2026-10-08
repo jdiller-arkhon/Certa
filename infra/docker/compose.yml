@@ -1,0 +1,120 @@
+# Certa self-hosted stack. One command: `pnpm stack:up` (or `docker compose -f infra/docker/compose.yml --env-file .env up -d --build`).
+# Every service runs inside your network; nothing calls out to the internet.
+name: certa
+
+x-api-env: &api-env
+  NODE_ENV: production
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8080}
+  DATABASE_URL: postgres://${APP_DB_USER:-certa_api}:${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-certa}
+  AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET in .env}
+  SMTP_URL: ${SMTP_URL:-smtp://mailpit:1025}
+  MAIL_FROM: ${MAIL_FROM:-Certa <no-reply@certa.local>}
+  TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-}
+  S3_ENDPOINT: ${S3_ENDPOINT:-http://objects:9000}
+  S3_BUCKET: ${S3_BUCKET:-certa}
+  S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-certa}
+  S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?set S3_SECRET_ACCESS_KEY in .env}
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-certa}
+      POSTGRES_USER: ${POSTGRES_USER:-certa_owner}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # S3-compatible object storage (SeaweedFS, Apache-2.0). Any S3 endpoint works: point
+  # S3_ENDPOINT at AWS S3 or an existing object store and remove this service.
+  objects:
+    image: chrislusf/seaweedfs:3.97
+    restart: unless-stopped
+    environment:
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-certa}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+    entrypoint:
+      - sh
+      - -c
+      - |
+        mkdir -p /etc/seaweedfs
+        printf '{"identities":[{"name":"certa","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","Write","List","Tagging"]}]}' "$$S3_ACCESS_KEY_ID" "$$S3_SECRET_ACCESS_KEY" > /etc/seaweedfs/s3.json
+        exec weed server -dir=/data -s3 -s3.port=9000 -s3.config=/etc/seaweedfs/s3.json -volume.max=0
+    volumes:
+      - objects:/data
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:9333/cluster/status || exit 1']
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    restart: unless-stopped
+    ports:
+      - '${MAILPIT_PORT:-8025}:8025'
+
+  migrate:
+    build: { context: ../.., dockerfile: infra/docker/Dockerfile, target: api }
+    image: certa-api:local
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_ADMIN_URL: postgres://${POSTGRES_USER:-certa_owner}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-certa}
+      APP_DB_USER: ${APP_DB_USER:-certa_api}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD}
+    command: ['node', 'dist/migrate.js']
+    restart: 'no'
+
+  api:
+    image: certa-api:local
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment: *api-env
+
+  worker:
+    image: certa-api:local
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment: *api-env
+    command: ['node', 'dist/worker.js']
+    healthcheck:
+      disable: true
+
+  web:
+    build: { context: ../.., dockerfile: infra/docker/Dockerfile, target: web }
+    image: certa-web:local
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+      - api
+    ports:
+      - '${HTTP_PORT:-8080}:8080'
+    environment:
+      CERTA_SITE_ADDRESS: ${CERTA_SITE_ADDRESS:-:8080}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+
+volumes:
+  pgdata:
+  objects:
+  caddy_data:

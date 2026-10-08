@@ -15,7 +15,8 @@
     "contract:gen": "pnpm --filter @certa/api gen:openapi && pnpm --filter @certa/sdk gen && pnpm --filter @certa/contract gen:fixtures",
     "contract:check": "pnpm --filter @certa/api gen:openapi --check && pnpm --filter @certa/sdk exec openapi-typescript ../../contract/openapi.yaml -o src/schema.ts --check && pnpm --filter @certa/rulepacks gen:verification --check && pnpm --filter @certa/contract gen:fixtures --check && pnpm --filter @certa/contract typecheck",
     "stack:up": "docker compose -f infra/docker/compose.yml --env-file .env up -d --build",
-    "stack:down": "docker compose -f infra/docker/compose.yml --env-file .env down"
+    "stack:down": "docker compose -f infra/docker/compose.yml --env-file .env down",
+    "services:up": "docker compose -f infra/docker/compose.yml -f infra/docker/compose.dev.yml --env-file .env up -d postgres mailpit objects migrate"
   },
   "devDependencies": {
     "turbo": "2.11.7",
