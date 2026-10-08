@@ -6,6 +6,7 @@ export const expired = {
   "id": "expired",
   "description": "Everything expired: recurrent training, registrations, batteries at end of life, one aircraft grounded.",
   "shell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000002dc6c2",
       "name": "Riley Fenwick",
@@ -146,7 +147,8 @@ export const expired = {
     },
     "theme": "light"
   },
-  "mobileShell": {
+  "fieldShell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000002dc6c2",
       "name": "Riley Fenwick",

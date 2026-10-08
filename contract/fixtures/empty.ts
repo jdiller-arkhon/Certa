@@ -6,6 +6,7 @@ export const empty = {
   "id": "empty",
   "description": "Brand-new organization: no pilots, aircraft, batteries, or flights. Exercises every empty state.",
   "shell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000003d0902",
       "name": "Jordan Avery",
@@ -146,7 +147,8 @@ export const empty = {
     },
     "theme": "light"
   },
-  "mobileShell": {
+  "fieldShell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000003d0902",
       "name": "Jordan Avery",

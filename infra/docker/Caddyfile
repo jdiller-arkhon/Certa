@@ -1,4 +1,6 @@
-# Single origin: the web app and the API share a hostname so session cookies need no CORS.
+# Single origin: the web app and the API share a hostname (and base path) so session cookies
+# need no CORS. BASE_PATH is '' for a root install or e.g. '/certa' when Certa is served inside
+# the Arkhon website (see docs/ARKHON_SITE_INTEGRATION.md).
 {
 	admin off
 }
@@ -12,13 +14,13 @@
 		X-Frame-Options "DENY"
 		-Server
 	}
-	handle /api/* {
+	handle {$BASE_PATH}/api/* {
 		reverse_proxy api:4000
 	}
-	handle /healthz {
+	handle {$BASE_PATH}/healthz {
 		reverse_proxy api:4000
 	}
-	handle /readyz {
+	handle {$BASE_PATH}/readyz {
 		reverse_proxy api:4000
 	}
 	handle {

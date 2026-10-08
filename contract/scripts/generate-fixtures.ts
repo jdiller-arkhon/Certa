@@ -99,7 +99,7 @@ interface World {
   flights: Flight[];
   audit: (AuditEvent & { actorName: string | null })[];
   overrides: { ruleId: string; value: unknown; reason: string; setBy: string; setAt: string }[];
-  mobileSync: SyncStateViewModel;
+  fieldSync: SyncStateViewModel;
 }
 
 const SITES = [
@@ -128,7 +128,7 @@ function buildWorld(opts: {
   flights: number;
   credentialMode: 'healthy' | 'mixed' | 'expired';
   longNames?: boolean;
-  mobileSync?: SyncStateViewModel;
+  fieldSync?: SyncStateViewModel;
 }): World {
   const rnd = prng(opts.seed);
   const nid = idFactory(opts.seed);
@@ -287,7 +287,7 @@ function buildWorld(opts: {
     flights,
     audit,
     overrides: owner ? [{ ruleId: 'operation.max_altitude_agl', value: 91.44, reason: 'Company SOP caps altitude at 300 ft', setBy: owner.name, setAt: '2026-10-07T21:14:09.000Z' }] : [],
-    mobileSync: opts.mobileSync ?? { status: 'online', pendingChanges: 0, lastSynced: displayInstant('2026-10-08T15:58:00.000Z', TZ, NOW), message: null, conflictCount: 0 },
+    fieldSync: opts.fieldSync ?? { status: 'online', pendingChanges: 0, lastSynced: displayInstant('2026-10-08T15:58:00.000Z', TZ, NOW), message: null, conflictCount: 0 },
   };
 }
 
@@ -297,7 +297,7 @@ function toScenario(w: World): FixtureScenario {
   const role = w.currentUser.role;
   const memberships = [{ orgId: w.org.id, orgName: w.org.name, role }, ...w.otherOrgs];
   const shellFor = (href: string, sync?: SyncStateViewModel) =>
-    buildShell({ user: w.currentUser, role, organization: w.org, memberships, activeHref: href, sync });
+    buildShell({ user: w.currentUser, role, organization: w.org, memberships, activeHref: href, sync, basePath: '/certa' });
   const pilotName = (id: string) => w.pilots.find((p) => p.id === id)?.displayName ?? 'Unknown pilot';
   const acName = (id: string) => {
     const a = w.aircraft.find((x) => x.id === id);
@@ -331,7 +331,7 @@ function toScenario(w: World): FixtureScenario {
     const fs = w.flights.filter(pred);
     return { count: fs.length, seconds: fs.reduce((s, f) => s + f.durationSeconds, 0), last: fs[0]?.takeoffAt ?? null };
   };
-  const flightRows = w.flights.map((f, i) => toFlightRow(f, { pilot: pilotName(f.pilotInCommandId), aircraft: acName(f.aircraftId) }, ctx, w.mobileSync.pendingChanges > 0 && i < w.mobileSync.pendingChanges));
+  const flightRows = w.flights.map((f, i) => toFlightRow(f, { pilot: pilotName(f.pilotInCommandId), aircraft: acName(f.aircraftId) }, ctx, w.fieldSync.pendingChanges > 0 && i < w.fieldSync.pendingChanges));
 
   const p0 = w.pilots[0];
   const a0 = w.aircraft[0];
@@ -349,7 +349,7 @@ function toScenario(w: World): FixtureScenario {
     id: w.id,
     description: w.description,
     shell: shellFor('/'),
-    mobileShell: shellFor('/', w.mobileSync),
+    fieldShell: shellFor('/', w.fieldSync),
     screens: {
       readinessDashboard: {
         ...ok,
@@ -567,7 +567,7 @@ function toScenario(w: World): FixtureScenario {
       syncConflicts: {
         ...ok,
         conflicts:
-          w.mobileSync.conflictCount > 0 && f0
+          w.fieldSync.conflictCount > 0 && f0
             ? [
                 {
                   id: 'conflict-1',
@@ -618,7 +618,7 @@ const worlds: World[] = [
     batteriesPerAircraft: 4,
     flights: 240,
     credentialMode: 'mixed',
-    mobileSync: { status: 'offline', pendingChanges: 3, lastSynced: displayInstant('2026-10-07T22:41:00.000Z', TZ, NOW), message: 'Offline — 3 changes will sync when you reconnect', conflictCount: 1 },
+    fieldSync: { status: 'offline', pendingChanges: 3, lastSynced: displayInstant('2026-10-07T22:41:00.000Z', TZ, NOW), message: 'Offline — 3 changes will sync when you reconnect', conflictCount: 1 },
   }),
   buildWorld({ id: 'expired', description: 'Everything expired: recurrent training, registrations, batteries at end of life, one aircraft grounded.', seed: 3, orgName: 'Lapsed Drone Works', pilotNames: ['Riley Fenwick', 'Jordan Pike', 'Casey Morrow'], aircraftCount: 3, batteriesPerAircraft: 2, flights: 25, credentialMode: 'expired' }),
   buildWorld({ id: 'empty', description: 'Brand-new organization: no pilots, aircraft, batteries, or flights. Exercises every empty state.', seed: 4, orgName: 'New Horizon UAS', pilotNames: [], aircraftCount: 0, batteriesPerAircraft: 0, flights: 0, credentialMode: 'healthy' }),

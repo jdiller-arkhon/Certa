@@ -33,7 +33,7 @@ export function AppShell(props: AppShellProps & { children: ReactNode }) {
           {props.navigation.map((n) => (
             <li key={n.id}>
               <a
-                href={n.href}
+                href={props.basePath + n.href}
                 aria-current={n.active ? 'page' : undefined}
                 onClick={(e) => {
                   e.preventDefault();

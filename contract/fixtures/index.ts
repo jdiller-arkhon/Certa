@@ -3,7 +3,7 @@
  *
  * Scenarios (each renders every Phase 1–2 screen for one coherent organization):
  * - solo       — one Part 107 pilot, two aircraft, everything current
- * - company    — 12 pilots / 9 aircraft, mixed green/amber/red; mobile offline with pending changes + 1 conflict
+ * - company    — 12 pilots / 9 aircraft, mixed green/amber/red; field app offline with pending changes + 1 conflict
  * - expired    — everything expired, grounded aircraft, retired batteries
  * - empty      — brand-new org; every list is empty (use each screen's `empty` copy)
  * - longNames  — very long org, pilot, aircraft, and location names
@@ -42,16 +42,16 @@ export const states = {
   staleWithError: { loading: false, error: 'Showing saved data — the latest changes couldn’t be loaded.' } satisfies AsyncState,
 } as const;
 
-/** Mobile shells for the sync banner states. */
+/** Field (installed app) shells for the sync banner states. */
 export const syncStates = {
-  online: solo.mobileShell,
-  offlineWithPending: company.mobileShell,
+  online: solo.fieldShell,
+  offlineWithPending: company.fieldShell,
   syncing: {
-    ...company.mobileShell,
-    sync: { ...company.mobileShell.sync, status: 'syncing', message: 'Syncing 3 changes…', conflictCount: 0 },
+    ...company.fieldShell,
+    sync: { ...company.fieldShell.sync, status: 'syncing', message: 'Syncing 3 changes…', conflictCount: 0 },
   },
   error: {
-    ...solo.mobileShell,
-    sync: { ...solo.mobileShell.sync, status: 'error', message: 'Sync failed. Your changes are saved on this device and will retry.', pendingChanges: 1 },
+    ...solo.fieldShell,
+    sync: { ...solo.fieldShell.sync, status: 'error', message: 'Sync failed. Your changes are saved on this device and will retry.', pendingChanges: 1 },
   },
-} satisfies Record<string, FixtureScenario['mobileShell']>;
+} satisfies Record<string, FixtureScenario['fieldShell']>;

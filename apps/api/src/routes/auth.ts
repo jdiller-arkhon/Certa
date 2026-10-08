@@ -26,14 +26,16 @@ export const authRoutes =
   async (app) => {
     const authRateLimit = { max: ctx.config.RATE_LIMIT_AUTH_PER_MINUTE, timeWindow: '1 minute' };
 
-    // Better Auth owns /api/auth/* (sign-in, sign-out, magic link, session). Not in OpenAPI.
+    const base = ctx.config.basePath;
+
+    // Better Auth owns {base}/api/auth/* (sign-in, sign-out, magic link, session). Not in OpenAPI.
     app.route({
       method: ['GET', 'POST'],
-      url: '/api/auth/*',
+      url: `${base}/api/auth/*`,
       schema: { hide: true },
       config: { rateLimit: authRateLimit },
       async handler(req, reply) {
-        const url = new URL(req.url, ctx.config.PUBLIC_URL);
+        const url = new URL(req.url, ctx.config.publicOrigin);
         const request = new Request(url, {
           method: req.method,
           headers: toWebHeaders(req),
@@ -51,7 +53,7 @@ export const authRoutes =
 
     // Sign-up creates the user, their first organization (as owner), and their pilot record.
     app.post(
-      '/api/v1/signup',
+      `${base}/api/v1/signup`,
       {
         config: { rateLimit: authRateLimit },
         schema: {
@@ -106,7 +108,7 @@ export const authRoutes =
     );
 
     app.get(
-      '/api/v1/me',
+      `${base}/api/v1/me`,
       { schema: { tags: ['auth'], summary: 'Current user and their organizations', response: { 200: api.MeResponse } } },
       async (req) => {
         const user = requireUser(req);

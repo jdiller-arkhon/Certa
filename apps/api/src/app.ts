@@ -64,7 +64,13 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   const ctx: AppContext = { ...deps, auth: createAuth(config, deps.pool, deps.mailer) };
 
   await app.register(cookie);
-  await app.register(rateLimit, { global: false });
+  await app.register(rateLimit, {
+    global: false,
+    keyGenerator: (req) => {
+      const h = config.CLIENT_IP_HEADER ? req.headers[config.CLIENT_IP_HEADER] : undefined;
+      return (Array.isArray(h) ? h[0] : h)?.split(',')[0]?.trim() || req.ip;
+    },
+  });
   await app.register(swagger, {
     openapi: {
       openapi: '3.1.0',
@@ -89,7 +95,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   app.decorateRequest('user', null);
   app.addHook('onRequest', async (req, reply) => {
     reply.header('x-request-id', req.id);
-    if (!req.url.startsWith('/api/v1')) return;
+    if (!req.url.startsWith(`${config.basePath}/api/v1`)) return;
     const headers = new Headers();
     for (const [k, v] of Object.entries(req.headers)) if (typeof v === 'string') headers.set(k, v);
     const session = await ctx.auth.api.getSession({ headers });
@@ -127,12 +133,15 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
     });
   });
 
+  // Health checks answer at the root (container probes) and under the base path (public).
   await app.register(healthRoutes(ctx));
+  if (config.basePath) await app.register(healthRoutes(ctx, { hidden: true }), { prefix: config.basePath });
   await app.register(authRoutes(ctx));
-  await app.register(orgRoutes(ctx), { prefix: '/api/v1' });
-  await app.register(memberRoutes(ctx), { prefix: '/api/v1' });
-  await app.register(ruleRoutes(ctx), { prefix: '/api/v1' });
-  await app.register(auditRoutes(ctx), { prefix: '/api/v1' });
+  const v1 = `${config.basePath}/api/v1`;
+  await app.register(orgRoutes(ctx), { prefix: v1 });
+  await app.register(memberRoutes(ctx), { prefix: v1 });
+  await app.register(ruleRoutes(ctx), { prefix: v1 });
+  await app.register(auditRoutes(ctx), { prefix: v1 });
 
   return app;
 }

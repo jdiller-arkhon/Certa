@@ -23,10 +23,10 @@ import type {
 export interface FixtureScenario {
   id: string;
   description: string;
-  /** Shell as seen on the web dashboard (active route "/"). */
+  /** Shell on the dashboard (active route "/"), online. */
   shell: AppShellViewModel;
-  /** Shell as seen on mobile (sync engine state). */
-  mobileShell: AppShellViewModel;
+  /** Shell in the installed app in the field (sync engine state: offline, pending changes). */
+  fieldShell: AppShellViewModel;
   screens: {
     readinessDashboard: ScreenData<ReadinessDashboardScreenProps>;
     pilotList: ScreenData<PilotListScreenProps>;

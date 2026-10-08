@@ -4,6 +4,8 @@
 
 When an auditor, insurer, client, or regulator asks "prove it," Certa produces a complete, trustworthy record in under 60 seconds.
 
+Certa is one web app. It runs inside the Arkhon website at **arkhonindustries.com/certa** (see [`docs/ARKHON_SITE_INTEGRATION.md`](docs/ARKHON_SITE_INTEGRATION.md)), installs on phones as an offline-capable PWA for field use, and ships as a self-hosted Docker install for customers who need their data on their own network.
+
 > Certa is a record-keeping tool. Operators remain responsible for compliance with all applicable regulations. Regulatory values shipped in rule packs are pending verification — see [`docs/RULES_VERIFICATION.md`](docs/RULES_VERIFICATION.md).
 
 ---
@@ -18,7 +20,7 @@ infra/scripts/init-env.sh                         # writes .env with generated s
 docker compose -f infra/docker/compose.yml --env-file .env up -d --build
 ```
 
-Then open **http://localhost:8080**, create an account, and go to **Rule pack** in the navigation.
+Then open **http://localhost:8080**, create an account, and go to **Rule pack** in the navigation. (With `BASE_PATH=/certa` in `.env`, the app is at http://localhost:8080/certa/, exactly as on the Arkhon website.)
 
 | URL | What |
 |---|---|
@@ -42,7 +44,7 @@ pnpm build                       # build shared packages once (core, db, rulepac
 pnpm dev                         # API on :4000 (watch) + web on :3000 (proxies /api to :4000)
 ```
 
-Open http://localhost:3000. The mobile app: `pnpm --filter @certa/mobile start`. Set `EXPO_PUBLIC_API_URL` to an origin your phone can reach, and add it to `TRUSTED_ORIGINS`.
+Open http://localhost:3000. To develop under the hosted base path, set `NEXT_PUBLIC_BASE_PATH=/certa` for the web app and run the API with `PUBLIC_URL=http://localhost:3000/certa`, then open http://localhost:3000/certa/.
 
 ### Tests
 
@@ -61,8 +63,7 @@ Integration tests create throwaway databases on the server in `TEST_PG_SERVER_UR
 ```
 apps/
   api/        Fastify REST API, Better Auth, pg-boss worker, migrator entrypoint
-  web/        Next.js dashboard — containers (data) + screens (presentational, from the frontend)
-  mobile/     Expo field app — offline-first SQLite
+  web/        Next.js app (dashboard + installable field app/PWA) — containers (data) + screens (presentational, from the frontend)
 packages/
   core/       Domain types, Zod schemas, permissions, rule engine, readiness engine, view-model mappers
   db/         Drizzle schema, SQL migrations (RLS, audit triggers), test database helper

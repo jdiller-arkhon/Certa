@@ -1,5 +1,5 @@
 /**
- * Domain → view-model mappers. Containers (web/mobile) and the contract fixture generator both
+ * Domain → view-model mappers. Containers (web app, online or offline) and the contract fixture generator both
  * use these, so fixtures always match what the real app renders.
  */
 import type {
@@ -402,8 +402,10 @@ export function buildShell(input: {
   sync?: SyncStateViewModel;
   theme?: ThemeName;
   navBadges?: Record<string, NavItem['badge']>;
+  basePath?: string;
 }): AppShellViewModel {
   return {
+    basePath: input.basePath ?? '',
     user: { ...userChip(input.user.id, input.user.name), email: input.user.email, roleLabel: ROLE_LABELS[input.role] },
     organization: input.organization,
     orgOptions: input.memberships.map((m) => ({ orgId: m.orgId, name: m.orgName, role: m.role, current: m.orgId === input.organization.id })),

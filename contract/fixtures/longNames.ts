@@ -6,6 +6,7 @@ export const longNames = {
   "id": "longNames",
   "description": "Very long names everywhere: organization, pilots, aircraft nicknames, and locations.",
   "shell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000004c4b42",
       "name": "Maximilian Alexander Featherstonehaugh-Montgomery III",
@@ -146,7 +147,8 @@ export const longNames = {
     },
     "theme": "light"
   },
-  "mobileShell": {
+  "fieldShell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000004c4b42",
       "name": "Maximilian Alexander Featherstonehaugh-Montgomery III",

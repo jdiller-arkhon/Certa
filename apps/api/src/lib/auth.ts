@@ -14,17 +14,21 @@ const ARGON2 = { memoryCost: 19_456, timeCost: 2, parallelism: 1, algorithm: 2 /
 export function createAuth(config: Config, pool: pg.Pool, mailer: Mailer) {
   return betterAuth({
     appName: 'Certa',
-    baseURL: config.PUBLIC_URL,
-    basePath: '/api/auth',
+    baseURL: config.publicOrigin,
+    basePath: `${config.basePath}/api/auth`,
     secret: config.AUTH_SECRET,
-    trustedOrigins: [config.PUBLIC_URL, ...config.TRUSTED_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean)],
+    trustedOrigins: [config.publicOrigin, ...config.TRUSTED_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean)],
     database: drizzleAdapter(globalDb(pool), {
       provider: 'pg',
       schema: { user: authUsers, session: authSessions, account: authAccounts, verification: authVerifications },
     }),
     advanced: {
       database: { generateId: () => newId() },
-      useSecureCookies: config.PUBLIC_URL.startsWith('https://'),
+      useSecureCookies: config.publicOrigin.startsWith('https://'),
+      // Certa may share an origin with the Arkhon website: prefix and path-scope its cookies so
+      // they never collide with, or get sent to, the rest of the site.
+      cookiePrefix: 'certa',
+      defaultCookieAttributes: { path: config.basePath || '/', sameSite: 'lax', httpOnly: true },
     },
     emailAndPassword: {
       enabled: true,

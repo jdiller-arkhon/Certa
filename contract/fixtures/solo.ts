@@ -6,6 +6,7 @@ export const solo = {
   "id": "solo",
   "description": "Solo Part 107 pilot: one pilot, two aircraft, all current.",
   "shell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000000f4242",
       "name": "Dana Reyes",
@@ -146,7 +147,8 @@ export const solo = {
     },
     "theme": "light"
   },
-  "mobileShell": {
+  "fieldShell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000000f4242",
       "name": "Dana Reyes",

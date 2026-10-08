@@ -22,8 +22,7 @@ import type {
 } from './common.js';
 
 /**
- * A user-selected file, platform-neutral. Web passes the DOM `File` as `handle`; mobile passes
- * the document-picker URI. Containers own the upload; components only forward it.
+ * A user-selected file. The host passes the DOM `File` as `handle`. Containers own the upload; components only forward it.
  */
 export interface PickedFile {
   name: string;
@@ -36,7 +35,7 @@ export interface PickedFile {
 // Auth (stable)
 // =====================================================================================
 
-/** @status stable — route: /sign-in (web), (auth)/sign-in (mobile) */
+/** @status stable — route: /sign-in */
 export interface SignInScreenProps extends AsyncState {
   initialEmail: string | null;
   magicLinkSentTo: string | null;
@@ -193,7 +192,7 @@ export interface ReadinessRowViewModel {
   href: string;
 }
 
-/** @status beta — route: / (web dashboard), (tabs)/index (mobile) */
+/** @status beta — route: / */
 export interface ReadinessDashboardScreenProps extends AsyncState {
   asOf: DateDisplay;
   overall: StatusBadge;
@@ -435,8 +434,8 @@ export interface FlightDetailScreenProps extends AsyncState {
 }
 
 /**
- * @status beta — route: /flights/new (web), (tabs)/log (mobile)
- * Designed for < 30 s entry on mobile: everything defaults from the last flight.
+ * @status beta — route: /flights/new
+ * Designed for < 30 s entry on a phone (installed app, often offline): everything defaults from the last flight.
  */
 export interface LogFlightScreenProps extends AsyncState {
   defaults: {

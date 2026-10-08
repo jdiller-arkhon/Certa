@@ -5,7 +5,9 @@ name: certa
 x-api-env: &api-env
   NODE_ENV: production
   LOG_LEVEL: ${LOG_LEVEL:-info}
+  # Must end with BASE_PATH, e.g. https://arkhonindustries.com/certa
   PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8080}
+  CLIENT_IP_HEADER: ${CLIENT_IP_HEADER:-}
   DATABASE_URL: postgres://${APP_DB_USER:-certa_api}:${APP_DB_PASSWORD:?set APP_DB_PASSWORD in .env}@postgres:5432/${POSTGRES_DB:-certa}
   AUTH_SECRET: ${AUTH_SECRET:?set AUTH_SECRET in .env}
   SMTP_URL: ${SMTP_URL:-smtp://mailpit:1025}
@@ -94,7 +96,12 @@ services:
       disable: true
 
   web:
-    build: { context: ../.., dockerfile: infra/docker/Dockerfile, target: web }
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      target: web
+      args:
+        NEXT_PUBLIC_BASE_PATH: ${BASE_PATH:-}
     image: certa-web:local
     restart: unless-stopped
     depends_on:
@@ -110,6 +117,7 @@ services:
       - '${HTTP_PORT:-8080}:8080'
     environment:
       CERTA_SITE_ADDRESS: ${CERTA_SITE_ADDRESS:-:8080}
+      BASE_PATH: ${BASE_PATH:-}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

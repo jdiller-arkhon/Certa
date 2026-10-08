@@ -167,7 +167,7 @@ export const webhookEndpoints = pgTable('webhook_endpoints', {
   active: boolean('active').notNull().default(true),
 });
 
-/** Monotonic per-org change feed consumed by mobile pull (Phase 2). */
+/** Monotonic per-org change feed consumed by the offline app's pull (Phase 2). */
 export const syncChanges = pgTable(
   'sync_changes',
   {

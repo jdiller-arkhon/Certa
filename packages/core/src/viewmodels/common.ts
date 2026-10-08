@@ -91,9 +91,8 @@ export interface NavItem {
 }
 
 /**
- * Sync status for the shell.
- * - web: always `online`, pendingChanges 0, lastSynced null.
- * - mobile: reflects the offline-first sync engine.
+ * Sync status for the shell, from the browser's offline-first sync engine (IndexedDB outbox).
+ * Online with nothing pending: status `online`, pendingChanges 0.
  */
 export interface SyncStateViewModel {
   status: 'online' | 'syncing' | 'offline' | 'error';
@@ -108,6 +107,12 @@ export interface SyncStateViewModel {
 
 /** Shared layout props for every authenticated screen. Built by the host, never by components. */
 export interface AppShellViewModel {
+  /**
+   * Path prefix the app is served under ('/certa' on the Arkhon website, '' self-hosted).
+   * Every `href` in view-models is app-relative; when rendering a real `<a href>`, use
+   * `basePath + href`. Prefer the `onNavigate`/`onOpen` callbacks for in-app navigation.
+   */
+  basePath: string;
   user: UserChip & { email: string; roleLabel: string };
   organization: { id: string; name: string };
   orgOptions: OrgSwitcherOption[];

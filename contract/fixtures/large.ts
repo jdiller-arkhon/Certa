@@ -6,6 +6,7 @@ export const large = {
   "id": "large",
   "description": "520 flights across 4 pilots and 4 aircraft, for list performance and pagination.",
   "shell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000005b8d82",
       "name": "Alex Rivera",
@@ -146,7 +147,8 @@ export const large = {
     },
     "theme": "light"
   },
-  "mobileShell": {
+  "fieldShell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000005b8d82",
       "name": "Alex Rivera",

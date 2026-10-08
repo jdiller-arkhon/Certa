@@ -4,9 +4,9 @@ import type { AppContext } from '../app.js';
 import { VERSION } from '../config.js';
 
 export const healthRoutes =
-  (ctx: AppContext): FastifyPluginAsyncZod =>
+  (ctx: AppContext, opts: { hidden?: boolean } = {}): FastifyPluginAsyncZod =>
   async (app) => {
-    app.get('/healthz', { schema: { tags: ['health'], response: { 200: api.HealthResponse } } }, async () => ({
+    app.get('/healthz', { schema: { hide: opts.hidden, tags: ['health'], response: { 200: api.HealthResponse } } }, async () => ({
       status: 'ok' as const,
       version: VERSION,
       checks: {},
@@ -14,7 +14,7 @@ export const healthRoutes =
 
     app.get(
       '/readyz',
-      { schema: { tags: ['health'], response: { 200: api.HealthResponse, 503: api.HealthResponse } } },
+      { schema: { hide: opts.hidden, tags: ['health'], response: { 200: api.HealthResponse, 503: api.HealthResponse } } },
       async (_req, reply) => {
         let db: 'ok' | 'fail' = 'ok';
         try {

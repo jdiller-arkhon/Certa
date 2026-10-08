@@ -6,6 +6,7 @@ export const company = {
   "id": "company",
   "description": "12-pilot service company with mixed readiness: a grounded aircraft, an expiring registration, a missing registration, a pilot missing recurrent training, and some recurrents expiring soon. Mobile is offline with pending changes and one conflict.",
   "shell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000001e8482",
       "name": "Maya Thornton",
@@ -146,7 +147,8 @@ export const company = {
     },
     "theme": "light"
   },
-  "mobileShell": {
+  "fieldShell": {
+    "basePath": "/certa",
     "user": {
       "id": "0199c4a0-0000-7000-8000-0000001e8482",
       "name": "Maya Thornton",

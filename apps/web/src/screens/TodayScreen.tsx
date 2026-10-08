@@ -8,7 +8,7 @@ function Rows({ title, rows, onOpen }: { title: string; rows: ReadinessRowViewMo
       <ul>
         {rows.map((r) => (
           <li key={r.id}>
-            <a href={r.href} onClick={(e) => { e.preventDefault(); onOpen(r.href); }}>{r.name}</a> <Badge status={r.status} />
+            <button type="button" onClick={() => onOpen(r.href)}>{r.name}</button> <Badge status={r.status} />
             {r.reasons.map((x, i) => <div key={i}>{x.text}{x.due ? ` — ${x.due.display}` : ''}</div>)}
           </li>
         ))}

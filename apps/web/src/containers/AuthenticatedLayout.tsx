@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { mapContextFor, useMe, useOrgContext, useSignOut } from '@/data/session';
 import { CurrentOrgContext, readSelectedOrg, writeSelectedOrg, type CurrentOrg } from '@/lib/current-org';
 import { readTheme, writeTheme } from '@/lib/theme';
+import { BASE_PATH } from '@/lib/base-path';
 import { AppShell } from '@/screens';
 
 export function AuthenticatedLayout({ children }: { children: ReactNode }) {
@@ -59,6 +60,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
     organization: { id: current.org.organization.id, name: current.org.organization.name },
     memberships: memberships.map((m) => ({ orgId: m.orgId, orgName: m.orgName, role: m.role })),
     activeHref: pathname,
+    basePath: BASE_PATH,
     theme,
   });
 

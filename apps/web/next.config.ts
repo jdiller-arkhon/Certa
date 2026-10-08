@@ -7,13 +7,22 @@ import type { NextConfig } from 'next';
  */
 const apiOrigin = process.env.API_ORIGIN ?? (process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : null);
 
+/** '/certa' when hosted inside the Arkhon website; '' for a self-hosted install at a domain root. */
+const basePath = (process.env.NEXT_PUBLIC_BASE_PATH ?? '').replace(/\/+$/, '');
+
 const config: NextConfig = {
+  basePath,
   output: 'standalone',
   outputFileTracingRoot: new URL('../..', import.meta.url).pathname,
   transpilePackages: ['@certa/ui', '@certa/contract'],
   poweredByHeader: false,
+  async headers() {
+    // The service worker must be revalidated on every load so updates roll out promptly.
+    return [{ source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache' }, { key: 'Service-Worker-Allowed', value: `${basePath}/` }] }];
+  },
   async rewrites() {
-    return apiOrigin ? [{ source: '/api/:path*', destination: `${apiOrigin}/api/:path*` }] : [];
+    // `source` is automatically prefixed with basePath; the API serves under the same prefix.
+    return apiOrigin ? [{ source: '/api/:path*', destination: `${apiOrigin}${basePath}/api/:path*` }] : [];
   },
 };
 

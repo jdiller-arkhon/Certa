@@ -91,7 +91,7 @@ export const memberRoutes =
           }
         });
         await ctx.auth.api
-          .signInMagicLink({ body: { email, callbackURL: `/orgs/${oc.orgId}` }, headers: new Headers() })
+          .signInMagicLink({ body: { email, callbackURL: `${ctx.config.basePath}/` }, headers: new Headers() })
           .catch((err: unknown) => req.log.warn({ err }, 'invite email failed'));
         const row = (await listMembers(oc, req)).find((m) => m.membershipId === membershipId)!;
         return reply.status(201).send(row);

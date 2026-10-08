@@ -4,6 +4,7 @@ import { dateInZone, type MapContext, type UnitsPreference } from '@certa/core';
 import { CertaApiError, unwrap } from '@certa/sdk';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { withBase } from '@/lib/base-path';
 
 export const keys = {
   me: ['me'] as const,
@@ -44,7 +45,7 @@ export function useSignOut() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      await fetch('/api/auth/sign-out', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+      await fetch(withBase('/api/auth/sign-out'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
     },
     onSuccess: () => qc.clear(),
   });
