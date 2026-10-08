@@ -1,6 +1,10 @@
-// drizzle-kit quotes parameterised custom types ("geography(Point, 4326)"), which Postgres
-// rejects. Unquote them in generated migrations. Run automatically after `pnpm generate`.
+// Wraps `drizzle-kit generate`, then unquotes parameterised custom types that drizzle-kit
+// wraps in quotes ("geography(Point, 4326)"), which Postgres rejects.
+// Usage: pnpm generate --name <migration_name>
+import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+
+execFileSync('drizzle-kit', ['generate', ...process.argv.slice(2)], { stdio: 'inherit' });
 const dir = new URL('../migrations/', import.meta.url);
 for (const f of readdirSync(dir).filter((f) => f.endsWith('.sql'))) {
   const src = readFileSync(new URL(f, dir), 'utf8');

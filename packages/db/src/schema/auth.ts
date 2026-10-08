@@ -57,7 +57,8 @@ export const authAccounts = pgTable(
 export const authVerifications = pgTable(
   'auth_verifications',
   {
-    id: uuid('id').primaryKey(),
+    /** Text, not uuid: Better Auth looks verifications up by opaque string keys. */
+    id: text('id').primaryKey(),
     identifier: text('identifier').notNull(),
     value: text('value').notNull(),
     expiresAt: ts('expires_at').notNull(),
