@@ -1,0 +1,42 @@
+/* packages/ui/theme.css */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --certa-canvas: #fff; --certa-surface: #fff; --certa-inset: #f5f5f7;
+  --certa-text: #1d1d1f; --certa-muted: #5f6168; --certa-border: #d5d5da;
+  --certa-action: #2b2b2e; --certa-onAction: #fff; --certa-focus: #44444a;
+  --certa-current: #14633d; --certa-warning: #805000; --certa-expired: #a32030;
+  --certa-grounded: #832539; --certa-pending: #53536b; --certa-info: #245c91;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --certa-canvas: #111113; --certa-surface: #1c1c1f; --certa-inset: #252528;
+  --certa-text: #f5f5f7; --certa-muted: #b3b3bc; --certa-border: #65656e;
+  --certa-action: #f5f5f7; --certa-onAction: #1d1d1f; --certa-focus: #ededf2;
+  --certa-current: #85ddb0; --certa-warning: #efc56d; --certa-expired: #ff9ba6;
+  --certa-grounded: #f5a3b8; --certa-pending: #c3bce6; --certa-info: #9ccaff;
+}
+[data-theme="sunlight"] {
+  color-scheme: light; font-size: 18px;
+  --certa-canvas: #fff; --certa-surface: #fff; --certa-inset: #f1f1f1;
+  --certa-text: #000; --certa-muted: #333; --certa-border: #555;
+  --certa-action: #000; --certa-onAction: #fff; --certa-focus: #000;
+  --certa-current: #004023; --certa-warning: #573500; --certa-expired: #760015;
+  --certa-grounded: #640d23; --certa-pending: #383047; --certa-info: #003e6d;
+}
+.certa { background: var(--certa-canvas); color: var(--certa-text); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Geist, "Helvetica Neue", Arial, sans-serif; line-height: 1.5; }
+.certa *, .certa *::before, .certa *::after { box-sizing: border-box; }
+.certa :is(button, input, select, textarea) { font: inherit; }
+.certa :focus-visible { outline: 3px solid var(--certa-focus); outline-offset: 4px; }
+.certa-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 24px; border: 1px solid transparent; border-radius: 9999px; background: var(--certa-action); color: var(--certa-onAction); font-weight: 600; cursor: pointer; transition: opacity 160ms ease; text-decoration: none; }
+.certa-button:hover { opacity: .85; }
+.certa-button:disabled { opacity: .5; cursor: default; }
+.certa-button--secondary { background: var(--certa-surface); color: var(--certa-text); border-color: var(--certa-border); }
+.certa-panel { padding: 24px; background: var(--certa-surface); border: 1px solid var(--certa-border); border-radius: 20px; }
+.certa-label { font-size: .6875rem; font-weight: 650; letter-spacing: .14em; text-transform: uppercase; color: var(--certa-muted); }
+.certa-muted { color: var(--certa-muted); }
+.certa-number { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-variant-numeric: tabular-nums; }
+.certa-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid currentColor; border-radius: 9999px; font-size: .8125rem; font-weight: 600; }
+.certa-input { min-height: 48px; padding: 12px; border: 1px solid var(--certa-border); border-radius: 12px; background: var(--certa-surface); color: var(--certa-text); width: 100%; }
+[data-theme="sunlight"] :is(.certa-panel, .certa-input, .certa-badge, .certa-button--secondary) { border-width: 2px; }
+[data-theme="sunlight"] .certa-button { min-height: 56px; }
+@media (prefers-reduced-motion: reduce) { .certa *, .certa *::before, .certa *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
