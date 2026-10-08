@@ -1,0 +1,366 @@
+# US-FAA-Part107 rule pack.
+#
+# EVERY value below is the pack author's best understanding at the time of writing and is
+# marked needsVerification: true. Each one must be confirmed against the cited official source
+# before launch — see docs/RULES_VERIFICATION.md (generated from this file).
+#
+# Units: values are SI (metres, metres/second, kilograms). `statedAs` records the value as the
+# regulation states it. Money is in minor units (cents).
+
+schemaVersion: 1
+jurisdiction: US-FAA-Part107
+version: 1.0.0
+name: United States — FAA 14 CFR Part 107 (Small UAS)
+authority: Federal Aviation Administration
+effectiveFrom: '2021-04-21'
+disclaimer: >-
+  Values in this pack are provided for record-keeping convenience and are pending verification.
+  Certa does not provide legal or regulatory advice; operators remain responsible for compliance
+  with all applicable regulations.
+
+credentialTypes:
+  - id: part107_certificate
+    label: Remote Pilot Certificate (Part 107)
+    description: >-
+      Remote pilot certificate with small UAS rating. The certificate itself has no expiration
+      date; currency is maintained through recurrent training or testing.
+    validityRuleId: null
+    requiredForCurrency: true
+    satisfiedBy: []
+  - id: part107_initial_knowledge
+    label: Initial aeronautical knowledge test
+    description: Passing the initial knowledge test establishes currency for the recurrent period.
+    validityRuleId: pilot.aeronautical_knowledge.recency
+    requiredForCurrency: false
+    satisfiedBy: []
+  - id: part107_recurrent
+    label: Recurrent training (Part 107)
+    description: >-
+      Online recurrent training (or recurrent test) completed within the recency window required
+      to exercise the privileges of the remote pilot certificate.
+    validityRuleId: pilot.aeronautical_knowledge.recency
+    requiredForCurrency: true
+    satisfiedBy: [part107_initial_knowledge]
+  - id: night_operations_training
+    label: Night operations training
+    description: >-
+      Training or testing covering night operations, required before conducting operations at
+      night. Satisfied by recurrent training/testing completed after the night-rule effective date.
+    validityRuleId: null
+    requiredForCurrency: false
+    satisfiedBy: []
+  - id: type_specific_training
+    label: Type-specific training
+    description: Manufacturer or operator training for a specific aircraft type. Expiry set per record.
+    validityRuleId: null
+    requiredForCurrency: false
+    satisfiedBy: []
+  - id: waiver_held
+    label: Waiver / certificate of waiver (pilot-held)
+    description: A Part 107 waiver issued to the pilot. Expiry is taken from the waiver document.
+    validityRuleId: null
+    requiredForCurrency: false
+    satisfiedBy: []
+
+rules:
+  # ---------------------------------------------------------------- pilot
+  - id: pilot.aeronautical_knowledge.recency
+    title: Aeronautical knowledge recency
+    description: >-
+      A remote pilot must have completed initial or recurrent aeronautical knowledge training or
+      testing within the preceding period to act as remote pilot in command.
+    appliesTo: pilot
+    kind: duration
+    value: { amount: 24, unit: months, roundTo: end_of_month }
+    statedAs: 24 calendar months
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.65
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-C/section-107.65
+    lastVerifiedOn: null
+    needsVerification: true
+    notes: >-
+      Modelled as "through the last day of the 24th calendar month after the month of
+      completion". Confirm calendar-month semantics against 14 CFR 1.1 and FAA guidance.
+
+  - id: pilot.minimum_age
+    title: Minimum age for remote pilot certificate
+    description: Minimum age to be eligible for a remote pilot certificate.
+    appliesTo: pilot
+    kind: integer
+    value: 16
+    statedAs: 16 years of age
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.61(a)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-C/section-107.61
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: pilot.night_operations.training_required
+    title: Night operations require training
+    description: >-
+      Operations at night require the remote pilot to have completed training or testing that
+      covers night operations.
+    appliesTo: pilot
+    kind: boolean
+    value: true
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.29(b)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.29
+    lastVerifiedOn: null
+    needsVerification: true
+
+  # ---------------------------------------------------------------- aircraft
+  - id: aircraft.registration.validity
+    title: Aircraft registration validity period
+    description: Period for which a small unmanned aircraft registration remains valid before renewal.
+    appliesTo: aircraft
+    kind: duration
+    value: { amount: 3, unit: years, roundTo: none }
+    statedAs: 3 years
+    source:
+      title: 14 CFR Part 48
+      citation: 14 CFR 48.100
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-C/part-48
+    lastVerifiedOn: null
+    needsVerification: true
+    notes: Confirm the exact section that sets the registration term and renewal window.
+
+  - id: aircraft.max_takeoff_mass
+    title: Maximum takeoff mass for a small UAS
+    description: >-
+      A small unmanned aircraft must weigh less than this value at takeoff, including everything
+      on board or otherwise attached.
+    appliesTo: aircraft
+    kind: mass
+    value: 24.9476
+    unit: kg
+    statedAs: less than 55 pounds
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.3 (definition of small unmanned aircraft)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-A/section-107.3
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: aircraft.registration.min_mass
+    title: Registration mass threshold
+    description: >-
+      Mass above which registration is required for aircraft operated recreationally. Under
+      Part 107 every aircraft must be registered regardless of mass (see
+      aircraft.registration.required_part107).
+    appliesTo: aircraft
+    kind: mass
+    value: 0.25
+    unit: kg
+    statedAs: more than 0.55 pounds (250 grams)
+    source:
+      title: 14 CFR Part 48
+      citation: 14 CFR 48.15
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-C/part-48
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: aircraft.registration.required_part107
+    title: Registration required for all Part 107 aircraft
+    description: Aircraft operated under Part 107 must be registered regardless of mass.
+    appliesTo: aircraft
+    kind: boolean
+    value: true
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.13
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-A/section-107.13
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: aircraft.remote_id.required
+    title: Remote ID required
+    description: >-
+      Aircraft must comply with Remote ID by standard Remote ID, a broadcast module, or by
+      operating within an FAA-recognized identification area (FRIA).
+    appliesTo: aircraft
+    kind: boolean
+    value: true
+    source:
+      title: 14 CFR Part 89
+      citation: 14 CFR 89.105
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-89
+    lastVerifiedOn: null
+    needsVerification: true
+
+  # ---------------------------------------------------------------- operation
+  - id: operation.max_altitude_agl
+    title: Maximum altitude above ground level
+    description: >-
+      Maximum altitude above ground level, unless flown within a 400-foot radius of a structure
+      and not higher than 400 feet above the structure's immediate uppermost limit.
+    appliesTo: operation
+    kind: length
+    value: 121.92
+    unit: m
+    statedAs: 400 feet AGL
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.51(b)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: operation.max_groundspeed
+    title: Maximum groundspeed
+    description: Maximum groundspeed of the small unmanned aircraft.
+    appliesTo: operation
+    kind: speed
+    value: 44.704
+    unit: m/s
+    statedAs: 87 knots (100 miles per hour)
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.51(a)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51
+    lastVerifiedOn: null
+    needsVerification: true
+    notes: 87 kt is 44.757 m/s and 100 mph is 44.704 m/s; the lower value is used. Confirm.
+
+  - id: operation.min_flight_visibility
+    title: Minimum flight visibility
+    description: Minimum flight visibility from the control station.
+    appliesTo: operation
+    kind: length
+    value: 4828.032
+    unit: m
+    statedAs: 3 statute miles
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.51(c)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: operation.cloud_clearance_below
+    title: Minimum distance below clouds
+    description: Minimum vertical distance below clouds.
+    appliesTo: operation
+    kind: length
+    value: 152.4
+    unit: m
+    statedAs: 500 feet below the cloud
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.51(d)(1)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: operation.cloud_clearance_horizontal
+    title: Minimum horizontal distance from clouds
+    description: Minimum horizontal distance from clouds.
+    appliesTo: operation
+    kind: length
+    value: 609.6
+    unit: m
+    statedAs: 2,000 feet horizontally from the cloud
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.51(d)(2)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.51
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: operation.night_anticollision_lighting_visibility
+    title: Anti-collision lighting visibility (night / civil twilight)
+    description: >-
+      Operations at night or during civil twilight require anti-collision lighting visible for at
+      least this distance.
+    appliesTo: operation
+    kind: length
+    value: 4828.032
+    unit: m
+    statedAs: 3 statute miles
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.29(a)(2), 107.29(c)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-B/section-107.29
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: operation.remote_id.enforcement_date
+    title: Remote ID operating requirement date
+    description: Date from which operators must comply with Remote ID operating requirements.
+    appliesTo: operation
+    kind: date
+    value: '2023-09-16'
+    statedAs: September 16, 2023 (FAA exercised enforcement discretion until March 16, 2024)
+    source:
+      title: 14 CFR Part 89
+      citation: 14 CFR 89.105; FAA enforcement policy statement
+      url: https://www.faa.gov/uas/getting_started/remote_id
+    lastVerifiedOn: null
+    needsVerification: true
+
+  # ---------------------------------------------------------------- incident
+  - id: incident.report.deadline
+    title: Accident reporting deadline
+    description: >-
+      Time after an accident within which the remote pilot in command must report it to the FAA
+      when it meets a reporting threshold.
+    appliesTo: incident
+    kind: duration
+    value: { amount: 10, unit: days, roundTo: none }
+    statedAs: within 10 calendar days
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.9
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-A/section-107.9
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: incident.report.injury_min_ais_level
+    title: Reportable injury threshold (AIS)
+    description: >-
+      An accident causing serious injury to any person is reportable. Modelled as an injury of at
+      least this level on the Abbreviated Injury Scale.
+    appliesTo: incident
+    kind: integer
+    value: 3
+    statedAs: Serious injury — AIS level 3 or higher
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.9(a)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-A/section-107.9
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: incident.report.loss_of_consciousness
+    title: Loss of consciousness is reportable
+    description: An accident causing any loss of consciousness is reportable.
+    appliesTo: incident
+    kind: boolean
+    value: true
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.9(a)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-A/section-107.9
+    lastVerifiedOn: null
+    needsVerification: true
+
+  - id: incident.report.property_damage_min
+    title: Reportable property damage threshold
+    description: >-
+      Damage to any property, other than the small unmanned aircraft, is reportable when the cost
+      of repair (including materials and labor) or fair market value in the event of total loss
+      exceeds this amount.
+    appliesTo: incident
+    kind: money
+    value: 50000
+    unit: USD
+    statedAs: greater than $500
+    source:
+      title: 14 CFR Part 107
+      citation: 14 CFR 107.9(b)
+      url: https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107/subpart-A/section-107.9
+    lastVerifiedOn: null
+    needsVerification: true

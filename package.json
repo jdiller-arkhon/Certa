@@ -1,0 +1,27 @@
+{
+  "name": "certa",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test --concurrency=1",
+    "db:migrate": "pnpm --filter @certa/db migrate",
+    "db:seed": "pnpm --filter @certa/db seed",
+    "rules:verify-doc": "pnpm --filter @certa/rulepacks gen:verification",
+    "contract:gen": "pnpm --filter @certa/api gen:openapi && pnpm --filter @certa/contract check",
+    "stack:up": "docker compose -f infra/docker/compose.yml --env-file .env up -d --build",
+    "stack:down": "docker compose -f infra/docker/compose.yml --env-file .env down"
+  },
+  "devDependencies": {
+    "turbo": "2.11.7",
+    "typescript": "6.0.3",
+    "@types/node": "^22.15.0",
+    "vitest": "4.1.11",
+    "tsx": "4.23.15",
+    "prettier": "^3.6.2"
+  }
+}
