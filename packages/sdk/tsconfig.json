@@ -1,0 +1,5 @@
+{
+  "extends": "@certa/config/tsconfig.base.json",
+  "compilerOptions": { "rootDir": ".", "noEmit": true, "lib": ["ES2023", "DOM"] },
+  "include": ["src"]
+}

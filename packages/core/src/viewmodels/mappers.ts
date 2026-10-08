@@ -418,3 +418,46 @@ export function buildShell(input: {
 export function allowedActions(role: Role): Action[] {
   return ACTIONS.filter((a) => can(role, a));
 }
+
+/** Maps the API's rule row (already resolved server-side) to the screen view-model. */
+export function ruleRowFromApi(
+  row: {
+    id: string;
+    title: string;
+    description: string;
+    kind: string;
+    appliesTo: string;
+    value: unknown;
+    packValue: unknown;
+    unit: string | null;
+    statedAs: string | null;
+    source: { title: string; citation: string; url: string | null };
+    lastVerifiedOn: string | null;
+    needsVerification: boolean;
+    override: { value: unknown; reason: string; setBy: string | null; setAt: string } | null;
+  },
+  ctx: MapContext,
+  canOverride: boolean,
+): RuleRowViewModel {
+  const kind = row.kind as RuleRowViewModel['valueKind'];
+  const unit = row.unit ?? undefined;
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    appliesTo: row.appliesTo,
+    valueDisplay: describeRuleValue({ kind, value: row.value, unit } as never, ctx.units),
+    packValueDisplay: row.override ? describeRuleValue({ kind, value: row.packValue, unit } as never, ctx.units) : null,
+    statedAs: row.statedAs,
+    sourceCitation: row.source.citation,
+    sourceTitle: row.source.title,
+    sourceUrl: row.source.url,
+    lastVerified: row.lastVerifiedOn ? displayDate(row.lastVerifiedOn, ctx.today) : null,
+    needsVerification: row.needsVerification,
+    override: row.override
+      ? { reason: row.override.reason, setBy: row.override.setBy, setAt: displayInstant(row.override.setAt, ctx.orgTimeZone, ctx.now) }
+      : null,
+    canOverride,
+    valueKind: kind,
+  };
+}
