@@ -1,13 +1,16 @@
 /**
  * Screen view-models and callback contracts. One `XxxScreenProps` per screen in
  * contract/SCREENS.md. Each interface notes its contract status:
- *   @status stable — build and polish against it
- *   @status draft  — shape will change when its phase starts
+ *   @status stable — build and polish against it; changes are versioned in contract/CHANGELOG.md
+ *   @status beta   — build against it now; may gain fields (additive) when its phase starts
+ *   @status draft  — shape will change when its phase starts; placeholder only
+ *
+ * Screens render inside <AppShell> (see AppShellProps in contract/types.ts), so they do not
+ * receive shell props themselves.
  */
 import type { ReadinessLevel, Role } from '../domain/enums.js';
 import type {
   AppShellCallbacks,
-  AppShellViewModel,
   AsyncState,
   DateDisplay,
   EmptyState,
@@ -88,7 +91,6 @@ export interface RuleRowViewModel {
 
 /** @status stable — route: /admin/rules */
 export interface RulePackAdminScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   pack: {
     jurisdiction: string;
     name: string;
@@ -124,7 +126,6 @@ export interface MemberRowViewModel {
 
 /** @status stable — route: /admin/members */
 export interface MembersAdminScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   members: MemberRowViewModel[];
   roleOptions: { value: Role; label: string; description: string }[];
   canManage: boolean;
@@ -137,7 +138,6 @@ export interface MembersAdminScreenProps extends AsyncState {
 
 /** @status stable — route: /settings/organization */
 export interface OrgSettingsScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   values: {
     name: string;
     timezone: string;
@@ -170,7 +170,6 @@ export interface AuditEventViewModel {
 
 /** @status stable — route: /admin/audit */
 export interface AuditLogScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   events: AuditEventViewModel[];
   hasMore: boolean;
   filter: { entity: string | null; actorUserId: string | null };
@@ -181,7 +180,7 @@ export interface AuditLogScreenProps extends AsyncState {
 }
 
 // =====================================================================================
-// Core loop (draft until Phase 2 begins)
+// Core loop (beta — Phase 2)
 // =====================================================================================
 
 export interface ReadinessRowViewModel {
@@ -194,9 +193,8 @@ export interface ReadinessRowViewModel {
   href: string;
 }
 
-/** @status draft — route: / (web dashboard), (tabs)/index (mobile) */
+/** @status beta — route: / (web dashboard), (tabs)/index (mobile) */
 export interface ReadinessDashboardScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   asOf: DateDisplay;
   overall: StatusBadge;
   counts: Record<ReadinessLevel, number>;
@@ -220,9 +218,8 @@ export interface PilotRowViewModel {
   lastFlight: DateDisplay | null;
 }
 
-/** @status draft — route: /pilots */
+/** @status beta — route: /pilots */
 export interface PilotListScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   pilots: PilotRowViewModel[];
   search: string;
   canManage: boolean;
@@ -244,9 +241,8 @@ export interface CredentialViewModel {
   documentCount: number;
 }
 
-/** @status draft — route: /pilots/[pilotId] */
+/** @status beta — route: /pilots/[pilotId] */
 export interface PilotDetailScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   pilot: {
     id: string;
     name: string;
@@ -274,9 +270,8 @@ export interface PilotDetailScreenProps extends AsyncState {
   onOpenFlight: (flightId: string) => void;
 }
 
-/** @status draft — route: /pilots/new, /pilots/[pilotId]/edit */
+/** @status beta — route: /pilots/new, /pilots/[pilotId]/edit */
 export interface PilotFormScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   mode: 'create' | 'edit';
   values: { displayName: string; email: string; phone: string; certificateNumber: string; inviteAsUser: boolean; role: Role };
   fieldErrors: Partial<Record<'displayName' | 'email' | 'phone' | 'certificateNumber', string>>;
@@ -296,9 +291,8 @@ export interface AircraftRowViewModel {
   totalFlights: number;
 }
 
-/** @status draft — route: /aircraft */
+/** @status beta — route: /aircraft */
 export interface AircraftListScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   aircraft: AircraftRowViewModel[];
   search: string;
   statusFilter: 'all' | 'active' | 'grounded' | 'retired';
@@ -310,9 +304,8 @@ export interface AircraftListScreenProps extends AsyncState {
   onOpenAircraft: (aircraftId: string) => void;
 }
 
-/** @status draft — route: /aircraft/[aircraftId] */
+/** @status beta — route: /aircraft/[aircraftId] */
 export interface AircraftDetailScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   aircraft: {
     id: string;
     name: string;
@@ -339,9 +332,8 @@ export interface AircraftDetailScreenProps extends AsyncState {
   onOpenFlight: (flightId: string) => void;
 }
 
-/** @status draft — route: /aircraft/new, /aircraft/[aircraftId]/edit */
+/** @status beta — route: /aircraft/new, /aircraft/[aircraftId]/edit */
 export interface AircraftFormScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   mode: 'create' | 'edit';
   values: {
     nickname: string;
@@ -373,9 +365,8 @@ export interface BatteryRowViewModel {
   lastUsed: DateDisplay | null;
 }
 
-/** @status draft — route: /batteries */
+/** @status beta — route: /batteries */
 export interface BatteryListScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   batteries: BatteryRowViewModel[];
   canManage: boolean;
   empty: EmptyState;
@@ -397,9 +388,8 @@ export interface FlightRowViewModel {
   pendingSync: boolean;
 }
 
-/** @status draft — route: /flights */
+/** @status beta — route: /flights */
 export interface FlightListScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   flights: Paged<FlightRowViewModel>;
   filter: { pilotId: string | null; aircraftId: string | null; from: string | null; to: string | null };
   pilotOptions: { value: string; label: string }[];
@@ -414,9 +404,8 @@ export interface FlightListScreenProps extends AsyncState {
   onOpenFlight: (flightId: string) => void;
 }
 
-/** @status draft — route: /flights/[flightId] */
+/** @status beta — route: /flights/[flightId] */
 export interface FlightDetailScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   flight: {
     id: string;
     takeoff: DateDisplay;
@@ -446,11 +435,10 @@ export interface FlightDetailScreenProps extends AsyncState {
 }
 
 /**
- * @status draft — route: /flights/new (web), (tabs)/log (mobile)
+ * @status beta — route: /flights/new (web), (tabs)/log (mobile)
  * Designed for < 30 s entry on mobile: everything defaults from the last flight.
  */
 export interface LogFlightScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   defaults: {
     pilotId: string;
     aircraftId: string | null;
@@ -500,9 +488,8 @@ export interface SyncConflictViewModel {
   serverAt: DateDisplay;
 }
 
-/** @status draft — route: /sync/conflicts */
+/** @status beta — route: /sync/conflicts */
 export interface SyncConflictsScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   conflicts: SyncConflictViewModel[];
   empty: EmptyState;
   onResolve: (input: { conflictId: string; choose: 'local' | 'server'; note: string | null }) => void;
@@ -514,7 +501,6 @@ export interface SyncConflictsScreenProps extends AsyncState {
 
 /** @status draft — Phase 3 — route: /flights/import */
 export interface ImportScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   stage: 'select' | 'parsing' | 'review' | 'committing' | 'done';
   files: { name: string; parser: string | null; status: 'pending' | 'parsed' | 'error'; warnings: string[] }[];
   candidates: {
@@ -534,7 +520,6 @@ export interface ImportScreenProps extends AsyncState {
 
 /** @status draft — Phase 4 — route: /maintenance */
 export interface MaintenanceScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   due: { id: string; target: string; name: string; due: DateDisplay | null; usage: string | null; status: StatusBadge }[];
   history: { id: string; target: string; performed: DateDisplay; description: string; signedOff: boolean }[];
   onLogMaintenance: (scheduleId: string | null) => void;
@@ -543,7 +528,6 @@ export interface MaintenanceScreenProps extends AsyncState {
 
 /** @status draft — Phase 4 — route: /checklists */
 export interface ChecklistsScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   templates: { id: string; name: string; kind: string; version: number; isDefault: boolean }[];
   onCreateTemplate: () => void;
   onEditTemplate: (id: string) => void;
@@ -552,7 +536,6 @@ export interface ChecklistsScreenProps extends AsyncState {
 
 /** @status draft — Phase 4 — route: /incidents */
 export interface IncidentsScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   incidents: {
     id: string;
     occurred: DateDisplay;
@@ -567,7 +550,6 @@ export interface IncidentsScreenProps extends AsyncState {
 
 /** @status draft — Phase 5 — route: /records */
 export interface RecordsScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   integrity: { lastVerified: DateDisplay | null; result: 'ok' | 'failed' | 'never'; issues: string[] };
   exports: { id: string; kind: string; requested: DateDisplay; status: string; downloadHref: string | null }[];
   onVerifyIntegrity: () => void;
@@ -576,7 +558,6 @@ export interface RecordsScreenProps extends AsyncState {
 
 /** @status draft — Phase 6 — route: /missions */
 export interface MissionsScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   missions: { id: string; name: string; client: string | null; planned: DateDisplay | null; status: string; readiness: StatusBadge }[];
   onPlanMission: () => void;
   onOpenMission: (id: string) => void;
@@ -584,7 +565,6 @@ export interface MissionsScreenProps extends AsyncState {
 
 /** @status draft — Phase 6 — route: /analytics */
 export interface AnalyticsScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   range: { from: string; to: string };
   hoursByMonth: { month: string; hours: number }[];
   hoursByPilot: { label: string; hours: number }[];
@@ -595,7 +575,6 @@ export interface AnalyticsScreenProps extends AsyncState {
 
 /** @status draft — Phase 7 — route: /assistant (only when the AI module is enabled) */
 export interface AssistantScreenProps extends AsyncState {
-  shell: AppShellViewModel;
   messages: { id: string; role: 'user' | 'assistant'; text: string; citations: { label: string; href: string }[] }[];
   onAsk: (question: string) => void;
 }

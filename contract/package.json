@@ -1,0 +1,25 @@
+{
+  "name": "@certa/contract",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Frontend contract: view-model types, screen inventory, and typed fixtures.",
+  "type": "module",
+  "main": "./types.ts",
+  "types": "./types.ts",
+  "exports": {
+    ".": "./types.ts",
+    "./fixtures": "./fixtures/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "gen:fixtures": "tsx scripts/generate-fixtures.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@certa/core": "workspace:*",
+    "@certa/rulepacks": "workspace:*"
+  },
+  "devDependencies": {
+    "@certa/config": "workspace:*"
+  }
+}

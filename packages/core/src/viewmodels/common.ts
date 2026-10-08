@@ -9,8 +9,8 @@ import type { Action } from '../domain/permissions.js';
 
 export type { DateDisplay, Quantity, ReadinessLevel, Role, Action };
 
-/** Contract status of a view-model: `stable` may be built against; `draft` will change. */
-export type ContractStatus = 'stable' | 'draft';
+/** Contract status of a view-model: `stable` and `beta` may be built against; `draft` will change. */
+export type ContractStatus = 'stable' | 'beta' | 'draft';
 
 export interface StatusBadge {
   level: ReadinessLevel;
@@ -63,26 +63,72 @@ export interface OrgSwitcherOption {
   current: boolean;
 }
 
-/** Shared layout props for every authenticated screen. */
+export type ThemeName = 'light' | 'dark' | 'sunlight';
+
+/** Icon keys the shell may render; the frontend maps each key to an icon. */
+export type NavIcon =
+  | 'today'
+  | 'flights'
+  | 'pilots'
+  | 'aircraft'
+  | 'batteries'
+  | 'maintenance'
+  | 'missions'
+  | 'incidents'
+  | 'records'
+  | 'analytics'
+  | 'settings'
+  | 'admin';
+
+export interface NavItem {
+  id: string;
+  label: string;
+  href: string;
+  icon: NavIcon;
+  active: boolean;
+  /** e.g. count of red items; null hides the badge. */
+  badge: { text: string; level: ReadinessLevel } | null;
+}
+
+/**
+ * Sync status for the shell.
+ * - web: always `online`, pendingChanges 0, lastSynced null.
+ * - mobile: reflects the offline-first sync engine.
+ */
+export interface SyncStateViewModel {
+  status: 'online' | 'syncing' | 'offline' | 'error';
+  /** Local changes not yet accepted by the server. */
+  pendingChanges: number;
+  lastSynced: DateDisplay | null;
+  /** Human-readable, e.g. "Offline — 3 changes will sync when you reconnect". */
+  message: string | null;
+  /** Conflicts needing a human; links to the sync conflicts screen. */
+  conflictCount: number;
+}
+
+/** Shared layout props for every authenticated screen. Built by the host, never by components. */
 export interface AppShellViewModel {
-  user: UserChip;
+  user: UserChip & { email: string; roleLabel: string };
   organization: { id: string; name: string };
   orgOptions: OrgSwitcherOption[];
-  /** Actions the current user may perform; use to hide nav items and buttons. */
+  /** Already filtered by permission and ordered. */
+  navigation: NavItem[];
+  /** Actions the current user may perform; use to hide buttons inside screens. */
   permissions: Action[];
   /** Required on every screen showing computed compliance status. */
   complianceNotice: string;
-  /** Pending sync conflicts needing a human (web + mobile). */
-  conflictCount: number;
-  /** Mobile: last successful sync; web: null. */
-  lastSyncedAt: DateDisplay | null;
-  offline: boolean;
+  sync: SyncStateViewModel;
+  /** Current theme; persistence belongs to the host. */
+  theme: ThemeName;
 }
 
 export interface AppShellCallbacks {
   onSwitchOrg: (orgId: string) => void;
   onSignOut: () => void;
   onNavigate: (href: string) => void;
+  onThemeChange: (theme: ThemeName) => void;
+  /** Mobile: user pulled to refresh or tapped "Sync now". */
+  onSyncNow: () => void;
 }
 
 export const COMPLIANCE_NOTICE =

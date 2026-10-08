@@ -1,0 +1,5 @@
+{
+  "extends": "@certa/config/tsconfig.base.json",
+  "compilerOptions": { "noEmit": true, "module": "ESNext", "moduleResolution": "Bundler", "allowImportingTsExtensions": true },
+  "include": ["types.ts", "fixtures", "test", "scripts"]
+}

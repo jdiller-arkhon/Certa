@@ -12,3 +12,4 @@ export * from './ids/ids.js';
 export * as api from './api/schemas.js';
 export * from './viewmodels/common.js';
 export * from './viewmodels/screens.js';
+export * from './viewmodels/mappers.js';

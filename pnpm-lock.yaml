@@ -88,6 +88,19 @@ importers:
         specifier: ^8.15.5
         version: 8.23.1
 
+  contract:
+    dependencies:
+      '@certa/core':
+        specifier: workspace:*
+        version: link:../packages/core
+      '@certa/rulepacks':
+        specifier: workspace:*
+        version: link:../packages/rulepacks
+    devDependencies:
+      '@certa/config':
+        specifier: workspace:*
+        version: link:../packages/config
+
   packages/config: {}
 
   packages/core:

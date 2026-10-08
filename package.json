@@ -13,7 +13,7 @@
     "db:seed": "pnpm --filter @certa/db seed",
     "rules:verify-doc": "pnpm --filter @certa/rulepacks gen:verification",
     "contract:gen": "pnpm --filter @certa/api gen:openapi",
-    "contract:check": "pnpm --filter @certa/api gen:openapi --check && pnpm --filter @certa/rulepacks gen:verification --check && pnpm --filter @certa/contract typecheck",
+    "contract:check": "pnpm --filter @certa/api gen:openapi --check && pnpm --filter @certa/rulepacks gen:verification --check && pnpm --filter @certa/contract gen:fixtures --check && pnpm --filter @certa/contract typecheck",
     "stack:up": "docker compose -f infra/docker/compose.yml --env-file .env up -d --build",
     "stack:down": "docker compose -f infra/docker/compose.yml --env-file .env down"
   },
