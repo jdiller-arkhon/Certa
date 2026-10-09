@@ -32,6 +32,23 @@ const STEPS = [
   { pts: [right, left], n: 3, label: 'First flight', done: 'Logged · 18 min', place: '-translate-x-[30%] translate-y-[16px]' },
 ] satisfies { pts: Pt[]; n: number; label: string; done: string; place: string }[];
 
+/** Points along the whole mark, for the closing burst. */
+const SPARKS = (() => {
+  const segs = P.slice(1).map(([x, y], i) => ({ a: P[i]!, b: [x, y] as Pt, l: Math.hypot(x - P[i]![0], y - P[i]![1]) }));
+  const total = segs.reduce((a, b) => a + b.l, 0);
+  return Array.from({ length: 30 }, (_, i) => {
+    let d = ((i + 0.5) / 30) * total;
+    const sg = segs.find((g) => (d -= g.l) <= 0) ?? segs.at(-1)!;
+    const t = 1 + d / sg.l;
+    const x = sg.a[0] + (sg.b[0] - sg.a[0]) * t;
+    const y = sg.a[1] + (sg.b[1] - sg.a[1]) * t;
+    const r = Math.abs(Math.sin(i * 91.7) * 1000) % 1;
+    const ang = Math.atan2(y - CENTER[1], x - CENTER[0]) + (r - 0.5) * 0.9;
+    const dist = 5 + r * 9;
+    return { x, y, dx: Math.cos(ang) * dist, dy: Math.sin(ang) * dist, s: 0.35 + r * 0.45, d: r * 0.18 };
+  });
+})();
+
 const SEG = 0.9;
 const GAP = 0.6;
 const CYCLE = 9_500;
@@ -45,9 +62,15 @@ function times(pts: Pt[]) {
 }
 
 /** One depth plane of the stage; fades with the scene. */
-function Plane({ z, children, className }: { z: number; children: ReactNode; className?: string }) {
+function Plane({ z, lift, children, className }: { z: number; lift?: number; children: ReactNode; className?: string }) {
   return (
-    <motion.div className={`absolute inset-0 ${className ?? ''}`} style={{ z }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.45 } }}>
+    <motion.div
+      className={`absolute inset-0 ${className ?? ''}`}
+      initial={{ opacity: 0, z }}
+      animate={{ opacity: 1, z: lift ?? z }}
+      transition={{ opacity: { duration: 0.5 }, z: { type: 'spring', stiffness: 120, damping: 14, delay: lift === undefined ? 0 : CLOSED } }}
+      exit={{ opacity: 0, transition: { duration: 0.45 } }}
+    >
       {children}
     </motion.div>
   );
@@ -102,8 +125,8 @@ function Scene({ run }: { run: boolean }) {
         </Svg>
       </Plane>
 
-      {/* The mark */}
-      <Plane z={0}>
+      {/* The mark: lifts toward the viewer when it closes */}
+      <Plane z={0} lift={run ? 22 : 0}>
         <Svg>
           <defs>
             <filter id="th-glow" x="-30%" y="-30%" width="160%" height="160%">
@@ -180,6 +203,39 @@ function Scene({ run }: { run: boolean }) {
             );
           })}
 
+          {/* Trail behind the drawing tip */}
+          {run &&
+            STEPS.map((s, i) => (
+              <motion.path
+                key={`t${i}`}
+                d={line(s.pts)}
+                fill="none"
+                stroke={green}
+                strokeWidth={STROKE * 2.2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#th-soft)"
+                initial={{ pathLength: 0.35, pathOffset: -0.35, opacity: 0 }}
+                animate={{ pathOffset: [-0.35, 0.65], opacity: [0, 0.75, 0.75, 0] }}
+                transition={{ pathOffset: { duration: SEG, delay: start(i), ease: 'linear' }, opacity: { duration: SEG + 0.2, delay: start(i), times: [0, 0.1, 0.8, 1] } }}
+              />
+            ))}
+
+          {/* Particle burst when the triangle closes */}
+          {run &&
+            SPARKS.map((p, i) => (
+              <motion.circle
+                key={`p${i}`}
+                cx={p.x}
+                cy={p.y}
+                r={p.s}
+                fill={i % 3 ? green : 'var(--certa-text)'}
+                initial={{ x: 0, y: 0, opacity: 0 }}
+                animate={{ x: [0, p.dx], y: [0, p.dy], opacity: [0, 1, 0] }}
+                transition={{ duration: 1.1, delay: CLOSED + p.d, ease: [0.16, 1, 0.3, 1], opacity: { duration: 1.1, delay: CLOSED + p.d, times: [0, 0.1, 1] } }}
+              />
+            ))}
+
           {/* Glowing tip that draws each step */}
           {run &&
             STEPS.map((s, i) => (
@@ -218,6 +274,12 @@ function Scene({ run }: { run: boolean }) {
                     transition={{ duration: 0.35, delay: at(start(i) + SEG), ease: EASE }}
                   >
                     Waiting
+                    {run &&
+                      [0, 1, 2].map((d) => (
+                        <motion.span key={d} animate={{ opacity: [0.2, 1, 0.2] }} transition={{ duration: 1, repeat: Infinity, delay: d * 0.18 }}>
+                          .
+                        </motion.span>
+                      ))}
                   </motion.span>
                   <motion.span
                     className="flex items-center gap-1 font-medium"
@@ -277,9 +339,28 @@ export function TriangleHero({ className }: { className?: string }) {
     <div aria-hidden className={`relative ${className ?? ''}`} style={{ aspectRatio: `${VB.w} / ${VB.h}`, perspective: 900 }}>
       <motion.div className="absolute inset-0" style={{ rotateX: rx, rotateY: ry, transformStyle: 'preserve-3d' }}>
         <div className="dot-grid dot-grid-fade absolute -inset-12" style={{ transform: 'translateZ(-90px)' }} />
+        {/* Gyroscope ring orbiting the mark in 3D; it passes through the mark's plane */}
+        <div className="pointer-events-none absolute" style={{ ...pct(CENTER), width: '118%', aspectRatio: '1', transformStyle: 'preserve-3d', transform: 'translate(-50%, -50%) rotateX(74deg)' }}>
+          <motion.svg viewBox="-50 -50 100 100" className="absolute inset-0 size-full overflow-visible" animate={reduce ? undefined : { rotate: 360 }} transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}>
+            <circle r={46} fill="none" stroke="var(--certa-border)" strokeWidth={0.4} strokeDasharray="0.6 2.2" />
+            <circle r={46} fill="none" stroke="var(--certa-muted)" strokeOpacity={0.35} strokeWidth={0.5} strokeDasharray="22 267" />
+            <circle cx={46} cy={0} r={1.6} fill="var(--certa-text)" />
+            <circle cx={-46} cy={0} r={1.1} fill={LEVEL_COLOR.green} />
+          </motion.svg>
+        </div>
         {/* Ghost of the whole mark: what you're working toward */}
         <svg viewBox={`0 0 ${VB.w} ${VB.h}`} className="absolute inset-0 size-full overflow-visible">
-          <path d={FULL} fill="none" stroke="var(--certa-border)" strokeWidth={0.35} strokeDasharray="0.5 1.3" strokeLinecap="round" strokeLinejoin="round" />
+          <motion.path
+            d={FULL}
+            fill="none"
+            stroke="var(--certa-border)"
+            strokeWidth={0.35}
+            strokeDasharray="0.5 1.3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            animate={reduce ? undefined : { strokeDashoffset: [0, -3.6] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: 'linear' }}
+          />
         </svg>
         <AnimatePresence mode="wait">
           {mounted && <Scene key={cycle} run={!reduce} />}
