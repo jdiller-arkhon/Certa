@@ -186,8 +186,8 @@ export function TodayScreen(props: ReadinessDashboardScreenProps) {
             <div className="min-w-0 space-y-6">
               <Stagger gap={0.08} delay={0.3} className="grid grid-cols-3 gap-2 sm:gap-3">
                 {LEVELS.map((l) => (
-                  <StaggerItem key={l.level}>
-                    <div className="min-w-0 rounded-2xl border border-[var(--certa-border)] bg-[var(--certa-surface)] p-3 sm:p-4">
+                  <StaggerItem key={l.level} className="h-full">
+                    <div className="flex h-full min-w-0 flex-col justify-between gap-1 rounded-2xl border border-[var(--certa-border)] bg-[var(--certa-surface)] p-3 sm:p-4">
                       <div className="flex items-start gap-1.5 text-[11px] leading-tight font-semibold sm:text-[12px]" style={{ color: LEVEL_COLOR[l.level] }}>
                         <LevelIcon level={l.level} className="size-3" /> <span>{l.label}</span>
                       </div>
