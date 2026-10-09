@@ -1,6 +1,6 @@
 'use client';
 
-import { animate, motion, MotionConfig, useInView, useReducedMotion, type HTMLMotionProps, type Variants } from 'motion/react';
+import { animate, motion, MotionConfig, useInView, useReducedMotion, useSpring, type HTMLMotionProps, type Variants } from 'motion/react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 /** The Arkhon website's easing curve. */
@@ -60,6 +60,23 @@ export function CountUp({ value, duration = 1.1, className }: { value: number; d
       {shown.toLocaleString('en-US')}
     </span>
   );
+}
+
+/** Pointer position across the window, -1…1 on each axis, sprung. Stays at 0 under reduced motion. */
+export function usePointerTilt() {
+  const reduce = useReducedMotion();
+  const x = useSpring(0, { stiffness: 50, damping: 16 });
+  const y = useSpring(0, { stiffness: 50, damping: 16 });
+  useEffect(() => {
+    if (reduce) return;
+    const on = (e: PointerEvent) => {
+      x.set((e.clientX / window.innerWidth) * 2 - 1);
+      y.set((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener('pointermove', on);
+    return () => window.removeEventListener('pointermove', on);
+  }, [reduce, x, y]);
+  return { x, y };
 }
 
 export { motion };

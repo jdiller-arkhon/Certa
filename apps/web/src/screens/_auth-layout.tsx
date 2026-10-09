@@ -2,24 +2,15 @@
 
 import type { ReactNode } from 'react';
 import { CertaLogo } from '@/components/brand';
-import { Hub } from '@/components/hub';
 import { Rise } from '@/components/motion';
+import { RecordHero } from '@/components/record-hero';
 import { Eyebrow } from '@/components/ui/text';
 
-const NODES = [
-  { label: 'Pilots', sub: 'Part 107 currency', level: 'green' as const },
-  { label: 'Aircraft' },
-  { label: 'Registrations', sub: 'Renewal in 23 days', level: 'amber' as const },
-  { label: 'Batteries' },
-  { label: 'Flight log', sub: 'Synced · tamper-evident', level: 'green' as const },
-  { label: 'Audit trail' },
-];
-
-/** Split layout: brand + animated hub (wide screens), form panel. */
+/** Split layout: brand + the flight-record hero (wide screens), form panel. */
 export function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="certa grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
-      <section className="relative hidden overflow-hidden border-r border-[var(--certa-border)] bg-[var(--certa-canvas)] lg:flex lg:flex-col lg:gap-12 lg:p-14">
+      <section className="relative hidden overflow-hidden border-r border-[var(--certa-border)] bg-[var(--certa-canvas)] lg:flex lg:flex-col lg:gap-10 lg:p-14">
         <CertaLogo height={32} endorsed animated />
         <div className="space-y-6">
           <Rise>
@@ -36,9 +27,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             </p>
           </Rise>
         </div>
-        <div className="-mx-6 mt-auto max-w-[540px]">
-          <Hub nodes={NODES} />
-        </div>
+        <RecordHero className="mt-auto w-full max-w-[520px]" />
       </section>
       <section className="flex flex-col justify-center px-5 py-10 sm:px-10">
         <div className="mx-auto w-full max-w-[420px]">

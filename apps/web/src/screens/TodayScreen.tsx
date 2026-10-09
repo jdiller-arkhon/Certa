@@ -5,10 +5,10 @@ import { ChevronRight, Plane, Plus, Route, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 import { ReadinessRing } from '@/components/gauge';
-import { Hub } from '@/components/hub';
 import { CountUp, Rise, Stagger, StaggerItem, StaggerLi } from '@/components/motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { TriangleHero } from '@/components/triangle-hero';
 import { Banner, Banners, Skeleton, SkeletonRows } from '@/components/ui/feedback';
 import { LEVEL_COLOR, LevelDot, LevelIcon, StatusBadge } from '@/components/ui/status';
 import { Eyebrow, Label } from '@/components/ui/text';
@@ -136,7 +136,7 @@ export function TodayScreen(props: ReadinessDashboardScreenProps) {
             </Rise>
           </div>
           <div className="hidden md:block">
-            <Hub nodes={[{ label: 'Pilots' }, { label: 'Certificates' }, { label: 'Aircraft' }, { label: 'Registrations' }, { label: 'Batteries' }, { label: 'Flights' }]} />
+            <TriangleHero className="mx-auto w-full max-w-[460px]" />
           </div>
         </div>
       </div>
