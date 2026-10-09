@@ -136,7 +136,7 @@ export function TodayScreen(props: ReadinessDashboardScreenProps) {
             </Rise>
           </div>
           <div className="hidden md:block">
-            <TriangleHero className="mx-auto w-full max-w-[460px]" />
+            <TriangleHero className="mx-auto w-full max-w-[440px]" />
           </div>
         </div>
       </div>

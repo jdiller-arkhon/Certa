@@ -22,8 +22,9 @@ const line = (pts: Pt[]) => 'M' + pts.map(([x, y]) => `${x} ${y}`).join(' L');
 const FULL = line(P);
 const CENTER: Pt = [(peak[0] + right[0] + left[0]) / 3, (peak[1] + right[1] + left[1]) / 3];
 
-const VB = { w: 68, h: 64 };
-const pct = ([x, y]: Pt) => ({ left: `${(x / VB.w) * 100}%`, top: `${(y / VB.h) * 100}%` });
+// Headroom above and below the mark so the step cards stay inside the 3D box.
+const VB = { y: -15, w: 68, h: 86 };
+const pct = ([x, y]: Pt) => ({ left: `${(x / VB.w) * 100}%`, top: `${((y - VB.y) / VB.h) * 100}%` });
 const STROKE = MARK_STROKE * 0.24;
 
 const STEPS = [
@@ -78,7 +79,7 @@ function Plane({ z, lift, children, className }: { z: number; lift?: number; chi
 
 function Svg({ children }: { children: ReactNode }) {
   return (
-    <svg viewBox={`0 0 ${VB.w} ${VB.h}`} className="absolute inset-0 size-full overflow-visible">
+    <svg viewBox={`0 ${VB.y} ${VB.w} ${VB.h}`} className="absolute inset-0 size-full overflow-visible">
       {children}
     </svg>
   );
@@ -140,7 +141,7 @@ function Scene({ run }: { run: boolean }) {
               <stop offset="0.5" stopColor={green} stopOpacity={1} />
               <stop offset="1" stopColor={green} stopOpacity={0} />
             </linearGradient>
-            <mask id="th-mask" maskUnits="userSpaceOnUse" x={-10} y={-10} width={VB.w + 20} height={VB.h + 20}>
+            <mask id="th-mask" maskUnits="userSpaceOnUse" x={-10} y={VB.y - 10} width={VB.w + 20} height={VB.h + 20}>
               <path d={FULL} fill="none" stroke="#fff" strokeWidth={STROKE + 0.2} strokeLinecap="round" strokeLinejoin="round" />
             </mask>
           </defs>
@@ -180,7 +181,7 @@ function Scene({ run }: { run: boolean }) {
           {/* Green sweep along the closed mark */}
           {run && (
             <g mask="url(#th-mask)">
-              <motion.rect y={0} height={VB.h} width={16} fill="url(#th-sheen)" initial={{ x: -20 }} animate={{ x: 76 }} transition={{ duration: 1.1, delay: CLOSED + 0.15, ease: [0.4, 0, 0.2, 1] }} />
+              <motion.rect y={VB.y} height={VB.h} width={16} fill="url(#th-sheen)" initial={{ x: -20 }} animate={{ x: 76 }} transition={{ duration: 1.1, delay: CLOSED + 0.15, ease: [0.4, 0, 0.2, 1] }} />
             </g>
           )}
 
@@ -299,7 +300,7 @@ function Scene({ run }: { run: boolean }) {
 
       {/* Result floats furthest forward */}
       <Plane z={72}>
-        <div className="absolute" style={{ left: '56%', top: '74%' }}>
+        <div className="absolute" style={pct([38, 47.4])}>
           <motion.div
             className="-translate-x-1/2 -translate-y-1/2"
             initial={{ opacity: 0, scale: 0.6, y: 10 }}
@@ -349,7 +350,7 @@ export function TriangleHero({ className }: { className?: string }) {
           </motion.svg>
         </div>
         {/* Ghost of the whole mark: what you're working toward */}
-        <svg viewBox={`0 0 ${VB.w} ${VB.h}`} className="absolute inset-0 size-full overflow-visible">
+        <svg viewBox={`0 ${VB.y} ${VB.w} ${VB.h}`} className="absolute inset-0 size-full overflow-visible">
           <motion.path
             d={FULL}
             fill="none"
