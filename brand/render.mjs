@@ -23,6 +23,7 @@ for (const p of ['certa', 'argus']) {
   const o = join(d, 'png');
   rmSync(o, { recursive: true, force: true });
   for (const s of [1024, 512, 192, 180, 64]) await png(join(d, `${p}-app-icon.svg`), join(o, `${p}-app-icon-${s}.png`), s);
+  await png(join(d, `${p}-app-icon-light.svg`), join(o, `${p}-app-icon-light-1024.png`), 1024);
   // Small sizes use the wider-channel variant so the cuts survive pixelation.
   for (const s of [48, 32, 16]) await png(join(d, `${p}-app-icon-small.svg`), join(o, `${p}-app-icon-${s}.png`), s);
   await png(join(d, `${p}-app-icon-maskable.svg`), join(o, `${p}-app-icon-maskable-512.png`), 512);

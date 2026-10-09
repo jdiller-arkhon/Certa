@@ -20,7 +20,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="certa grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
       <section className="relative hidden overflow-hidden border-r border-[var(--certa-border)] bg-[var(--certa-canvas)] lg:flex lg:flex-col lg:gap-12 lg:p-14">
-        <CertaLogo height={32} endorsed />
+        <CertaLogo height={32} endorsed animated />
         <div className="space-y-6">
           <Rise>
             <Eyebrow live>Flight operations · Compliance</Eyebrow>

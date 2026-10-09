@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react';
 import type { ReadinessLevel } from '@certa/contract';
-import { CertaMark } from './brand';
+import { CertaMarkAnimated } from './brand';
 import { EASE } from './motion';
 import { LEVEL_COLOR } from './ui/status';
 
@@ -28,7 +28,7 @@ function place(n: number) {
  * Certa's take on the Arkhon homepage hub: a central node, slowly turning dashed orbits, and
  * packets travelling between Certa and each record type. Purely decorative (aria-hidden).
  */
-export function Hub({ nodes, centerLabel = 'CERTA', className }: { nodes: HubNode[]; centerLabel?: string; className?: string }) {
+export function Hub({ nodes, centerLabel = 'certa', className }: { nodes: HubNode[]; centerLabel?: string; className?: string }) {
   const reduce = useReducedMotion();
   const pts = place(nodes.length);
   return (
@@ -81,9 +81,9 @@ export function Hub({ nodes, centerLabel = 'CERTA', className }: { nodes: HubNod
       >
         <div className="relative flex size-24 items-center justify-center rounded-full border border-[var(--certa-border)] bg-[var(--certa-surface)] shadow-[var(--certa-shadow-lg)]">
           <div className="absolute inset-2 rounded-full border border-dashed border-[var(--certa-border)]" />
-          <CertaMark className="size-11 translate-y-[1px] text-[var(--certa-text)]" />
+          <CertaMarkAnimated className="text-[42px] text-[var(--certa-text)]" delay={0.45} />
         </div>
-        <span className="mt-3 text-[10px] font-semibold tracking-[0.2em] text-[var(--certa-muted)]">{centerLabel}</span>
+        <span className="mt-3 text-[12px] font-semibold tracking-[-0.01em] text-[var(--certa-muted)]">{centerLabel}</span>
       </motion.div>
       </div>
 
