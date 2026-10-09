@@ -2,7 +2,7 @@
 
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
-import { CertaMark } from '@/components/hub';
+import { CertaLogo } from '@/components/brand';
 import { Rise, Stagger, StaggerItem } from '@/components/motion';
 import { Card } from '@/components/ui/card';
 import { Eyebrow, Label } from '@/components/ui/text';
@@ -13,10 +13,7 @@ export default function PreviewIndex() {
   return (
     <div className="certa min-h-dvh">
       <div className="mx-auto max-w-6xl px-5 py-12 sm:px-10 sm:py-16">
-        <div className="flex items-center gap-2.5">
-          <CertaMark className="size-8" />
-          <span className="text-[17px] font-bold tracking-[0.2em]">CERTA</span>
-        </div>
+        <CertaLogo height={30} endorsed />
         <Rise className="mt-12 space-y-4">
           <Eyebrow live>Screen preview · fixtures only</Eyebrow>
           <h1 className="headline text-[40px] leading-[1.06] sm:text-[52px]">Inspect every screen.</h1>

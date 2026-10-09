@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Builds the Certa and Argus logo families (SVG). Reproducible: run after changing geometry.
+Builds the Certa and Argus logo families (SVG) from geometry. Reproducible.
 
-    GEIST_SEMIBOLD=/path/Geist-SemiBold.ttf GEIST_MEDIUM=/path/Geist-Medium.ttf python3 brand/build.py
+    pip install fonttools shapely
+    GEIST_SEMIBOLD=.../Geist-SemiBold.ttf GEIST_MEDIUM=.../Geist-Medium.ttf python3 brand/build.py
+    node brand/render.mjs        # PNG exports
 
-Geist (SIL Open Font License) is from the `geist` npm package. Wordmarks are converted to
-outlines, so the output SVGs need no fonts. PNGs are rendered from these SVGs separately
-(brand/render.mjs).
-
-Family system (see brand/README.md): every Arkhon product mark is the same "lens" — the Arkhon
-split peak over a horizon bowl — with one product glyph at its center:
-  Argus = pupil (the platform that sees every job), Certa = check (the verified record).
+System (brand/README.md): every Arkhon product mark is the solid Arkhon triangle, cut by
+channels of one width into facets. The channels draw the product's idea in negative space:
+  Certa — a check (the verified record).
+  Argus — three paths meeting at a hub (the platform every job runs through).
+Wordmarks are Geist SemiBold, outlined, so the files need no fonts.
 """
 import math
 import os
@@ -19,103 +19,59 @@ from pathlib import Path
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
+from shapely.geometry import LineString, Point, Polygon
 
 OUT = Path(__file__).parent
-INK = '#1d1d1f'      # --certa-text (light)
-TILE = '#2b2b2e'     # --certa-action
-MUTED = '#5f6168'    # --certa-muted
-WHITE = '#ffffff'
+INK, TILE, MUTED, WHITE, MUTED_DARK = '#1d1d1f', '#2b2b2e', '#5f6168', '#ffffff', '#b3b3bc'
 
 # ------------------------------------------------------------------ geometry (64-unit grid)
 
-def offset_line(p, q, d):
-    dx, dy = q[0] - p[0], q[1] - p[1]
-    L = math.hypot(dx, dy)
-    nx, ny = -dy / L, dx / L
-    return (p[0] + nx * d, p[1] + ny * d), (q[0] + nx * d, q[1] + ny * d)
+TRIANGLE = Polygon([(32, 5), (60, 55), (4, 55)])
+CENTROID = (32, 115 / 3)
+CHANNEL = 4.2      # channel width at display sizes
+CHANNEL_SMALL = 6  # wider channels for the ≤32 px variant so the cuts survive pixelation
+CORNER = 0.9       # corner rounding
 
-def intersect(a1, a2, b1, b2):
-    (x1, y1), (x2, y2), (x3, y3), (x4, y4) = a1, a2, b1, b2
-    den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
-    px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / den
-    py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / den
-    return px, py
+def ray(p, ang_deg, length=90):
+    a = math.radians(ang_deg)
+    return (p[0] + math.cos(a) * length, p[1] - math.sin(a) * length)
 
-def point_on(p, q, f):
-    return p[0] + (q[0] - p[0]) * f, p[1] + (q[1] - p[1]) * f
+def channel(points, w):
+    return LineString(points).buffer(w / 2, cap_style='flat', join_style='mitre', mitre_limit=6)
 
-def leg(bottom, top, t, base_y, side):
-    """A thick stroke: horizontal cut at the base, perpendicular cut at the top."""
-    # Legs grow outward from the reference triangle, which keeps the lens interior open.
-    i0, i1 = offset_line(bottom, top, -t if side == 'left' else t)
-    ob = intersect(bottom, top, (0, base_y), (64, base_y))
-    ib = intersect(i0, i1, (0, base_y), (64, base_y))
-    dx, dy = top[0] - bottom[0], top[1] - bottom[1]
-    it = intersect(i0, i1, top, (top[0] - dy, top[1] + dx))
-    return [ob, top, it, ib]
+def rounded(g, r):
+    return g.buffer(-r, join_style='round').buffer(r, join_style='round')
 
-def d_poly(pts):
-    return 'M' + ' L'.join(f'{x:.2f} {y:.2f}' for x, y in pts) + ' Z'
+def certa(w=CHANNEL):
+    """Check-shaped channel: 45° short arm into a low vertex, 58° long arm out the right edge."""
+    v = (26.5, 50.5)
+    return rounded(TRIANGLE.difference(channel([ray(v, 135), v, ray(v, 58)], w)), CORNER)
 
-APEX, BL, BR, T, BASE = (32, 6.5), (5.5, 47), (58.5, 47), 7.4, 47
-BOWL_DEPTH, BOWL_W = 11.5, 5.4
-
-def lens():
-    """Arkhon split peak (right leg starts lower, like the Arkhon A) over a horizon bowl."""
-    left = leg(BL, APEX, T, BASE, 'left')
-    right = leg(BR, point_on(APEX, BR, 0.21), T, BASE, 'right')
-    y0, d = BASE, BOWL_DEPTH
-    bowl = (f'M{BL[0]:.2f} {y0} Q32 {y0 + 2 * d:.2f} {BR[0]:.2f} {y0} '
-            f'L{BR[0] - T * 1.1:.2f} {y0} Q32 {y0 + 2 * (d - BOWL_W):.2f} {BL[0] + T * 1.1:.2f} {y0} Z')
-    return [d_poly(left), d_poly(right), bowl]
-
-def check_glyph():
-    """Bold check as a filled polygon (miter joins), optically centered in the lens."""
-    cx, cy, s, w = 32, 38.6, 1.12, 5.9
-    pts = [(cx - 9.5 * s, cy - 0.5 * s), (cx - 3 * s, cy + 6 * s), (cx + 9.5 * s, cy - 7 * s)]
-    # outline the polyline with half-width w/2 on each side
-    def norm(a, b):
-        dx, dy = b[0] - a[0], b[1] - a[1]
-        L = math.hypot(dx, dy)
-        return -dy / L * w / 2, dx / L * w / 2
-    n1, n2 = norm(pts[0], pts[1]), norm(pts[1], pts[2])
-    a_l = [(pts[0][0] + n1[0], pts[0][1] + n1[1]), (pts[1][0] + n1[0], pts[1][1] + n1[1])]
-    b_l = [(pts[1][0] + n2[0], pts[1][1] + n2[1]), (pts[2][0] + n2[0], pts[2][1] + n2[1])]
-    a_r = [(pts[0][0] - n1[0], pts[0][1] - n1[1]), (pts[1][0] - n1[0], pts[1][1] - n1[1])]
-    b_r = [(pts[1][0] - n2[0], pts[1][1] - n2[1]), (pts[2][0] - n2[0], pts[2][1] - n2[1])]
-    j_l = intersect(*a_l, *b_l)
-    j_r = intersect(*a_r, *b_r)
-    return [d_poly([a_l[0], j_l, b_l[1], b_r[1], j_r, a_r[0]])]
-
-def pupil_glyph():
-    """Solid pupil with a cut-out highlight (even-odd), so it works on any background."""
-    cx, cy, r = 32, 38.6, 7.8
-    hx, hy, hr = cx + 3.1, cy - 3.1, r * 0.3
-    circ = lambda x, y, rr: f'M{x - rr:.2f} {y:.2f} a{rr:.2f} {rr:.2f} 0 1 0 {2 * rr:.2f} 0 a{rr:.2f} {rr:.2f} 0 1 0 {-2 * rr:.2f} 0 Z'
-    return [circ(cx, cy, r) + ' ' + circ(hx, hy, hr)]
-
-def mark_box():
-    """Square box (x, y, size) that tightly contains the drawn mark, centered."""
-    left = leg(BL, APEX, T, BASE, 'left')
-    right = leg(BR, point_on(APEX, BR, 0.21), T, BASE, 'right')
-    xs = [p[0] for p in left + right]
-    ys = [p[1] for p in left + right] + [BASE + BOWL_DEPTH]  # bowl's lowest point
-    w, h = max(xs) - min(xs), max(ys) - min(ys)
-    size = max(w, h)
-    return min(xs) - (size - w) / 2, min(ys) - (size - h) / 2, size
+def argus(w=CHANNEL):
+    """Three channels from the vertices meet at a hub at the centroid."""
+    c = CENTROID
+    cut = channel([c, (32, -30)], w).union(channel([c, ray(c, 210)], w)).union(channel([c, ray(c, -30)], w))
+    cut = cut.union(Point(c).buffer(w, 96))
+    return rounded(TRIANGLE.difference(cut), CORNER)
 
 PRODUCTS = {
-    'certa': {'name': 'CERTA', 'glyph': check_glyph, 'tagline': 'Flight operations & compliance'},
-    'argus': {'name': 'ARGUS', 'glyph': pupil_glyph, 'tagline': 'The platform that runs every job'},
+    'certa': {'name': 'Certa', 'mark': certa},
+    'argus': {'name': 'Argus', 'mark': argus},
 }
 
-def mark_paths(product):
-    return lens() + PRODUCTS[product]['glyph']()
+def d_of(geom):
+    polys = [geom] if geom.geom_type == 'Polygon' else list(geom.geoms)
+    out = []
+    for p in polys:
+        for ring in [p.exterior, *p.interiors]:
+            c = list(ring.coords)[:-1]
+            out.append('M' + ' L'.join(f'{x:.2f} {y:.2f}' for x, y in c) + ' Z')
+    return ' '.join(out)
 
-def path_el(d, fill):
-    return f'<path fill="{fill}" fill-rule="evenodd" d="{d}"/>'
+# Optical box: the triangle sits slightly low in a square so it looks centered.
+VIEWBOX = (0, -3.6, 64, 64)
 
-# ------------------------------------------------------------------ text outlines
+# ------------------------------------------------------------------ type
 
 class Outliner:
     def __init__(self, ttf):
@@ -123,85 +79,92 @@ class Outliner:
         self.gs = self.font.getGlyphSet()
         self.cmap = self.font.getBestCmap()
         self.upm = self.font['head'].unitsPerEm
-        self.cap = getattr(self.font['OS/2'], 'sCapHeight', 0.7 * self.upm)
+        os2 = self.font['OS/2']
+        self.cap = os2.sCapHeight
+        self.xh = os2.sxHeight
 
-    def text(self, s, x, baseline, size, tracking_em=0.0):
-        """Returns (svg path d, advance width) for `s` set at `size` px."""
+    def text(self, s, size, tracking_em=0.0):
         scale = size / self.upm
         pen = SVGPathPen(self.gs)
-        cursor = x
-        for ch in s:
-            gname = self.cmap[ord(ch)]
-            g = self.gs[gname]
-            g.draw(TransformPen(pen, (scale, 0, 0, -scale, cursor, baseline)))
-            cursor += g.width * scale + tracking_em * size
-        width = cursor - x - tracking_em * size
-        return pen.getCommands(), width
+        x = 0.0
+        for i, ch in enumerate(s):
+            g = self.gs[self.cmap[ord(ch)]]
+            g.draw(TransformPen(pen, (scale, 0, 0, -scale, x, 0)))
+            x += g.width * scale + (tracking_em * size if i < len(s) - 1 else 0)
+        return pen.getCommands(), x
 
-# ------------------------------------------------------------------ files
+# ------------------------------------------------------------------ output
 
-def svg(w, h, body, title):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w:.0f} {h:.0f}" width="{w:.0f}" height="{h:.0f}" role="img" aria-label="{title}">'
+def svg(w, h, body, title, vb=None):
+    vb = vb or f'0 0 {w:.2f} {h:.2f}'
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" width="{w:.0f}" height="{h:.0f}" role="img" aria-label="{title}">'
             f'<title>{title}</title>{body}</svg>\n')
 
+def mark_g(d, fill, size, x, y):
+    k = size / VIEWBOX[2]
+    return f'<path fill="{fill}" fill-rule="evenodd" transform="translate({x:.2f} {y:.2f}) scale({k:.5f}) translate({-VIEWBOX[0]} {-VIEWBOX[1]})" d="{d}"/>'
+
 def build(semibold, medium):
-    bold, med = Outliner(semibold), Outliner(medium)
+    sb, md = Outliner(semibold), Outliner(medium)
+    vb = ' '.join(str(v) for v in VIEWBOX)
     for product, meta in PRODUCTS.items():
-        d = OUT / product
-        d.mkdir(exist_ok=True)
-        paths = mark_paths(product)
-        title = f'{meta["name"].title()} by Arkhon Industries'
+        out = OUT / product
+        out.mkdir(exist_ok=True)
+        for old in out.glob('*.svg'):
+            old.unlink()
+        name = meta['name']
+        d = d_of(meta['mark']())
+        d_small = d_of(meta['mark'](CHANNEL_SMALL))
 
-        bx, by, bs = mark_box()
-        fit = lambda size, x0, y0: f'translate({x0:.2f} {y0:.2f}) scale({size / bs:.5f}) translate({-bx:.3f} {-by:.3f})'
+        # Marks
         for variant, fill in [('', INK), ('-white', WHITE)]:
-            body = f'<g transform="{fit(64, 0, 0)}">' + ''.join(path_el(p, fill) for p in paths) + '</g>'
-            (d / f'{product}-mark{variant}.svg').write_text(svg(64, 64, body, meta['name'].title()))
+            (out / f'{product}-mark{variant}.svg').write_text(svg(64, 64, f'<path fill="{fill}" fill-rule="evenodd" d="{d}"/>', name, vb))
+            (out / f'{product}-mark-small{variant}.svg').write_text(svg(64, 64, f'<path fill="{fill}" fill-rule="evenodd" d="{d_small}"/>', name, vb))
 
-        # App icon: charcoal tile (iOS-style corner), white mark at ~64% of the tile.
-        s = 1024
-        inner = 0.66 * s
-        off = (s - inner) / 2
-        g = f'<g transform="{fit(inner, off, off)}">' + ''.join(path_el(p, WHITE) for p in paths) + '</g>'
-        (d / f'{product}-app-icon.svg').write_text(svg(s, s, f'<rect width="{s}" height="{s}" rx="{0.225 * s:.0f}" fill="{TILE}"/>{g}', meta['name'].title()))
-        # Maskable (Android adaptive): full-bleed tile, mark inside the 80% safe zone.
-        inner = 0.52 * s
-        off = (s - inner) / 2
-        g = f'<g transform="{fit(inner, off, off)}">' + ''.join(path_el(p, WHITE) for p in paths) + '</g>'
-        (d / f'{product}-app-icon-maskable.svg').write_text(svg(s, s, f'<rect width="{s}" height="{s}" fill="{TILE}"/>{g}', meta['name'].title()))
+        # App icons (tile corner baked in; maskable is full-bleed with a safe-zone mark)
+        S = 1024
+        for suffix, rx, frac, md_ in [('', 0.225 * S, 0.62, d), ('-maskable', 0, 0.5, d), ('-small', 0.225 * S, 0.66, d_small)]:
+            size = frac * S
+            body = f'<rect width="{S}" height="{S}" rx="{rx:.0f}" fill="{TILE}"/>' + mark_g(md_, WHITE, size, (S - size) / 2, (S - size) / 2)
+            (out / f'{product}-app-icon{suffix}.svg').write_text(svg(S, S, body, name))
 
-        # Horizontal lockup: mark | NAME over "BY ARKHON INDUSTRIES".
-        for variant, fg, sub in [('', INK, MUTED), ('-white', WHITE, '#b3b3bc')]:
-            mark_h = 64
-            name_size = 34
-            name_d, name_w = bold.text(meta['name'], 0, 0, name_size, tracking_em=0.16)
-            sub_d, sub_w = med.text('BY ARKHON INDUSTRIES', 0, 0, 9.2, tracking_em=0.24)
-            gap = 18
-            cap = bold.cap * name_size / bold.upm
-            # vertically center the text block (cap height + gap + descriptor cap) on the lens
-            block = cap + 9 + med.cap * 9.2 / med.upm
-            top = 32 - block / 2
-            name_base = top + cap
-            sub_base = name_base + 9 + med.cap * 9.2 / med.upm
-            tx = mark_h + gap
-            W = tx + max(name_w, sub_w) + 2
-            body = (f'<g transform="{fit(64, 0, 0)}">' + ''.join(path_el(p, fg) for p in paths) + '</g>'
-                    + f'<path fill="{fg}" transform="translate({tx:.2f} {name_base:.2f})" d="{name_d}"/>'
-                    + f'<path fill="{sub}" transform="translate({tx + 1.5:.2f} {sub_base:.2f})" d="{sub_d}"/>')
-            (d / f'{product}-lockup{variant}.svg').write_text(svg(W, 64, body, title))
+        # Wordmark: Geist SemiBold, sentence case, tightened like the app's headlines.
+        H = 64                                  # lockup height = mark height
+        size = 40                               # cap height ≈ 0.45 × mark
+        word_d, word_w = sb.text(name, size, tracking_em=-0.025)
+        cap = sb.cap * size / sb.upm
+        gap = 0.3 * H
+        # Align the wordmark's cap height with the triangle's visual middle band.
+        base = H / 2 + cap / 2 + 3
+        for variant, fg in [('', INK), ('-white', WHITE)]:
+            body = mark_g(d, fg, H, 0, 0) + f'<path fill="{fg}" transform="translate({H + gap:.2f} {base:.2f})" d="{word_d}"/>'
+            (out / f'{product}-lockup{variant}.svg').write_text(svg(H + gap + word_w + 1, H, body, f'{name} by Arkhon Industries'))
 
-        # Wordmark alone (for tight spaces next to an existing mark).
-        name_d, name_w = bold.text(meta['name'], 0, 0, 34, tracking_em=0.16)
-        cap = bold.cap * 34 / bold.upm
-        (d / f'{product}-wordmark.svg').write_text(svg(name_w + 2, cap + 2, f'<path fill="{INK}" transform="translate(1 {cap + 1:.2f})" d="{name_d}"/>', meta['name'].title()))
-    # Same geometry for the web app's inline logo component.
-    bx, by, bs = mark_box()
-    ts = ['// GENERATED by brand/build.py — do not edit. Mark paths (fill-rule evenodd); render with MARK_VIEWBOX.',
-          f'export const MARK_VIEWBOX = "{bx:.3f} {by:.3f} {bs:.3f} {bs:.3f}";']
-    for product in PRODUCTS:
-        ts.append(f'export const {product.upper()}_MARK_PATHS = {mark_paths(product)!r} as const;'.replace("'", '"'))
-    web = OUT.parent / 'apps' / 'web' / 'src' / 'components' / 'brand-marks.ts'
-    web.write_text('\n'.join(ts) + '\n')
+        # Lockup with endorsement line: "by Arkhon Industries"
+        sub_size = 12.5
+        sub_d, sub_w = md.text('by Arkhon Industries', sub_size, tracking_em=0.0)
+        sub_cap = md.xh * sub_size / md.upm
+        line_gap = 8
+        block = cap + line_gap + sub_cap
+        top = H / 2 - block / 2 + 3
+        for variant, fg, sub in [('', INK, MUTED), ('-white', WHITE, MUTED_DARK)]:
+            body = (mark_g(d, fg, H, 0, 0)
+                    + f'<path fill="{fg}" transform="translate({H + gap:.2f} {top + cap:.2f})" d="{word_d}"/>'
+                    + f'<path fill="{sub}" transform="translate({H + gap + 1:.2f} {top + cap + line_gap + sub_cap + 2:.2f})" d="{sub_d}"/>')
+            (out / f'{product}-lockup-endorsed{variant}.svg').write_text(svg(H + gap + max(word_w, sub_w) + 1, H, body, f'{name} by Arkhon Industries'))
+
+        (out / f'{product}-wordmark.svg').write_text(svg(word_w + 2, cap + 2, f'<path fill="{INK}" transform="translate(1 {cap + 1:.2f})" d="{word_d}"/>', name))
+
+    ts = ['// GENERATED by brand/build.py — do not edit. Product marks (fill-rule evenodd).',
+          f'export const MARK_VIEWBOX = "{vb}";']
+    for product, meta in PRODUCTS.items():
+        word_d, word_w = sb.text(meta['name'], 40, tracking_em=-0.025)
+        cap = sb.cap * 40 / sb.upm
+        ts.append(f'/** {meta["name"]} wordmark outlines (Geist SemiBold); baseline at y=0, cap height {cap:.2f}. */')
+        ts.append(f'export const {product.upper()}_WORDMARK = {{ d: "{word_d}", width: {word_w:.2f}, capHeight: {cap:.2f} }} as const;')
+        ts.append(f'export const {product.upper()}_MARK = "{d_of(meta["mark"]())}";')
+        ts.append(f'export const {product.upper()}_MARK_SMALL = "{d_of(meta["mark"](CHANNEL_SMALL))}";')
+    (OUT.parent / 'apps' / 'web' / 'src' / 'components' / 'brand-marks.ts').write_text('\n'.join(ts) + '\n')
     print('built', ', '.join(PRODUCTS))
 
 if __name__ == '__main__':

@@ -33,7 +33,7 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { useState, type ReactNode } from 'react';
 import { cn } from '@/components/cn';
-import { CertaMark } from '@/components/hub';
+import { CertaLogo } from '@/components/brand';
 import { EASE } from '@/components/motion';
 import { MenuItem, Popover } from '@/components/popover';
 import { Avatar } from '@/components/ui/avatar';
@@ -64,15 +64,7 @@ const THEMES: { value: ThemeName; label: string }[] = [
 ];
 
 function Wordmark({ compact }: { compact?: boolean }) {
-  return (
-    <div className="flex items-center gap-2.5">
-      <CertaMark className="size-8 text-[var(--certa-text)]" />
-      <div className="leading-none">
-        <div className="text-[17px] font-bold tracking-[0.2em]">CERTA</div>
-        {!compact && <div className="mt-1 text-[8.5px] font-semibold tracking-[0.22em] text-[var(--certa-muted)]">BY ARKHON INDUSTRIES</div>}
-      </div>
-    </div>
-  );
+  return <CertaLogo height={compact ? 26 : 30} endorsed={!compact} />;
 }
 
 function SyncChip({ sync, onSyncNow }: Pick<AppShellProps, 'sync' | 'onSyncNow'>) {

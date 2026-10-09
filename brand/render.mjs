@@ -1,7 +1,7 @@
 // Renders PNG exports from the SVGs built by build.py (headless Chromium, transparent background).
 //   node brand/render.mjs
 import { chromium } from '@playwright/test';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -21,14 +21,18 @@ async function png(svgPath, out, width, height = width) {
 for (const p of ['certa', 'argus']) {
   const d = join(here, p);
   const o = join(d, 'png');
-  for (const s of [1024, 512, 192, 180, 64, 32, 16]) await png(join(d, `${p}-app-icon.svg`), join(o, `${p}-app-icon-${s}.png`), s);
+  rmSync(o, { recursive: true, force: true });
+  for (const s of [1024, 512, 192, 180, 64]) await png(join(d, `${p}-app-icon.svg`), join(o, `${p}-app-icon-${s}.png`), s);
+  // Small sizes use the wider-channel variant so the cuts survive pixelation.
+  for (const s of [48, 32, 16]) await png(join(d, `${p}-app-icon-small.svg`), join(o, `${p}-app-icon-${s}.png`), s);
   await png(join(d, `${p}-app-icon-maskable.svg`), join(o, `${p}-app-icon-maskable-512.png`), 512);
-  await png(join(d, `${p}-mark.svg`), join(o, `${p}-mark-512.png`), 512);
-  await png(join(d, `${p}-mark-white.svg`), join(o, `${p}-mark-white-512.png`), 512);
   for (const v of ['', '-white']) {
-    const svg = readFileSync(join(d, `${p}-lockup${v}.svg`), 'utf8');
-    const [, w, h] = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
-    await png(join(d, `${p}-lockup${v}.svg`), join(o, `${p}-lockup${v}@4x.png`), Math.round(w * 4), Math.round(h * 4));
+    await png(join(d, `${p}-mark${v}.svg`), join(o, `${p}-mark${v}-512.png`), 512);
+    for (const kind of ['lockup', 'lockup-endorsed']) {
+      const file = join(d, `${p}-${kind}${v}.svg`);
+      const [, w, h] = readFileSync(file, 'utf8').match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
+      await png(file, join(o, `${p}-${kind}${v}@4x.png`), Math.round(w * 4), Math.round(h * 4));
+    }
   }
 }
 await browser.close();
