@@ -13,7 +13,7 @@ import type {
 import type { ReadinessLevel, Role, UnitsPreference } from '../domain/enums.js';
 import { ACTIONS, can, ROLE_LABELS, type Action } from '../domain/permissions.js';
 import { displayDate, displayInstant } from '../format/dates.js';
-import { formatDuration, formatLength, formatMass, formatSpeed } from '../format/units.js';
+import { formatDuration, formatLength, formatMass, formatSpeed, kgTo, metresTo, mpsTo, toKg, toMetres, toMps } from '../format/units.js';
 import type { ResolvedRule, ResolvedRulePack } from '../rules/engine.js';
 import { credentialExpiry } from '../rules/evaluators.js';
 import {
@@ -44,6 +44,7 @@ import type {
   MemberRowViewModel,
   PilotRowViewModel,
   ReadinessRowViewModel,
+  RuleEditor,
   RuleRowViewModel,
 } from './screens.js';
 
@@ -276,6 +277,52 @@ function describeRuleValue(r: Pick<ResolvedRule, 'kind' | 'value'> & { unit?: st
   }
 }
 
+const round = (n: number, dp: number) => Number(n.toFixed(dp));
+const speedLabel = (u: UnitsPreference['speed']) => (u === 'mps' ? 'm/s' : u === 'kph' ? 'km/h' : u);
+
+/** Editor descriptor for a rule value, in the org's display units. */
+export function ruleEditorFor(kind: string, value: unknown, units: UnitsPreference): RuleEditor {
+  switch (kind) {
+    case 'length':
+      return { input: 'number', unit: units.length, value: round(metresTo(value as number, units.length), 2), step: 1 };
+    case 'speed':
+      return { input: 'number', unit: speedLabel(units.speed), value: round(mpsTo(value as number, units.speed), 2), step: 1 };
+    case 'mass':
+      return { input: 'number', unit: units.mass, value: round(kgTo(value as number, units.mass), 3), step: 0.1 };
+    case 'money':
+      return { input: 'number', unit: 'USD', value: (value as number) / 100, step: 0.01 };
+    case 'integer':
+      return { input: 'number', unit: null, value: value as number, step: 1 };
+    case 'duration':
+      return { input: 'duration', unit: null, value: value as Extract<RuleEditor, { input: 'duration' }>['value'] };
+    case 'boolean':
+      return { input: 'boolean', unit: null, value: value as boolean };
+    case 'date':
+      return { input: 'date', unit: null, value: value as string };
+    default:
+      return { input: 'text', unit: null, value: String(value) };
+  }
+}
+
+/** Converts an override edited in display units (ruleEditorFor) back to the SI value the API stores. */
+export function ruleEditorValueToSI(kind: string, value: unknown, units: UnitsPreference): unknown {
+  const n = typeof value === 'string' ? Number(value) : (value as number);
+  switch (kind) {
+    case 'length':
+      return round(toMetres(n, units.length), 4);
+    case 'speed':
+      return round(toMps(n, units.speed), 4);
+    case 'mass':
+      return round(toKg(n, units.mass), 4);
+    case 'money':
+      return Math.round(n * 100);
+    case 'integer':
+      return Math.round(n);
+    default:
+      return value;
+  }
+}
+
 export function toRuleRow(
   r: ResolvedRule,
   ctx: MapContext,
@@ -301,6 +348,7 @@ export function toRuleRow(
         : null,
     canOverride: opts.canOverride,
     valueKind: r.kind,
+    editor: ruleEditorFor(r.kind, r.value, ctx.units),
   };
 }
 
@@ -461,5 +509,6 @@ export function ruleRowFromApi(
       : null,
     canOverride,
     valueKind: kind,
+    editor: ruleEditorFor(kind, row.value, ctx.units),
   };
 }

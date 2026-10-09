@@ -1,3 +1,78 @@
 @import 'tailwindcss';
 @config '../tailwind.config.ts';
-@import '@certa/ui/theme.css';
+/* In the base layer so Tailwind utilities can refine it (unlayered CSS would beat every utility). */
+@import '@certa/ui/theme.css' layer(base);
+
+/*
+ * App-level styling on top of the frontend's theme foundation (packages/ui/theme.css).
+ * Matches the Arkhon website: monochrome surfaces, charcoal pill actions, uppercase eyebrows,
+ * faint dot-grid backdrops, and the site's easing curve (cubic-bezier(.22, 1, .36, 1)).
+ */
+:root {
+  --certa-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --certa-shadow-sm: 0 1px 2px rgb(16 16 20 / 0.04), 0 1px 1px rgb(16 16 20 / 0.03);
+  --certa-shadow: 0 1px 2px rgb(16 16 20 / 0.04), 0 8px 24px -8px rgb(16 16 20 / 0.10);
+  --certa-shadow-lg: 0 2px 4px rgb(16 16 20 / 0.04), 0 24px 48px -12px rgb(16 16 20 / 0.18);
+  --certa-dot: rgb(16 16 20 / 0.09);
+}
+[data-theme='dark'] {
+  --certa-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --certa-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --certa-shadow-lg: 0 2px 4px rgb(0 0 0 / 0.4), 0 24px 48px -12px rgb(0 0 0 / 0.7);
+  --certa-dot: rgb(255 255 255 / 0.07);
+}
+[data-theme='sunlight'] {
+  --certa-shadow-sm: none;
+  --certa-shadow: none;
+  --certa-shadow-lg: 0 0 0 2px #000;
+  --certa-dot: transparent;
+}
+
+html,
+body {
+  background: var(--certa-canvas);
+  color: var(--certa-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+html { transition: background-color 0.3s var(--certa-ease), color 0.3s var(--certa-ease); }
+::selection { background: var(--certa-action); color: var(--certa-onAction); }
+
+.dot-grid {
+  background-image: radial-gradient(var(--certa-dot) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.dot-grid-fade {
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%);
+}
+.tabular { font-variant-numeric: tabular-nums; }
+.headline { letter-spacing: -0.03em; font-weight: 600; }
+
+@keyframes certa-shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--certa-inset) 0%, color-mix(in srgb, var(--certa-inset) 40%, var(--certa-surface)) 50%, var(--certa-inset) 100%);
+  background-size: 200% 100%;
+  animation: certa-shimmer 1.6s linear infinite;
+}
+@keyframes certa-ping {
+  0% { transform: scale(1); opacity: 0.55; }
+  80%, 100% { transform: scale(2.4); opacity: 0; }
+}
+.ping { animation: certa-ping 1.8s var(--certa-ease) infinite; }
+
+@keyframes certa-spin { to { transform: rotate(360deg); } }
+.spin-slow { animation: certa-spin 90s linear infinite; }
+.spin-slower { animation: certa-spin 160s linear infinite reverse; }
+
+/* Respect the user's motion preference everywhere (motion components honor it too). */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .ping, .spin-slow, .spin-slower { animation: none !important; }
+}
+
+/* Installed app: keep content clear of notches and the home indicator. */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-top { padding-top: env(safe-area-inset-top); }

@@ -45,3 +45,15 @@ describe('units & ids', () => {
     expect(a < b).toBe(true);
   });
 });
+
+import { ruleEditorFor, ruleEditorValueToSI } from '../src/index.js';
+describe('rule override editor units', () => {
+  it('round-trips through display units', () => {
+    const us = DEFAULT_UNITS_US;
+    expect(ruleEditorFor('length', 121.92, us)).toEqual({ input: 'number', unit: 'ft', value: 400, step: 1 });
+    expect(ruleEditorValueToSI('length', 300, us)).toBeCloseTo(91.44);
+    expect(ruleEditorFor('money', 50000, us)).toMatchObject({ value: 500, unit: 'USD' });
+    expect(ruleEditorValueToSI('money', '750.5', us)).toBe(75050);
+    expect(ruleEditorValueToSI('speed', 100, us)).toBeCloseTo(44.704);
+  });
+});

@@ -1,6 +1,6 @@
 # Certa Screen Inventory
 
-**Contract version 0.3.0** (see `CHANGELOG.md`). Types: `contract/types.ts`. Fixtures: `contract/fixtures/`.
+**Contract version 0.4.0** (see `CHANGELOG.md`). Types: `contract/types.ts`. Fixtures: `contract/fixtures/`.
 
 Each screen is one presentational component that takes `XxxScreenProps` from `types.ts`. It
 renders inside `<AppShell>` and never fetches data, holds server state, or computes anything
@@ -77,7 +77,7 @@ Rule pack notes:
 - Show the pack header (`name`, `version`, `authority`, `effectiveFrom`, `disclaimer`) and an **"N of M values pending verification"** notice from `unverifiedCount`.
 - Each rule row shows `title`, `valueDisplay`, `statedAs`, `sourceCitation` (linked to `sourceUrl`), `lastVerified` or "Not yet verified", and a `needsVerification` marker.
 - When `override` is set, show the effective value, the pack value (`packValueDisplay`) struck through or secondary, and the override reason, author and date.
-- Override editor (only when `canOverride`): input by `valueKind`, plus a required reason. It calls `onSetOverride({ ruleId, value, reason })` with the value in **SI** (metres, m/s, kg, cents, or `{ amount, unit, roundTo }` for durations). The host converts from display units before calling the API.
+- Override editor (only when `canOverride`): render `editor` (number with `unit` suffix, duration amount + unit, boolean switch, date, or text), plus a required reason. Call `onSetOverride({ ruleId, value, reason })` with the value **in the editor's units** (e.g. feet). The host converts to SI.
 
 Audit log notes: show `actorLabel`. **"Direct database change"** (no actor) is a red flag; give it a warning treatment. `changes` lists field-level before → after.
 

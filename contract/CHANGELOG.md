@@ -3,6 +3,13 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.4.0 — 2026-10-09
+
+- **Added** `RuleRowViewModel.editor: RuleEditor` — the override editor's input type, display unit, and current value **in the org's display units** (e.g. `{ input: 'number', unit: 'ft', value: 400 }`). `onSetOverride` now receives the value in those same units; the host converts to SI. Components still never convert units.
+- **Changed** `onSetOverride` semantics as above (previously SI).
+
+Screens affected: **Rule pack admin**.
+
 ## 0.3.0 — 2026-10-08
 
 Certa now runs **inside the Arkhon website at `/certa`** as a single web app, installable on phones as a PWA. The native mobile app is retired.

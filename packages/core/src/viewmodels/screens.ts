@@ -86,7 +86,20 @@ export interface RuleRowViewModel {
   canOverride: boolean;
   /** Editor hint for overrides. */
   valueKind: 'duration' | 'length' | 'speed' | 'mass' | 'money' | 'integer' | 'boolean' | 'date' | 'text';
+  /**
+   * How to edit an override, already in the org's display units. The override editor shows
+   * `editor.value` with `editor.unit` and returns the edited value in the SAME units via
+   * `onSetOverride`; the host converts to SI.
+   */
+  editor: RuleEditor;
 }
+
+export type RuleEditor =
+  | { input: 'number'; unit: string | null; value: number; step: number }
+  | { input: 'duration'; unit: null; value: { amount: number; unit: 'days' | 'months' | 'years'; roundTo: 'none' | 'end_of_month' } }
+  | { input: 'boolean'; unit: null; value: boolean }
+  | { input: 'date'; unit: null; value: string }
+  | { input: 'text'; unit: null; value: string };
 
 /** @status stable — route: /admin/rules */
 export interface RulePackAdminScreenProps extends AsyncState {
@@ -106,6 +119,7 @@ export interface RulePackAdminScreenProps extends AsyncState {
   filter: { search: string; appliesTo: string | null; unverifiedOnly: boolean };
   empty: EmptyState;
   onFilterChange: (filter: { search: string; appliesTo: string | null; unverifiedOnly: boolean }) => void;
+  /** `value` is in the row's `editor` units (see RuleEditor); the host converts to SI. */
   onSetOverride: (input: { ruleId: string; value: unknown; reason: string }) => void;
   onClearOverride: (input: { ruleId: string; reason: string }) => void;
   onSelectJurisdiction: (jurisdiction: string) => void;

@@ -2678,7 +2678,16 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "duration"
+          "valueKind": "duration",
+          "editor": {
+            "input": "duration",
+            "unit": null,
+            "value": {
+              "amount": 24,
+              "unit": "months",
+              "roundTo": "end_of_month"
+            }
+          }
         },
         {
           "id": "pilot.minimum_age",
@@ -2695,7 +2704,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "integer"
+          "valueKind": "integer",
+          "editor": {
+            "input": "number",
+            "unit": null,
+            "value": 16,
+            "step": 1
+          }
         },
         {
           "id": "pilot.night_operations.training_required",
@@ -2712,7 +2727,12 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "boolean"
+          "valueKind": "boolean",
+          "editor": {
+            "input": "boolean",
+            "unit": null,
+            "value": true
+          }
         },
         {
           "id": "aircraft.registration.validity",
@@ -2729,7 +2749,16 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "duration"
+          "valueKind": "duration",
+          "editor": {
+            "input": "duration",
+            "unit": null,
+            "value": {
+              "amount": 3,
+              "unit": "years",
+              "roundTo": "none"
+            }
+          }
         },
         {
           "id": "aircraft.max_takeoff_mass",
@@ -2746,7 +2775,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "mass"
+          "valueKind": "mass",
+          "editor": {
+            "input": "number",
+            "unit": "lb",
+            "value": 55,
+            "step": 0.1
+          }
         },
         {
           "id": "aircraft.registration.min_mass",
@@ -2763,7 +2798,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "mass"
+          "valueKind": "mass",
+          "editor": {
+            "input": "number",
+            "unit": "lb",
+            "value": 0.551,
+            "step": 0.1
+          }
         },
         {
           "id": "aircraft.registration.required_part107",
@@ -2780,7 +2821,12 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "boolean"
+          "valueKind": "boolean",
+          "editor": {
+            "input": "boolean",
+            "unit": null,
+            "value": true
+          }
         },
         {
           "id": "aircraft.remote_id.required",
@@ -2797,7 +2843,12 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "boolean"
+          "valueKind": "boolean",
+          "editor": {
+            "input": "boolean",
+            "unit": null,
+            "value": true
+          }
         },
         {
           "id": "operation.max_altitude_agl",
@@ -2824,7 +2875,13 @@ export const solo = {
             }
           },
           "canOverride": true,
-          "valueKind": "length"
+          "valueKind": "length",
+          "editor": {
+            "input": "number",
+            "unit": "ft",
+            "value": 300,
+            "step": 1
+          }
         },
         {
           "id": "operation.max_groundspeed",
@@ -2841,7 +2898,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "speed"
+          "valueKind": "speed",
+          "editor": {
+            "input": "number",
+            "unit": "mph",
+            "value": 100,
+            "step": 1
+          }
         },
         {
           "id": "operation.min_flight_visibility",
@@ -2858,7 +2921,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "length"
+          "valueKind": "length",
+          "editor": {
+            "input": "number",
+            "unit": "ft",
+            "value": 15840,
+            "step": 1
+          }
         },
         {
           "id": "operation.cloud_clearance_below",
@@ -2875,7 +2944,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "length"
+          "valueKind": "length",
+          "editor": {
+            "input": "number",
+            "unit": "ft",
+            "value": 500,
+            "step": 1
+          }
         },
         {
           "id": "operation.cloud_clearance_horizontal",
@@ -2892,7 +2967,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "length"
+          "valueKind": "length",
+          "editor": {
+            "input": "number",
+            "unit": "ft",
+            "value": 2000,
+            "step": 1
+          }
         },
         {
           "id": "operation.night_anticollision_lighting_visibility",
@@ -2909,7 +2990,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "length"
+          "valueKind": "length",
+          "editor": {
+            "input": "number",
+            "unit": "ft",
+            "value": 15840,
+            "step": 1
+          }
         },
         {
           "id": "operation.remote_id.enforcement_date",
@@ -2926,7 +3013,12 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "date"
+          "valueKind": "date",
+          "editor": {
+            "input": "date",
+            "unit": null,
+            "value": "2023-09-16"
+          }
         },
         {
           "id": "incident.report.deadline",
@@ -2943,7 +3035,16 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "duration"
+          "valueKind": "duration",
+          "editor": {
+            "input": "duration",
+            "unit": null,
+            "value": {
+              "amount": 10,
+              "unit": "days",
+              "roundTo": "none"
+            }
+          }
         },
         {
           "id": "incident.report.injury_min_ais_level",
@@ -2960,7 +3061,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "integer"
+          "valueKind": "integer",
+          "editor": {
+            "input": "number",
+            "unit": null,
+            "value": 3,
+            "step": 1
+          }
         },
         {
           "id": "incident.report.loss_of_consciousness",
@@ -2977,7 +3084,12 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "boolean"
+          "valueKind": "boolean",
+          "editor": {
+            "input": "boolean",
+            "unit": null,
+            "value": true
+          }
         },
         {
           "id": "incident.report.property_damage_min",
@@ -2994,7 +3106,13 @@ export const solo = {
           "needsVerification": true,
           "override": null,
           "canOverride": true,
-          "valueKind": "money"
+          "valueKind": "money",
+          "editor": {
+            "input": "number",
+            "unit": "USD",
+            "value": 500,
+            "step": 0.01
+          }
         }
       ],
       "filter": {

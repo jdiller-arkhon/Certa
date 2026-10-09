@@ -18,14 +18,16 @@ test('sign up, see the compliance notice, and review the US rule pack in admin',
   await expect(page).toHaveURL(/\/certa\/admin\/rules$/);
   await expect(page.getByTestId('rule-pack-header')).toContainText('US-FAA-Part107');
   await expect(page.getByTestId('unverified-count')).toContainText(/(\d+) of \1 values pending verification/);
-  const altitude = page.locator('tr[data-rule-id="operation.max_altitude_agl"]');
+  const altitude = page.locator('[data-rule-id="operation.max_altitude_agl"]');
   await expect(altitude).toContainText('400 ft');
   await expect(altitude).toContainText('14 CFR 107.51(b)');
   await expect(altitude).toContainText('Needs verification');
 
   // Owner overrides a value; the change shows with its reason and lands in the audit log.
   await altitude.getByRole('button', { name: 'Override' }).click();
-  await page.getByLabel('Override value for operation.max_altitude_agl').fill('91.44');
+  // The editor works in the org's display units (feet); the app stores SI.
+  await expect(page.getByLabel('Override value for operation.max_altitude_agl')).toHaveValue('400');
+  await page.getByLabel('Override value for operation.max_altitude_agl').fill('300');
   await page.getByLabel('Override reason for operation.max_altitude_agl').fill('Company SOP caps altitude at 300 ft');
   await page.getByRole('button', { name: 'Save override' }).click();
   await expect(altitude).toContainText('300 ft');
@@ -73,4 +75,9 @@ test('installable: manifest scoped to the base path, service worker, opens offli
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Sign in to Certa' })).toBeVisible();
   await context.setOffline(false);
+});
+
+test('the fixture preview gallery is not exposed in production builds', async ({ request }) => {
+  test.skip(!!process.env.E2E_PREVIEW, 'review build with the gallery enabled');
+  expect((await request.get('preview')).status()).toBe(404);
 });

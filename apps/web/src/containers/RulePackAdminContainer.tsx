@@ -1,6 +1,6 @@
 'use client';
 
-import { can, displayDate, ruleRowFromApi } from '@certa/core';
+import { can, displayDate, ruleEditorValueToSI, ruleRowFromApi } from '@certa/core';
 import { CertaApiError, unwrap } from '@certa/sdk';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -74,7 +74,11 @@ export function RulePackAdminContainer() {
       filter={filter}
       empty={{ title: 'No rules match', body: 'Try clearing the search or filters.', actionLabel: null }}
       onFilterChange={setFilter}
-      onSetOverride={(v) => setOverride.mutate(v)}
+      onSetOverride={(v) => {
+        // The screen edits in display units (row.editor); the API stores SI.
+        const kind = data?.rules.find((r) => r.id === v.ruleId)?.kind ?? 'text';
+        setOverride.mutate({ ...v, value: ruleEditorValueToSI(kind, v.value, mapCtx.units) });
+      }}
       onClearOverride={(v) => clearOverride.mutate(v)}
       onSelectJurisdiction={() => {}}
     />
