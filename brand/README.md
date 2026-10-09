@@ -2,16 +2,21 @@
 
 ## The system: "Apple × Perplexity"
 
-- **Perplexity:** each mark is a monoline glyph drawn on the Arkhon triangle, with one stroke weight and round caps and joins. Geometric, ownable, and it animates by drawing itself.
+- **Perplexity:** geometric, ownable marks built on the Arkhon triangle. certa is drawn as a single line; argus is cut as solid blades inside a fine line ring.
 - **Apple:** app icons are continuous-curvature squircles with real light: a top-lit charcoal gradient, a soft sheen, a silver mark, and a gentle glow. Restraint everywhere else.
 
 | Product | Mark | Meaning |
 |---|---|---|
 | **certa** | The check closes the triangle: one line whose check rises to become the triangle's side, then runs over the peak and along the base | The verified record: "prove it" in under a minute |
-| **argus** | The aperture: three blades turn inside the triangle, leaving a twisted inner triangle (exact 3-fold symmetry) | The platform every job runs through. It focuses everything to one point. |
+| **argus** | A shutter iris: three curved, individually lit metal blades in a fine ring, opening onto the Arkhon triangle turned 45° | The platform every job runs through, focused to one point |
 
-**Wordmark:** lowercase Geist SemiBold, −0.03em, converted to outlines. **Family rule:** same
-triangle, same stroke weight, same tile, and a new line idea for each product.
+**Siblings, not twins.** Both share the charcoal tile, the silver material and lighting, the line
+weight, and the lowercase wordmark. They differ in **form**: certa is *drawn* (an open, pointed line)
+and argus is *solid* (a closed, round, faceted disc). That reads instantly at any size without
+relying on color.
+
+**Wordmark:** lowercase Geist SemiBold, −0.03em, converted to outlines. **Family rule:** a new
+product keeps the material, tile, and wordmark, and gets its own form.
 
 ## Files
 
@@ -41,7 +46,7 @@ copied from `certa/png`.
 - **Minimum size:** lockup 20 px tall; mark 16 px (use the `-small` files at 24 px and below).
 - **Don't** rotate, stretch, change the stroke weight, re-space the wordmark, or capitalize it. Change geometry only in `build.py` and rebuild.
 - **Motion:** the marks may draw themselves (stroke draw-on along the centerlines exported as `*_MARK_LINES`), once, on entry. Respect reduced motion.
-- **Never** put a circle or "eye" in the center of the triangle. That reads as the Eye of Providence.
+- **Never** put an eye in a triangle (it reads as the Eye of Providence). Never turn the argus opening upright (it reads as an A in a circle, the anarchy symbol) or pointing right (a play button). It is fixed at 45°.
 
 ## Rebuild
 
