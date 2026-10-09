@@ -28,7 +28,9 @@ test('sign up, see the compliance notice, and review the US rule pack in admin',
   // The editor works in the org's display units (feet); the app stores SI.
   await expect(page.getByLabel('Override value for operation.max_altitude_agl')).toHaveValue('400');
   await page.getByLabel('Override value for operation.max_altitude_agl').fill('300');
-  await page.getByLabel('Override reason for operation.max_altitude_agl').fill('Company SOP caps altitude at 300 ft');
+  // Type key by key (not fill) so focus must stay in the field while the dialog re-renders.
+  await page.getByLabel('Override reason for operation.max_altitude_agl').pressSequentially('Company SOP caps altitude at 300 ft');
+  await expect(page.getByLabel('Override reason for operation.max_altitude_agl')).toHaveValue('Company SOP caps altitude at 300 ft');
   await page.getByRole('button', { name: 'Save override' }).click();
   await expect(altitude).toContainText('300 ft');
   await expect(altitude).toContainText('Company SOP caps altitude at 300 ft');

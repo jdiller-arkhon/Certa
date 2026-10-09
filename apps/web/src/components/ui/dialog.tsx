@@ -25,13 +25,17 @@ export function Dialog({
   const id = useId();
   const panel = useRef<HTMLDivElement>(null);
   const restore = useRef<HTMLElement | null>(null);
+  // Callers pass inline handlers; keep the latest in a ref so re-renders don't re-run the
+  // focus effect (which would pull focus back to the first field on every keystroke).
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
 
   useEffect(() => {
     if (!open) return;
     restore.current = document.activeElement as HTMLElement | null;
     const t = setTimeout(() => panel.current?.querySelector<HTMLElement>('input,select,textarea,button:not([data-close])')?.focus(), 60);
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') closeRef.current();
       if (e.key !== 'Tab' || !panel.current) return;
       const els = [...panel.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])')];
       const first = els[0];
@@ -47,7 +51,7 @@ export function Dialog({
       document.body.style.overflow = '';
       restore.current?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (typeof document === 'undefined') return null;
   return createPortal(
