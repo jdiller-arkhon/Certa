@@ -14,7 +14,7 @@ export default function PreviewIndex() {
     <div className="certa min-h-dvh">
       <div className="mx-auto max-w-6xl px-5 py-12 sm:px-10 sm:py-16">
         <div className="flex items-center gap-2.5">
-          <CertaMark className="size-7" />
+          <CertaMark className="size-8" />
           <span className="text-[17px] font-bold tracking-[0.2em]">CERTA</span>
         </div>
         <Rise className="mt-12 space-y-4">

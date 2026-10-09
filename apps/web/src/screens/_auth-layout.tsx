@@ -20,7 +20,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
     <div className="certa grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
       <section className="relative hidden overflow-hidden border-r border-[var(--certa-border)] bg-[var(--certa-canvas)] lg:flex lg:flex-col lg:gap-12 lg:p-14">
         <div className="flex items-center gap-2.5">
-          <CertaMark className="size-7" />
+          <CertaMark className="size-8" />
           <div className="leading-none">
             <div className="text-[17px] font-bold tracking-[0.2em]">CERTA</div>
             <div className="mt-1 text-[8.5px] font-semibold tracking-[0.22em] text-[var(--certa-muted)]">BY ARKHON INDUSTRIES</div>
@@ -48,7 +48,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
       <section className="flex flex-col justify-center px-5 py-10 sm:px-10">
         <div className="mx-auto w-full max-w-[420px]">
           <div className="mb-10 flex items-center gap-2.5 lg:hidden">
-            <CertaMark className="size-7" />
+            <CertaMark className="size-8" />
             <span className="text-[17px] font-bold tracking-[0.2em]">CERTA</span>
           </div>
           {children}

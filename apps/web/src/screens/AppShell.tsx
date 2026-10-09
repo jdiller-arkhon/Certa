@@ -66,7 +66,7 @@ const THEMES: { value: ThemeName; label: string }[] = [
 function Wordmark({ compact }: { compact?: boolean }) {
   return (
     <div className="flex items-center gap-2.5">
-      <CertaMark className="size-7 text-[var(--certa-text)]" />
+      <CertaMark className="size-8 text-[var(--certa-text)]" />
       <div className="leading-none">
         <div className="text-[17px] font-bold tracking-[0.2em]">CERTA</div>
         {!compact && <div className="mt-1 text-[8.5px] font-semibold tracking-[0.22em] text-[var(--certa-muted)]">BY ARKHON INDUSTRIES</div>}
