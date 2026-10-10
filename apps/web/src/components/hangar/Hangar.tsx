@@ -5,7 +5,7 @@ import { ContactShadows, Environment, Html, Lightformer, OrbitControls } from '@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ChevronLeft, ChevronRight, Fan, Layers, RotateCcw } from 'lucide-react';
 import { useReducedMotion } from 'motion/react';
-import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import { Component, useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import * as THREE from 'three';
 import { Button } from '../ui/button';
 import { LevelDot, LevelIcon, StatusBadge } from '../ui/status';
@@ -43,6 +43,27 @@ function useThemeVars(ref: RefObject<HTMLElement | null>): Vars | null {
     return () => mo.disconnect();
   }, [ref]);
   return vars;
+}
+
+/** True if this browser can actually create a WebGL context (it can be present but blocked). */
+function canUseWebGL() {
+  try {
+    const c = document.createElement('canvas');
+    return !!(c.getContext('webgl2') ?? c.getContext('webgl'));
+  } catch {
+    return false;
+  }
+}
+
+/** Keeps a 3D failure inside the hangar instead of taking down the Today page. */
+class SceneBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
 }
 
 const damp = (a: number, b: number, k: number, dt: number) => THREE.MathUtils.damp(a, b, k, dt);
@@ -218,8 +239,27 @@ export default function Hangar({ aircraft, onOpen }: HangarProps) {
   const [spinning, setSpinning] = useState(false);
   const [exploded, setExploded] = useState(false);
   const controls = useRef<React.ComponentRef<typeof OrbitControls>>(null);
+  // On touch screens, dragging scrolls the page instead of orbiting; tap, chips and arrows still work.
+  const [coarse, setCoarse] = useState(false);
+  useEffect(() => {
+    const mq = matchMedia('(pointer: coarse)');
+    const on = () => setCoarse(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => {
+      mq.removeEventListener('change', on);
+      document.body.style.cursor = '';
+    };
+  }, []);
   const count = aircraft.length;
   const R = radiusFor(count);
+  const [webgl, setWebgl] = useState<boolean | null>(null);
+  useEffect(() => setWebgl(canUseWebGL()), []);
+  const noScene = (
+    <p className="absolute inset-0 flex items-center justify-center p-8 text-center text-sm text-[var(--certa-muted)]">
+      3D view isn&rsquo;t available on this device. Choose an aircraft below.
+    </p>
+  );
   const row = aircraft[Math.min(selected, count - 1)]!;
   const canSpin = row.status.level !== 'red';
 
@@ -234,8 +274,10 @@ export default function Hangar({ aircraft, onOpen }: HangarProps) {
   const resetView = () => controls.current?.reset();
 
   const onKey = (e: React.KeyboardEvent) => {
+    const self = e.target === e.currentTarget;
     if (e.key === 'ArrowRight') select(selected + 1);
     else if (e.key === 'ArrowLeft') select(selected - 1);
+    else if (!self) return;
     else if (e.key === 'Enter') onOpen(row.href);
     else if (e.key.toLowerCase() === 's' && canSpin) setSpinning((v) => !v);
     else if (e.key.toLowerCase() === 'i') setExploded((v) => !v);
@@ -254,7 +296,9 @@ export default function Hangar({ aircraft, onOpen }: HangarProps) {
       data-testid="hangar"
       className="relative h-[420px] overflow-hidden rounded-[28px] border border-[var(--certa-border)] bg-[radial-gradient(ellipse_at_50%_35%,var(--certa-surface),var(--certa-canvas))] focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-[var(--certa-focus)] sm:h-[480px]"
     >
-      {vars && (
+      {webgl === false && noScene}
+      {vars && webgl && (
+        <SceneBoundary fallback={noScene}>
         <Canvas
           aria-hidden
           dpr={[1, 2]}
@@ -262,6 +306,8 @@ export default function Hangar({ aircraft, onOpen }: HangarProps) {
           gl={{ antialias: true, alpha: true }}
           onPointerMissed={() => (document.body.style.cursor = '')}
           className="absolute inset-0"
+          style={{ touchAction: coarse ? 'pan-y' : 'none' }}
+          fallback={noScene}
         >
           <Lens />
           <ambientLight intensity={0.55} />
@@ -292,6 +338,7 @@ export default function Hangar({ aircraft, onOpen }: HangarProps) {
             ))}
           </Carousel>
           <ContactShadows position={[0, 0.006, 0]} opacity={0.5} scale={R * 2 + 4} blur={2.2} far={1.6} resolution={512} />
+          {!coarse && (
           <OrbitControls
             ref={controls}
             target={[0, 0.38, R]}
@@ -303,7 +350,9 @@ export default function Hangar({ aircraft, onOpen }: HangarProps) {
             minAzimuthAngle={-1.1}
             maxAzimuthAngle={1.1}
           />
+          )}
         </Canvas>
+        </SceneBoundary>
       )}
 
       {/* Soft backdrop so the text stays legible over the scene */}
@@ -331,7 +380,7 @@ export default function Hangar({ aircraft, onOpen }: HangarProps) {
         ))}
       </div>
 
-      <p className="pointer-events-none absolute top-6 right-6 hidden text-[12px] text-[var(--certa-muted)] md:block">Drag to orbit · ← → to switch · S spin · I inspect</p>
+      <p className="pointer-events-none absolute top-6 right-6 hidden text-[12px] text-[var(--certa-muted)] md:block">{coarse ? 'Tap an aircraft to bring it forward' : 'Drag to orbit · ← → to switch · S spin · I inspect'}</p>
 
       {/* Prev / next */}
       {count > 1 && (
