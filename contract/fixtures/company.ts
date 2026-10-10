@@ -505,7 +505,8 @@ export const company = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84d2",
@@ -523,7 +524,8 @@ export const company = {
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2"
             }
           ],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84d7",
@@ -547,7 +549,8 @@ export const company = {
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7"
             }
           ],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84dc",
@@ -558,7 +561,8 @@ export const company = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84e1",
@@ -576,7 +580,8 @@ export const company = {
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1"
             }
           ],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84e6",
@@ -587,7 +592,8 @@ export const company = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84eb",
@@ -598,18 +604,20 @@ export const company = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb",
+          "airframe": "fixed_wing_vtol"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84f0",
-          "name": "DJI Matrice 30T",
+          "name": "DJI Matrice 600 Pro",
           "subtitle": "Reg. FA3XXX16H8",
           "status": {
             "level": "green",
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0",
+          "airframe": "hex"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84f5",
@@ -620,7 +628,8 @@ export const company = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f5"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f5",
+          "airframe": "octo"
         }
       ],
       "upcoming": [
@@ -1142,7 +1151,7 @@ export const company = {
             "display": "22m 36s"
           },
           "pilotName": "Maya Thornton",
-          "aircraftName": "DJI Matrice 30T",
+          "aircraftName": "DJI Matrice 600 Pro",
           "locationName": "Lakewood Water Tower",
           "maxAltitude": {
             "value": 367,
@@ -1192,7 +1201,7 @@ export const company = {
             "display": "7m 25s"
           },
           "pilotName": "Maya Thornton",
-          "aircraftName": "DJI Matrice 30T",
+          "aircraftName": "DJI Matrice 600 Pro",
           "locationName": "Henderson Solar Farm",
           "maxAltitude": {
             "value": 302,
@@ -1217,7 +1226,7 @@ export const company = {
             "display": "8m 17s"
           },
           "pilotName": "Maya Thornton",
-          "aircraftName": "DJI Matrice 30T",
+          "aircraftName": "DJI Matrice 600 Pro",
           "locationName": "Boulder Creek Levee",
           "maxAltitude": {
             "value": 364,
@@ -1292,7 +1301,7 @@ export const company = {
             "display": "11m 55s"
           },
           "pilotName": "Maya Thornton",
-          "aircraftName": "DJI Matrice 30T",
+          "aircraftName": "DJI Matrice 600 Pro",
           "locationName": "Aurora Distribution Center",
           "maxAltitude": {
             "value": 295,
@@ -1471,8 +1480,8 @@ export const company = {
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84eb",
           "name": "Raven 7",
-          "makeModel": "DJI Mavic 3 Enterprise",
-          "serialNumber": "DJ11VR11878",
+          "makeModel": "Quantum Systems Trinity F90+",
+          "serialNumber": "QU11VR11878",
           "registrationNumber": "FA3XXX15Q3",
           "status": {
             "level": "green",
@@ -1487,8 +1496,8 @@ export const company = {
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84f0",
-          "name": "DJI Matrice 30T",
-          "makeModel": "DJI Matrice 30T",
+          "name": "DJI Matrice 600 Pro",
+          "makeModel": "DJI Matrice 600 Pro",
           "serialNumber": "DJ17ZQ12191",
           "registrationNumber": "FA3XXX16H8",
           "status": {
@@ -1505,8 +1514,8 @@ export const company = {
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84f5",
           "name": "Heron 9",
-          "makeModel": "DJI Matrice 350 RTK",
-          "serialNumber": "DJ1E3P12504",
+          "makeModel": "Freefly Alta 8",
+          "serialNumber": "FR1E3P12504",
           "registrationNumber": "FA3XXX178D",
           "status": {
             "level": "green",
@@ -1831,11 +1840,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-06-28T17:06:00.000Z",
-            "absolute": "Jun 28, 2026, 11:06 AM MDT",
-            "relative": "3 months ago",
-            "display": "Jun 28, 2026, 11:06 AM MDT — 3 months ago",
-            "daysFromToday": -102
+            "iso": "2026-09-23T21:22:00.000Z",
+            "absolute": "Sep 23, 2026, 3:22 PM MDT",
+            "relative": "15 days ago",
+            "display": "Sep 23, 2026, 3:22 PM MDT — 15 days ago",
+            "daysFromToday": -15
           }
         },
         {
@@ -1849,11 +1858,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-09-23T21:22:00.000Z",
-            "absolute": "Sep 23, 2026, 3:22 PM MDT",
-            "relative": "15 days ago",
-            "display": "Sep 23, 2026, 3:22 PM MDT — 15 days ago",
-            "daysFromToday": -15
+            "iso": "2026-03-03T17:04:00.000Z",
+            "absolute": "Mar 3, 2026, 10:04 AM MST",
+            "relative": "7 months ago",
+            "display": "Mar 3, 2026, 10:04 AM MST — 7 months ago",
+            "daysFromToday": -219
           }
         },
         {
@@ -1861,42 +1870,6 @@ export const company = {
           "label": "Falcon #3",
           "serialNumber": "BAT-01-03-7702",
           "cycleCount": 76,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2026-05-07T15:19:00.000Z",
-            "absolute": "May 7, 2026, 9:19 AM MDT",
-            "relative": "5 months ago",
-            "display": "May 7, 2026, 9:19 AM MDT — 5 months ago",
-            "daysFromToday": -154
-          }
-        },
-        {
-          "id": "0199c4a0-0000-7000-8000-0000001e84d1",
-          "label": "Falcon #4",
-          "serialNumber": "BAT-01-04-7703",
-          "cycleCount": 107,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2025-12-26T16:48:00.000Z",
-            "absolute": "Dec 26, 2025, 9:48 AM MST",
-            "relative": "9 months ago",
-            "display": "Dec 26, 2025, 9:48 AM MST — 9 months ago",
-            "daysFromToday": -286
-          }
-        },
-        {
-          "id": "0199c4a0-0000-7000-8000-0000001e84ec",
-          "label": "Raven #1",
-          "serialNumber": "BAT-07-01-7886",
-          "cycleCount": 140,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -1911,46 +1884,10 @@ export const company = {
           }
         },
         {
-          "id": "0199c4a0-0000-7000-8000-0000001e84ed",
-          "label": "Raven #2",
-          "serialNumber": "BAT-07-02-7887",
-          "cycleCount": 75,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2026-09-15T17:25:00.000Z",
-            "absolute": "Sep 15, 2026, 11:25 AM MDT",
-            "relative": "23 days ago",
-            "display": "Sep 15, 2026, 11:25 AM MDT — 23 days ago",
-            "daysFromToday": -23
-          }
-        },
-        {
-          "id": "0199c4a0-0000-7000-8000-0000001e84ee",
-          "label": "Raven #3",
-          "serialNumber": "BAT-07-03-7888",
-          "cycleCount": 161,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2026-08-03T14:42:00.000Z",
-            "absolute": "Aug 3, 2026, 8:42 AM MDT",
-            "relative": "2 months ago",
-            "display": "Aug 3, 2026, 8:42 AM MDT — 2 months ago",
-            "daysFromToday": -66
-          }
-        },
-        {
-          "id": "0199c4a0-0000-7000-8000-0000001e84ef",
-          "label": "Raven #4",
-          "serialNumber": "BAT-07-04-7889",
-          "cycleCount": 12,
+          "id": "0199c4a0-0000-7000-8000-0000001e84d1",
+          "label": "Falcon #4",
+          "serialNumber": "BAT-01-04-7703",
+          "cycleCount": 107,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -1983,11 +1920,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-06-28T17:06:00.000Z",
-            "absolute": "Jun 28, 2026, 11:06 AM MDT",
-            "relative": "3 months ago",
-            "display": "Jun 28, 2026, 11:06 AM MDT — 3 months ago",
-            "daysFromToday": -102
+            "iso": "2026-09-23T21:22:00.000Z",
+            "absolute": "Sep 23, 2026, 3:22 PM MDT",
+            "relative": "15 days ago",
+            "display": "Sep 23, 2026, 3:22 PM MDT — 15 days ago",
+            "daysFromToday": -15
           }
         },
         {
@@ -2001,11 +1938,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-09-23T21:22:00.000Z",
-            "absolute": "Sep 23, 2026, 3:22 PM MDT",
-            "relative": "15 days ago",
-            "display": "Sep 23, 2026, 3:22 PM MDT — 15 days ago",
-            "daysFromToday": -15
+            "iso": "2026-03-03T17:04:00.000Z",
+            "absolute": "Mar 3, 2026, 10:04 AM MST",
+            "relative": "7 months ago",
+            "display": "Mar 3, 2026, 10:04 AM MST — 7 months ago",
+            "daysFromToday": -219
           }
         },
         {
@@ -2019,11 +1956,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-05-07T15:19:00.000Z",
-            "absolute": "May 7, 2026, 9:19 AM MDT",
-            "relative": "5 months ago",
-            "display": "May 7, 2026, 9:19 AM MDT — 5 months ago",
-            "daysFromToday": -154
+            "iso": "2026-09-22T22:00:00.000Z",
+            "absolute": "Sep 22, 2026, 4:00 PM MDT",
+            "relative": "16 days ago",
+            "display": "Sep 22, 2026, 4:00 PM MDT — 16 days ago",
+            "daysFromToday": -16
           }
         },
         {
@@ -2037,11 +1974,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2025-12-26T16:48:00.000Z",
-            "absolute": "Dec 26, 2025, 9:48 AM MST",
-            "relative": "9 months ago",
-            "display": "Dec 26, 2025, 9:48 AM MST — 9 months ago",
-            "daysFromToday": -286
+            "iso": "2026-08-12T18:24:00.000Z",
+            "absolute": "Aug 12, 2026, 12:24 PM MDT",
+            "relative": "57 days ago",
+            "display": "Aug 12, 2026, 12:24 PM MDT — 57 days ago",
+            "daysFromToday": -57
           }
         },
         {
@@ -2049,24 +1986,6 @@ export const company = {
           "label": "DJI #1",
           "serialNumber": "BAT-02-01-7731",
           "cycleCount": 168,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2026-09-06T15:04:00.000Z",
-            "absolute": "Sep 6, 2026, 9:04 AM MDT",
-            "relative": "32 days ago",
-            "display": "Sep 6, 2026, 9:04 AM MDT — 32 days ago",
-            "daysFromToday": -32
-          }
-        },
-        {
-          "id": "0199c4a0-0000-7000-8000-0000001e84d4",
-          "label": "DJI #2",
-          "serialNumber": "BAT-02-02-7732",
-          "cycleCount": 39,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2081,10 +2000,10 @@ export const company = {
           }
         },
         {
-          "id": "0199c4a0-0000-7000-8000-0000001e84d5",
-          "label": "DJI #3",
-          "serialNumber": "BAT-02-03-7733",
-          "cycleCount": 79,
+          "id": "0199c4a0-0000-7000-8000-0000001e84d4",
+          "label": "DJI #2",
+          "serialNumber": "BAT-02-02-7732",
+          "cycleCount": 39,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2099,6 +2018,24 @@ export const company = {
           }
         },
         {
+          "id": "0199c4a0-0000-7000-8000-0000001e84d5",
+          "label": "DJI #3",
+          "serialNumber": "BAT-02-03-7733",
+          "cycleCount": 79,
+          "cycleLimit": 200,
+          "status": {
+            "level": "green",
+            "label": "Healthy"
+          },
+          "lastUsed": {
+            "iso": "2026-09-14T14:29:00.000Z",
+            "absolute": "Sep 14, 2026, 8:29 AM MDT",
+            "relative": "24 days ago",
+            "display": "Sep 14, 2026, 8:29 AM MDT — 24 days ago",
+            "daysFromToday": -24
+          }
+        },
+        {
           "id": "0199c4a0-0000-7000-8000-0000001e84d6",
           "label": "DJI #4",
           "serialNumber": "BAT-02-04-7734",
@@ -2109,11 +2046,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-08-28T19:44:00.000Z",
-            "absolute": "Aug 28, 2026, 1:44 PM MDT",
-            "relative": "41 days ago",
-            "display": "Aug 28, 2026, 1:44 PM MDT — 41 days ago",
-            "daysFromToday": -41
+            "iso": "2026-06-07T20:50:00.000Z",
+            "absolute": "Jun 7, 2026, 2:50 PM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 7, 2026, 2:50 PM MDT — 4 months ago",
+            "daysFromToday": -123
           }
         },
         {
@@ -2121,24 +2058,6 @@ export const company = {
           "label": "Osprey #1",
           "serialNumber": "BAT-03-01-7762",
           "cycleCount": 8,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2026-08-23T17:10:00.000Z",
-            "absolute": "Aug 23, 2026, 11:10 AM MDT",
-            "relative": "46 days ago",
-            "display": "Aug 23, 2026, 11:10 AM MDT — 46 days ago",
-            "daysFromToday": -46
-          }
-        },
-        {
-          "id": "0199c4a0-0000-7000-8000-0000001e84d9",
-          "label": "Osprey #2",
-          "serialNumber": "BAT-03-02-7763",
-          "cycleCount": 88,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2153,6 +2072,24 @@ export const company = {
           }
         },
         {
+          "id": "0199c4a0-0000-7000-8000-0000001e84d9",
+          "label": "Osprey #2",
+          "serialNumber": "BAT-03-02-7763",
+          "cycleCount": 88,
+          "cycleLimit": 200,
+          "status": {
+            "level": "green",
+            "label": "Healthy"
+          },
+          "lastUsed": {
+            "iso": "2026-05-10T17:17:00.000Z",
+            "absolute": "May 10, 2026, 11:17 AM MDT",
+            "relative": "5 months ago",
+            "display": "May 10, 2026, 11:17 AM MDT — 5 months ago",
+            "daysFromToday": -151
+          }
+        },
+        {
           "id": "0199c4a0-0000-7000-8000-0000001e84da",
           "label": "Osprey #3",
           "serialNumber": "BAT-03-03-7764",
@@ -2163,11 +2100,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-01-31T17:46:00.000Z",
-            "absolute": "Jan 31, 2026, 10:46 AM MST",
-            "relative": "8 months ago",
-            "display": "Jan 31, 2026, 10:46 AM MST — 8 months ago",
-            "daysFromToday": -250
+            "iso": "2026-05-23T15:51:00.000Z",
+            "absolute": "May 23, 2026, 9:51 AM MDT",
+            "relative": "5 months ago",
+            "display": "May 23, 2026, 9:51 AM MDT — 5 months ago",
+            "daysFromToday": -138
           }
         },
         {
@@ -2181,11 +2118,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-08-25T17:56:00.000Z",
-            "absolute": "Aug 25, 2026, 11:56 AM MDT",
-            "relative": "44 days ago",
-            "display": "Aug 25, 2026, 11:56 AM MDT — 44 days ago",
-            "daysFromToday": -44
+            "iso": "2026-01-03T16:33:00.000Z",
+            "absolute": "Jan 3, 2026, 9:33 AM MST",
+            "relative": "9 months ago",
+            "display": "Jan 3, 2026, 9:33 AM MST — 9 months ago",
+            "daysFromToday": -278
           }
         },
         {
@@ -2415,11 +2352,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-09-22T22:00:00.000Z",
-            "absolute": "Sep 22, 2026, 4:00 PM MDT",
-            "relative": "16 days ago",
-            "display": "Sep 22, 2026, 4:00 PM MDT — 16 days ago",
-            "daysFromToday": -16
+            "iso": "2026-06-28T17:06:00.000Z",
+            "absolute": "Jun 28, 2026, 11:06 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jun 28, 2026, 11:06 AM MDT — 3 months ago",
+            "daysFromToday": -102
           }
         },
         {
@@ -2427,6 +2364,24 @@ export const company = {
           "label": "Raven #2",
           "serialNumber": "BAT-07-02-7887",
           "cycleCount": 75,
+          "cycleLimit": 200,
+          "status": {
+            "level": "green",
+            "label": "Healthy"
+          },
+          "lastUsed": {
+            "iso": "2026-05-07T15:19:00.000Z",
+            "absolute": "May 7, 2026, 9:19 AM MDT",
+            "relative": "5 months ago",
+            "display": "May 7, 2026, 9:19 AM MDT — 5 months ago",
+            "daysFromToday": -154
+          }
+        },
+        {
+          "id": "0199c4a0-0000-7000-8000-0000001e84ee",
+          "label": "Raven #3",
+          "serialNumber": "BAT-07-03-7888",
+          "cycleCount": 161,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2441,10 +2396,10 @@ export const company = {
           }
         },
         {
-          "id": "0199c4a0-0000-7000-8000-0000001e84ee",
-          "label": "Raven #3",
-          "serialNumber": "BAT-07-03-7888",
-          "cycleCount": 161,
+          "id": "0199c4a0-0000-7000-8000-0000001e84ef",
+          "label": "Raven #4",
+          "serialNumber": "BAT-07-04-7889",
+          "cycleCount": 12,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2459,24 +2414,6 @@ export const company = {
           }
         },
         {
-          "id": "0199c4a0-0000-7000-8000-0000001e84ef",
-          "label": "Raven #4",
-          "serialNumber": "BAT-07-04-7889",
-          "cycleCount": 12,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2026-08-12T18:24:00.000Z",
-            "absolute": "Aug 12, 2026, 12:24 PM MDT",
-            "relative": "57 days ago",
-            "display": "Aug 12, 2026, 12:24 PM MDT — 57 days ago",
-            "daysFromToday": -57
-          }
-        },
-        {
           "id": "0199c4a0-0000-7000-8000-0000001e84f1",
           "label": "DJI #1",
           "serialNumber": "BAT-08-01-7917",
@@ -2487,11 +2424,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-09-14T14:29:00.000Z",
-            "absolute": "Sep 14, 2026, 8:29 AM MDT",
-            "relative": "24 days ago",
-            "display": "Sep 14, 2026, 8:29 AM MDT — 24 days ago",
-            "daysFromToday": -24
+            "iso": "2026-09-06T15:04:00.000Z",
+            "absolute": "Sep 6, 2026, 9:04 AM MDT",
+            "relative": "32 days ago",
+            "display": "Sep 6, 2026, 9:04 AM MDT — 32 days ago",
+            "daysFromToday": -32
           }
         },
         {
@@ -2499,6 +2436,24 @@ export const company = {
           "label": "DJI #2",
           "serialNumber": "BAT-08-02-7918",
           "cycleCount": 166,
+          "cycleLimit": 200,
+          "status": {
+            "level": "green",
+            "label": "Healthy"
+          },
+          "lastUsed": {
+            "iso": "2026-08-19T21:05:00.000Z",
+            "absolute": "Aug 19, 2026, 3:05 PM MDT",
+            "relative": "50 days ago",
+            "display": "Aug 19, 2026, 3:05 PM MDT — 50 days ago",
+            "daysFromToday": -50
+          }
+        },
+        {
+          "id": "0199c4a0-0000-7000-8000-0000001e84f3",
+          "label": "DJI #3",
+          "serialNumber": "BAT-08-03-7919",
+          "cycleCount": 142,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2513,10 +2468,10 @@ export const company = {
           }
         },
         {
-          "id": "0199c4a0-0000-7000-8000-0000001e84f3",
-          "label": "DJI #3",
-          "serialNumber": "BAT-08-03-7919",
-          "cycleCount": 142,
+          "id": "0199c4a0-0000-7000-8000-0000001e84f4",
+          "label": "DJI #4",
+          "serialNumber": "BAT-08-04-7920",
+          "cycleCount": 109,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2531,24 +2486,6 @@ export const company = {
           }
         },
         {
-          "id": "0199c4a0-0000-7000-8000-0000001e84f4",
-          "label": "DJI #4",
-          "serialNumber": "BAT-08-04-7920",
-          "cycleCount": 109,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2026-07-03T18:27:00.000Z",
-            "absolute": "Jul 3, 2026, 12:27 PM MDT",
-            "relative": "3 months ago",
-            "display": "Jul 3, 2026, 12:27 PM MDT — 3 months ago",
-            "daysFromToday": -97
-          }
-        },
-        {
           "id": "0199c4a0-0000-7000-8000-0000001e84f6",
           "label": "Heron #1",
           "serialNumber": "BAT-09-01-7948",
@@ -2559,11 +2496,11 @@ export const company = {
             "label": "Healthy"
           },
           "lastUsed": {
-            "iso": "2026-03-17T14:28:00.000Z",
-            "absolute": "Mar 17, 2026, 8:28 AM MDT",
-            "relative": "7 months ago",
-            "display": "Mar 17, 2026, 8:28 AM MDT — 7 months ago",
-            "daysFromToday": -205
+            "iso": "2026-08-23T17:10:00.000Z",
+            "absolute": "Aug 23, 2026, 11:10 AM MDT",
+            "relative": "46 days ago",
+            "display": "Aug 23, 2026, 11:10 AM MDT — 46 days ago",
+            "daysFromToday": -46
           }
         },
         {
@@ -2571,6 +2508,24 @@ export const company = {
           "label": "Heron #2",
           "serialNumber": "BAT-09-02-7949",
           "cycleCount": 5,
+          "cycleLimit": 200,
+          "status": {
+            "level": "green",
+            "label": "Healthy"
+          },
+          "lastUsed": {
+            "iso": "2026-08-25T17:56:00.000Z",
+            "absolute": "Aug 25, 2026, 11:56 AM MDT",
+            "relative": "44 days ago",
+            "display": "Aug 25, 2026, 11:56 AM MDT — 44 days ago",
+            "daysFromToday": -44
+          }
+        },
+        {
+          "id": "0199c4a0-0000-7000-8000-0000001e84f8",
+          "label": "Heron #3",
+          "serialNumber": "BAT-09-03-7950",
+          "cycleCount": 144,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2585,10 +2540,10 @@ export const company = {
           }
         },
         {
-          "id": "0199c4a0-0000-7000-8000-0000001e84f8",
-          "label": "Heron #3",
-          "serialNumber": "BAT-09-03-7950",
-          "cycleCount": 144,
+          "id": "0199c4a0-0000-7000-8000-0000001e84f9",
+          "label": "Heron #4",
+          "serialNumber": "BAT-09-04-7951",
+          "cycleCount": 142,
           "cycleLimit": 200,
           "status": {
             "level": "green",
@@ -2600,24 +2555,6 @@ export const company = {
             "relative": "7 months ago",
             "display": "Feb 23, 2026, 8:51 AM MST — 7 months ago",
             "daysFromToday": -227
-          }
-        },
-        {
-          "id": "0199c4a0-0000-7000-8000-0000001e84f9",
-          "label": "Heron #4",
-          "serialNumber": "BAT-09-04-7951",
-          "cycleCount": 142,
-          "cycleLimit": 200,
-          "status": {
-            "level": "green",
-            "label": "Healthy"
-          },
-          "lastUsed": {
-            "iso": "2025-12-23T21:18:00.000Z",
-            "absolute": "Dec 23, 2025, 2:18 PM MST",
-            "relative": "9 months ago",
-            "display": "Dec 23, 2025, 2:18 PM MST — 9 months ago",
-            "daysFromToday": -289
           }
         }
       ],
@@ -2973,7 +2910,7 @@ export const company = {
               "display": "8m 21s"
             },
             "pilotName": "Ben Okafor",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Riverside Substation",
             "maxAltitude": {
               "value": 266,
@@ -3073,7 +3010,7 @@ export const company = {
               "display": "22m 36s"
             },
             "pilotName": "Maya Thornton",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Lakewood Water Tower",
             "maxAltitude": {
               "value": 367,
@@ -3173,7 +3110,7 @@ export const company = {
               "display": "9m 02s"
             },
             "pilotName": "Tomás Herrera",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Castle Rock Quarry",
             "maxAltitude": {
               "value": 328,
@@ -3648,7 +3585,7 @@ export const company = {
               "display": "27m 28s"
             },
             "pilotName": "Kenji Watanabe",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Aurora Distribution Center",
             "maxAltitude": {
               "value": 335,
@@ -3698,7 +3635,7 @@ export const company = {
               "display": "17m 54s"
             },
             "pilotName": "Tomás Herrera",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Aurora Distribution Center",
             "maxAltitude": {
               "value": 184,
@@ -3723,7 +3660,7 @@ export const company = {
               "display": "7m 25s"
             },
             "pilotName": "Maya Thornton",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Henderson Solar Farm",
             "maxAltitude": {
               "value": 302,
@@ -3773,7 +3710,7 @@ export const company = {
               "display": "8m 17s"
             },
             "pilotName": "Maya Thornton",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Boulder Creek Levee",
             "maxAltitude": {
               "value": 364,
@@ -4198,7 +4135,7 @@ export const company = {
               "display": "15m 46s"
             },
             "pilotName": "Tomás Herrera",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Aurora Distribution Center",
             "maxAltitude": {
               "value": 177,
@@ -4248,7 +4185,7 @@ export const company = {
               "display": "5m 42s"
             },
             "pilotName": "Tomás Herrera",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Boulder Creek Levee",
             "maxAltitude": {
               "value": 171,
@@ -4698,7 +4635,7 @@ export const company = {
               "display": "10m 10s"
             },
             "pilotName": "Tomás Herrera",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Boulder Creek Levee",
             "maxAltitude": {
               "value": 358,
@@ -4873,7 +4810,7 @@ export const company = {
               "display": "11m 55s"
             },
             "pilotName": "Maya Thornton",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Aurora Distribution Center",
             "maxAltitude": {
               "value": 295,
@@ -6998,7 +6935,7 @@ export const company = {
               "display": "5m 16s"
             },
             "pilotName": "Darnell Brooks",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Boulder Creek Levee",
             "maxAltitude": {
               "value": 180,
@@ -7048,7 +6985,7 @@ export const company = {
               "display": "13m 23s"
             },
             "pilotName": "Luis Ortega",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Castle Rock Quarry",
             "maxAltitude": {
               "value": 121,
@@ -7398,7 +7335,7 @@ export const company = {
               "display": "17m 34s"
             },
             "pilotName": "Darnell Brooks",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Riverside Substation",
             "maxAltitude": {
               "value": 374,
@@ -7423,7 +7360,7 @@ export const company = {
               "display": "10m 44s"
             },
             "pilotName": "Darnell Brooks",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Riverside Substation",
             "maxAltitude": {
               "value": 151,
@@ -7823,7 +7760,7 @@ export const company = {
               "display": "27m 54s"
             },
             "pilotName": "Ben Okafor",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Cherry Creek Bridge",
             "maxAltitude": {
               "value": 226,
@@ -7898,7 +7835,7 @@ export const company = {
               "display": "12m 06s"
             },
             "pilotName": "Avery Chen",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Golden Rooftop Survey",
             "maxAltitude": {
               "value": 220,
@@ -7973,7 +7910,7 @@ export const company = {
               "display": "15m 51s"
             },
             "pilotName": "Avery Chen",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Boulder Creek Levee",
             "maxAltitude": {
               "value": 325,
@@ -8098,7 +8035,7 @@ export const company = {
               "display": "20m 13s"
             },
             "pilotName": "Hannah Kowalski",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Lakewood Water Tower",
             "maxAltitude": {
               "value": 299,
@@ -8148,7 +8085,7 @@ export const company = {
               "display": "9m 40s"
             },
             "pilotName": "Maya Thornton",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Boulder Creek Levee",
             "maxAltitude": {
               "value": 223,
@@ -8423,7 +8360,7 @@ export const company = {
               "display": "14m 48s"
             },
             "pilotName": "Grace Mbeki",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Golden Rooftop Survey",
             "maxAltitude": {
               "value": 308,
@@ -8448,7 +8385,7 @@ export const company = {
               "display": "21m 00s"
             },
             "pilotName": "Sofia Lindqvist",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Henderson Solar Farm",
             "maxAltitude": {
               "value": 262,
@@ -8498,7 +8435,7 @@ export const company = {
               "display": "16m 39s"
             },
             "pilotName": "Grace Mbeki",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Golden Rooftop Survey",
             "maxAltitude": {
               "value": 299,
@@ -8573,7 +8510,7 @@ export const company = {
               "display": "14m 03s"
             },
             "pilotName": "Priya Natarajan",
-            "aircraftName": "DJI Matrice 30T",
+            "aircraftName": "DJI Matrice 600 Pro",
             "locationName": "Lakewood Water Tower",
             "maxAltitude": {
               "value": 151,
@@ -8724,7 +8661,7 @@ export const company = {
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f0",
-          "label": "DJI Matrice 30T"
+          "label": "DJI Matrice 600 Pro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f5",
@@ -9093,7 +9030,7 @@ export const company = {
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f0",
-          "label": "DJI Matrice 30T",
+          "label": "DJI Matrice 600 Pro",
           "status": {
             "level": "green",
             "label": "Airworthy"

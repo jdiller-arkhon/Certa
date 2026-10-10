@@ -40,6 +40,10 @@ export type UnitsPreference = z.infer<typeof UnitsPreference>;
 export const AircraftStatus = z.enum(['active', 'grounded', 'retired']);
 export type AircraftStatus = z.infer<typeof AircraftStatus>;
 
+/** Airframe shape, for drawing an aircraft (e.g. the Today hangar). Derived from make and model. */
+export const Airframe = z.enum(['quad', 'hex', 'octo', 'fixed_wing_vtol']);
+export type Airframe = z.infer<typeof Airframe>;
+
 export const RemoteIdMethod = z.enum(['standard', 'broadcast_module', 'fria', 'none']);
 export type RemoteIdMethod = z.infer<typeof RemoteIdMethod>;
 

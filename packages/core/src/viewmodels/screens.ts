@@ -8,7 +8,7 @@
  * Screens render inside <AppShell> (see AppShellProps in contract/types.ts), so they do not
  * receive shell props themselves.
  */
-import type { ReadinessLevel, Role } from '../domain/enums.js';
+import type { Airframe, ReadinessLevel, Role } from '../domain/enums.js';
 import type {
   AppShellCallbacks,
   AsyncState,
@@ -204,6 +204,8 @@ export interface ReadinessRowViewModel {
   status: StatusBadge;
   reasons: ReadinessReason[];
   href: string;
+  /** Aircraft rows only: airframe shape for drawing the aircraft. Absent on pilot rows. */
+  airframe?: Airframe;
 }
 
 /** @status beta — route: / */

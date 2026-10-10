@@ -418,7 +418,8 @@ export const expired = {
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5"
             }
           ],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000002dc6d8",
@@ -442,7 +443,8 @@ export const expired = {
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d8"
             }
           ],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d8"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d8",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000002dc6db",
@@ -466,7 +468,8 @@ export const expired = {
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6db"
             }
           ],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6db"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6db",
+          "airframe": "quad"
         }
       ],
       "upcoming": [

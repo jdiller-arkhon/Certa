@@ -5,6 +5,7 @@ import { ChevronRight, Plane, Plus, Route, Users } from 'lucide-react';
 import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 import { ReadinessRing } from '@/components/gauge';
+import { HangarHero } from '@/components/hangar';
 import { CountUp, Rise, Stagger, StaggerItem, StaggerLi } from '@/components/motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -175,6 +176,12 @@ export function TodayScreen(props: ReadinessDashboardScreenProps) {
           </Button>
         </Rise>
       </div>
+
+      {props.aircraft.length > 0 && (
+        <Rise delay={0.08}>
+          <HangarHero aircraft={props.aircraft} onOpen={props.onOpen} />
+        </Rise>
+      )}
 
       <Rise delay={0.1}>
         <Card className="relative overflow-hidden">

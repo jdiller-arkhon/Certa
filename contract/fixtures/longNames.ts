@@ -360,7 +360,8 @@ export const longNames = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000004c4b58",
@@ -378,7 +379,8 @@ export const longNames = {
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58"
             }
           ],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000004c4b5b",
@@ -402,7 +404,8 @@ export const longNames = {
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b"
             }
           ],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b",
+          "airframe": "quad"
         }
       ],
       "upcoming": [

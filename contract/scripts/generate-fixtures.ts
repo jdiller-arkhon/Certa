@@ -109,6 +109,7 @@ const SITES = [
 const MODELS: [string, string, number][] = [
   ['DJI', 'Mavic 3 Enterprise', 0.915], ['DJI', 'Matrice 30T', 3.77], ['DJI', 'Matrice 350 RTK', 6.47],
   ['Skydio', 'X10', 2.11], ['Autel', 'EVO II Dual 640T', 1.19], ['Freefly', 'Astro', 9.1],
+  ['Quantum Systems', 'Trinity F90+', 5.0], ['DJI', 'Matrice 600 Pro', 9.5], ['Freefly', 'Alta 8', 6.2],
 ];
 
 function base(id: string, orgId: string, createdAt = '2025-01-15T17:00:00.000Z') {

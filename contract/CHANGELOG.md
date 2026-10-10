@@ -3,6 +3,13 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.5.0 — 2026-10-10
+
+- **Added** `ReadinessRowViewModel.airframe?: Airframe` (`'quad' | 'hex' | 'octo' | 'fixed_wing_vtol'`), set on aircraft rows only. Derived from make and model in `@certa/core` (`airframeOf`); unknown models draw as `quad`. Used by the Today hangar to draw each aircraft.
+- **Changed** fixtures: the sample fleet now includes a Quantum Systems Trinity F90+ (fixed-wing VTOL), a DJI Matrice 600 Pro (hex) and a Freefly Alta 8 (octo).
+
+Screens affected: **Today (readiness)**. Additive only.
+
 ## 0.4.0 — 2026-10-09
 
 - **Added** `RuleRowViewModel.editor: RuleEditor` — the override editor's input type, display unit, and current value **in the org's display units** (e.g. `{ input: 'number', unit: 'ft', value: 400 }`). `onSetOverride` now receives the value in those same units; the host converts to SI. Components still never convert units.

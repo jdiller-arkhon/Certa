@@ -371,7 +371,8 @@ export const large = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000005b8da1",
@@ -382,7 +383,8 @@ export const large = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000005b8da6",
@@ -393,7 +395,8 @@ export const large = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000005b8dab",
@@ -404,7 +407,8 @@ export const large = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8dab"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8dab",
+          "airframe": "quad"
         }
       ],
       "upcoming": [],

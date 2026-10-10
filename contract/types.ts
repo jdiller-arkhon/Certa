@@ -14,6 +14,7 @@ export type {
   DateDisplay,
   Quantity,
   ReadinessLevel,
+  Airframe,
   Role,
   Action,
   StatusBadge,

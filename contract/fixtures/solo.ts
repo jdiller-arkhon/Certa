@@ -338,7 +338,8 @@ export const solo = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000000f4249"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000000f4249",
+          "airframe": "quad"
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000000f424d",
@@ -349,7 +350,8 @@ export const solo = {
             "label": "Airworthy"
           },
           "reasons": [],
-          "href": "/aircraft/0199c4a0-0000-7000-8000-0000000f424d"
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000000f424d",
+          "airframe": "quad"
         }
       ],
       "upcoming": [],

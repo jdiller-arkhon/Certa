@@ -57,3 +57,15 @@ describe('rule override editor units', () => {
     expect(ruleEditorValueToSI('speed', 100, us)).toBeCloseTo(44.704);
   });
 });
+
+import { airframeOf } from '../src/index.js';
+describe('airframe from make and model', () => {
+  it('recognizes common non-quad airframes and defaults to quad', () => {
+    expect(airframeOf({ make: 'DJI', model: 'Matrice 30T' })).toBe('quad');
+    expect(airframeOf({ make: 'Skydio', model: 'X10' })).toBe('quad');
+    expect(airframeOf({ make: 'DJI', model: 'Matrice 600 Pro' })).toBe('hex');
+    expect(airframeOf({ make: 'Freefly', model: 'Alta 8' })).toBe('octo');
+    expect(airframeOf({ make: 'Quantum Systems', model: 'Trinity F90+' })).toBe('fixed_wing_vtol');
+    expect(airframeOf({ make: 'Wingtra', model: 'WingtraOne Gen II' })).toBe('fixed_wing_vtol');
+  });
+});

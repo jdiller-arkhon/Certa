@@ -10,7 +10,7 @@ import type {
   Flight,
   Pilot,
 } from '../domain/entities.js';
-import type { ReadinessLevel, Role, UnitsPreference } from '../domain/enums.js';
+import type { Airframe, ReadinessLevel, Role, UnitsPreference } from '../domain/enums.js';
 import { ACTIONS, can, ROLE_LABELS, type Action } from '../domain/permissions.js';
 import { displayDate, displayInstant } from '../format/dates.js';
 import { formatDuration, formatLength, formatMass, formatSpeed, kgTo, metresTo, mpsTo, toKg, toMetres, toMps } from '../format/units.js';
@@ -180,6 +180,18 @@ export function aircraftName(a: Pick<Aircraft, 'nickname' | 'make' | 'model'>): 
   return a.nickname ?? `${a.make} ${a.model}`;
 }
 
+/** Known airframes that aren't quadcopters, matched on "make model". Everything else draws as a quad. */
+const AIRFRAME_PATTERNS: [RegExp, Airframe][] = [
+  [/\b(wingtra|ebee|trinity|vector|quantum|fixed[- ]?wing|vtol|deltaquad|jouav|cw-?\d+)\b/i, 'fixed_wing_vtol'],
+  [/\b(alta ?8|octo|agras t(40|50|60)|matrice 1000)\b/i, 'octo'],
+  [/\b(matrice 600|m600|hexa?|alta ?6|s900|h520|typhoon h|agras t(10|16|20|30))\b/i, 'hex'],
+];
+
+export function airframeOf(a: Pick<Aircraft, 'make' | 'model'>): Airframe {
+  const name = `${a.make} ${a.model}`;
+  return AIRFRAME_PATTERNS.find(([re]) => re.test(name))?.[1] ?? 'quad';
+}
+
 export function aircraftReadiness(a: Aircraft, extra: ExpiringItem[], ctx: MapContext): ReadinessSummary {
   return summarize([...aircraftItems(a), ...extra], ctx.today, ctx.policy);
 }
@@ -206,6 +218,7 @@ export function toAircraftReadinessRow(a: Aircraft, summary: ReadinessSummary, c
     status: toAircraftRow(a, summary).status,
     reasons: summary.reasons.map((r) => reasonFromItem(r, ctx.today, href)),
     href,
+    airframe: airframeOf(a),
   };
 }
 
