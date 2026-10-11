@@ -1617,7 +1617,7 @@ export const longNames = {
         "operationType": "Commercial (Part 107)",
         "airspaceClass": "Class G",
         "authorizationRef": null,
-        "weatherSummary": "Clear, 64 °F, wind 9 mph gusting 15 mph from 270°",
+        "weatherSummary": null,
         "notes": "Gusty winds above 200 ft; RTH tested before mission.",
         "source": "Logged manually",
         "integrity": null
@@ -1734,7 +1734,7 @@ export const longNames = {
         ],
         "siteId": null,
         "operationType": "commercial",
-        "takeoffAt": "2026-10-08T15:30:00.000Z",
+        "takeoffAt": "2026-10-08T16:00:00.000Z",
         "durationMinutes": 13
       },
       "hasLastFlight": true,
@@ -1772,7 +1772,7 @@ export const longNames = {
             "level": "green",
             "label": "Airworthy"
           },
-          "recent": true
+          "recent": false
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b58",
@@ -1781,7 +1781,7 @@ export const longNames = {
             "level": "red",
             "label": "Grounded"
           },
-          "recent": true
+          "recent": false
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b5b",
@@ -1790,7 +1790,7 @@ export const longNames = {
             "level": "amber",
             "label": "Expires in 19 days"
           },
-          "recent": false
+          "recent": true
         }
       ],
       "batteryOptions": [
@@ -1845,28 +1845,38 @@ export const longNames = {
       ],
       "siteOptions": [
         {
-          "value": "site-1",
-          "label": "Henderson Solar Farm",
+          "value": "Aurora Distribution Center — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Aurora Distribution Center — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
           "recent": true
         },
         {
-          "value": "site-2",
-          "label": "Cherry Creek Bridge",
+          "value": "Cherry Creek Bridge — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Cherry Creek Bridge — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
           "recent": true
         },
         {
-          "value": "site-3",
-          "label": "Riverside Substation",
+          "value": "Castle Rock Quarry — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Castle Rock Quarry — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "recent": true
+        },
+        {
+          "value": "Boulder Creek Levee — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Boulder Creek Levee — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
           "recent": false
         },
         {
-          "value": "site-4",
-          "label": "Lakewood Water Tower",
+          "value": "Henderson Solar Farm — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Henderson Solar Farm — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
           "recent": false
         },
         {
-          "value": "site-5",
-          "label": "Golden Rooftop Survey",
+          "value": "Lakewood Water Tower — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Lakewood Water Tower — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "recent": false
+        },
+        {
+          "value": "Golden Rooftop Survey — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Golden Rooftop Survey — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
           "recent": false
         }
       ],

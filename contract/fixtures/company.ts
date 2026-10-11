@@ -1109,7 +1109,7 @@ export const company = {
             "display": "344 ft"
           },
           "source": "import",
-          "pendingSync": true
+          "pendingSync": false
         },
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84fd",
@@ -8745,7 +8745,7 @@ export const company = {
         "operationType": "Commercial (Part 107)",
         "airspaceClass": "Class G",
         "authorizationRef": null,
-        "weatherSummary": "Clear, 64 °F, wind 9 mph gusting 15 mph from 270°",
+        "weatherSummary": null,
         "notes": "Gusty winds above 200 ft; RTH tested before mission.",
         "source": "Logged manually",
         "integrity": null
@@ -8862,7 +8862,7 @@ export const company = {
         ],
         "siteId": null,
         "operationType": "commercial",
-        "takeoffAt": "2026-10-08T15:30:00.000Z",
+        "takeoffAt": "2026-10-08T16:00:00.000Z",
         "durationMinutes": 28
       },
       "hasLastFlight": true,
@@ -8972,7 +8972,7 @@ export const company = {
             "level": "green",
             "label": "Airworthy"
           },
-          "recent": true
+          "recent": false
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d2",
@@ -8981,7 +8981,7 @@ export const company = {
             "level": "red",
             "label": "Grounded"
           },
-          "recent": true
+          "recent": false
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d7",
@@ -9008,7 +9008,7 @@ export const company = {
             "level": "red",
             "label": "Not current"
           },
-          "recent": false
+          "recent": true
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e6",
@@ -9339,27 +9339,42 @@ export const company = {
       ],
       "siteOptions": [
         {
-          "value": "site-1",
+          "value": "Henderson Solar Farm",
           "label": "Henderson Solar Farm",
           "recent": true
         },
         {
-          "value": "site-2",
-          "label": "Cherry Creek Bridge",
+          "value": "Riverside Substation",
+          "label": "Riverside Substation",
           "recent": true
         },
         {
-          "value": "site-3",
-          "label": "Riverside Substation",
+          "value": "Aurora Distribution Center",
+          "label": "Aurora Distribution Center",
+          "recent": true
+        },
+        {
+          "value": "Cherry Creek Bridge",
+          "label": "Cherry Creek Bridge",
           "recent": false
         },
         {
-          "value": "site-4",
+          "value": "Boulder Creek Levee",
+          "label": "Boulder Creek Levee",
+          "recent": false
+        },
+        {
+          "value": "Lakewood Water Tower",
           "label": "Lakewood Water Tower",
           "recent": false
         },
         {
-          "value": "site-5",
+          "value": "Castle Rock Quarry",
+          "label": "Castle Rock Quarry",
+          "recent": false
+        },
+        {
+          "value": "Golden Rooftop Survey",
           "label": "Golden Rooftop Survey",
           "recent": false
         }

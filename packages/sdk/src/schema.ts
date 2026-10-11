@@ -1099,6 +1099,2661 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orgs/{orgId}/fleet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Everything needed to compute readiness and render the Phase 2 screens (offline-cacheable) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            organization: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                timezone: string;
+                                units: {
+                                    /** @enum {string} */
+                                    length: "ft" | "m";
+                                    /** @enum {string} */
+                                    speed: "mph" | "kph" | "kt" | "mps";
+                                    /** @enum {string} */
+                                    mass: "lb" | "kg" | "g";
+                                    /** @enum {string} */
+                                    temperature: "F" | "C";
+                                };
+                                defaultJurisdiction: string;
+                            };
+                            rulePack: {
+                                /** @enum {number} */
+                                schemaVersion: 1;
+                                jurisdiction: string;
+                                version: string;
+                                name: string;
+                                authority: string;
+                                /** Format: date */
+                                effectiveFrom: string;
+                                disclaimer: string;
+                                credentialTypes: {
+                                    id: string;
+                                    label: string;
+                                    description: string;
+                                    validityRuleId: string | null;
+                                    requiredForCurrency: boolean;
+                                    /** @default [] */
+                                    satisfiedBy: string[];
+                                }[];
+                                rules: ({
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "duration";
+                                    value: {
+                                        amount: number;
+                                        /** @enum {string} */
+                                        unit: "days" | "months" | "years";
+                                        /**
+                                         * @default none
+                                         * @enum {string}
+                                         */
+                                        roundTo: "none" | "end_of_month";
+                                    };
+                                } | {
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "length";
+                                    value: number;
+                                    /** @enum {string} */
+                                    unit: "m";
+                                } | {
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "speed";
+                                    value: number;
+                                    /** @enum {string} */
+                                    unit: "m/s";
+                                } | {
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "mass";
+                                    value: number;
+                                    /** @enum {string} */
+                                    unit: "kg";
+                                } | {
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "money";
+                                    value: number;
+                                    unit: string;
+                                } | {
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "integer";
+                                    value: number;
+                                } | {
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "boolean";
+                                    value: boolean;
+                                } | {
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "date";
+                                    /** Format: date */
+                                    value: string;
+                                } | {
+                                    id: string;
+                                    title: string;
+                                    description: string;
+                                    /** @enum {string} */
+                                    appliesTo: "pilot" | "credential" | "aircraft" | "operation" | "incident" | "battery";
+                                    source: {
+                                        title: string;
+                                        citation: string;
+                                        url: string | null;
+                                    };
+                                    /** @default null */
+                                    statedAs: string | null;
+                                    lastVerifiedOn: string | null;
+                                    needsVerification: boolean;
+                                    /** @default null */
+                                    notes: string | null;
+                                    /** @enum {string} */
+                                    kind: "text";
+                                    value: string;
+                                })[];
+                            };
+                            overrides: {
+                                ruleId: string;
+                                value: unknown;
+                                reason: string;
+                            }[];
+                            pilots: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                membershipId: string | null;
+                                displayName: string;
+                                email: string | null;
+                                phone: string | null;
+                                certificateNumber: string | null;
+                                active: boolean;
+                            }[];
+                            credentials: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                /** Format: uuid */
+                                pilotId: string;
+                                credentialType: string;
+                                jurisdiction: string;
+                                identifier: string | null;
+                                issuedOn: string | null;
+                                expiresOn: string | null;
+                                notes: string | null;
+                                documentIds: string[];
+                            }[];
+                            aircraft: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                nickname: string | null;
+                                make: string;
+                                model: string;
+                                serialNumber: string;
+                                registrationNumber: string | null;
+                                registrationExpiresOn: string | null;
+                                /** @enum {string} */
+                                remoteIdMethod: "standard" | "broadcast_module" | "fria" | "none";
+                                remoteIdSerial: string | null;
+                                takeoffMassKg: number | null;
+                                firmwareVersion: string | null;
+                                /** @enum {string} */
+                                status: "active" | "grounded" | "retired";
+                                groundedReason: string | null;
+                                totalFlightSeconds: number;
+                                totalFlights: number;
+                            }[];
+                            batteries: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                serialNumber: string;
+                                label: string | null;
+                                /** @enum {string} */
+                                chemistry: "lipo" | "lihv" | "liion" | "other";
+                                cellCount: number | null;
+                                ratedCapacityMah: number | null;
+                                cycleCount: number;
+                                /** @enum {string} */
+                                status: "active" | "watch" | "retired";
+                                aircraftModel: string | null;
+                                purchasedOn: string | null;
+                                thresholds: {
+                                    maxCycles: number | null;
+                                    minCapacityPct: number | null;
+                                    maxCellDeviationMv: number | null;
+                                    maxAgeDays: number | null;
+                                };
+                                notes: string | null;
+                            }[];
+                            insurancePolicies: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                carrier: string;
+                                policyNumber: string;
+                                coverageSummary: string | null;
+                                liabilityLimitCents: number | null;
+                                /** Format: date */
+                                effectiveOn: string;
+                                /** Format: date */
+                                expiresOn: string;
+                                coveredAircraftIds: string[];
+                                documentIds: string[];
+                            }[];
+                            maintenanceSchedules: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                name: string;
+                                target: {
+                                    /** @enum {string} */
+                                    type: "aircraft" | "component" | "battery";
+                                    /** Format: uuid */
+                                    id: string;
+                                };
+                                everyFlightSeconds: number | null;
+                                everyFlights: number | null;
+                                everyDays: number | null;
+                                lastDoneAt: string | null;
+                                lastDoneFlightSeconds: number | null;
+                                lastDoneFlights: number | null;
+                                groundsWhenOverdue: boolean;
+                            }[];
+                            pilotTotals: {
+                                [key: string]: {
+                                    flights: number;
+                                    flightSeconds: number;
+                                    lastFlightAt: string | null;
+                                    last90DaysFlights: number;
+                                };
+                            };
+                            batteryLastUsed: {
+                                [key: string]: string | null;
+                            };
+                            lastFlight: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                /** Format: uuid */
+                                pilotInCommandId: string;
+                                visualObserverIds: string[];
+                                /** Format: uuid */
+                                aircraftId: string;
+                                batteries: {
+                                    /** Format: uuid */
+                                    batteryId: string;
+                                    startPct: number | null;
+                                    endPct: number | null;
+                                }[];
+                                /** Format: date-time */
+                                takeoffAt: string;
+                                /** Format: date-time */
+                                landingAt: string;
+                                localTimeZone: string;
+                                takeoffPoint: {
+                                    lat: number;
+                                    lon: number;
+                                    altMslM?: number | null;
+                                } | null;
+                                landingPoint: {
+                                    lat: number;
+                                    lon: number;
+                                    altMslM?: number | null;
+                                } | null;
+                                locationName: string | null;
+                                durationSeconds: number;
+                                maxAltitudeAglM: number | null;
+                                maxDistanceM: number | null;
+                                totalDistanceM: number | null;
+                                hasPath: boolean;
+                                weather: {
+                                    provider: string;
+                                    /** Format: date-time */
+                                    fetchedAt: string;
+                                    temperatureC: number | null;
+                                    windSpeedMps: number | null;
+                                    windGustMps: number | null;
+                                    windDirectionDeg: number | null;
+                                    visibilityM: number | null;
+                                    cloudBaseM: number | null;
+                                    precipitationMm: number | null;
+                                    summary: string | null;
+                                } | null;
+                                airspaceClass: ("A" | "B" | "C" | "D" | "E" | "G" | "unknown") | null;
+                                authorizationId: string | null;
+                                missionId: string | null;
+                                siteId: string | null;
+                                /** @enum {string} */
+                                operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                                notes: string | null;
+                                /** @enum {string} */
+                                source: "manual" | "import";
+                                importParser: string | null;
+                                rawLogDocumentId: string | null;
+                            } | null;
+                            recentLocations: string[];
+                            /** Format: date-time */
+                            generatedAt: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/preflight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pre-flight go / no-go from records on file (advisory) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        pilotId: string;
+                        /** Format: uuid */
+                        aircraftId: string;
+                        /** @default [] */
+                        batteryIds?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            decision: "go" | "caution" | "no_go";
+                            checks: {
+                                key: string;
+                                label: string;
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                detail: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/pilots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        displayName: string;
+                        email?: string | null;
+                        phone?: string | null;
+                        certificateNumber?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            membershipId: string | null;
+                            displayName: string;
+                            email: string | null;
+                            phone: string | null;
+                            certificateNumber: string | null;
+                            active: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/pilots/{pilotId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Archive a pilot (records and flights are kept) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        displayName?: string;
+                        email?: string | null;
+                        phone?: string | null;
+                        certificateNumber?: string | null;
+                        active?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            membershipId: string | null;
+                            displayName: string;
+                            email: string | null;
+                            phone: string | null;
+                            certificateNumber: string | null;
+                            active: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/pilots/{pilotId}/credentials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        credentialType: string;
+                        jurisdiction?: string;
+                        identifier?: string | null;
+                        issuedOn?: string | null;
+                        expiresOn?: string | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotId: string;
+                            credentialType: string;
+                            jurisdiction: string;
+                            identifier: string | null;
+                            issuedOn: string | null;
+                            expiresOn: string | null;
+                            notes: string | null;
+                            documentIds: string[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/credentials/{credentialId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    credentialId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    credentialId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        credentialType?: string;
+                        jurisdiction?: string;
+                        identifier?: string | null;
+                        issuedOn?: string | null;
+                        expiresOn?: string | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotId: string;
+                            credentialType: string;
+                            jurisdiction: string;
+                            identifier: string | null;
+                            issuedOn: string | null;
+                            expiresOn: string | null;
+                            notes: string | null;
+                            documentIds: string[];
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/pilots/{pilotId}/training": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            records: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                /** Format: uuid */
+                                pilotId: string;
+                                course: string;
+                                provider: string | null;
+                                /** Format: date */
+                                completedOn: string;
+                                hours: number | null;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        course: string;
+                        provider?: string | null;
+                        /** Format: date */
+                        completedOn: string;
+                        hours?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotId: string;
+                            course: string;
+                            provider: string | null;
+                            /** Format: date */
+                            completedOn: string;
+                            hours: number | null;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/aircraft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        nickname?: string | null;
+                        make: string;
+                        model: string;
+                        serialNumber: string;
+                        registrationNumber?: string | null;
+                        registrationExpiresOn?: string | null;
+                        /**
+                         * @default standard
+                         * @enum {string}
+                         */
+                        remoteIdMethod?: "standard" | "broadcast_module" | "fria" | "none";
+                        remoteIdSerial?: string | null;
+                        takeoffMassKg?: number | null;
+                        firmwareVersion?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            nickname: string | null;
+                            make: string;
+                            model: string;
+                            serialNumber: string;
+                            registrationNumber: string | null;
+                            registrationExpiresOn: string | null;
+                            /** @enum {string} */
+                            remoteIdMethod: "standard" | "broadcast_module" | "fria" | "none";
+                            remoteIdSerial: string | null;
+                            takeoffMassKg: number | null;
+                            firmwareVersion: string | null;
+                            /** @enum {string} */
+                            status: "active" | "grounded" | "retired";
+                            groundedReason: string | null;
+                            totalFlightSeconds: number;
+                            totalFlights: number;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/aircraft/{aircraftId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Archive an aircraft (flights are kept) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    aircraftId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    aircraftId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        nickname?: string | null;
+                        make?: string;
+                        model?: string;
+                        serialNumber?: string;
+                        registrationNumber?: string | null;
+                        registrationExpiresOn?: string | null;
+                        /**
+                         * @default standard
+                         * @enum {string}
+                         */
+                        remoteIdMethod?: "standard" | "broadcast_module" | "fria" | "none";
+                        remoteIdSerial?: string | null;
+                        takeoffMassKg?: number | null;
+                        firmwareVersion?: string | null;
+                        /** @enum {string} */
+                        status?: "active" | "retired";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            nickname: string | null;
+                            make: string;
+                            model: string;
+                            serialNumber: string;
+                            registrationNumber: string | null;
+                            registrationExpiresOn: string | null;
+                            /** @enum {string} */
+                            remoteIdMethod: "standard" | "broadcast_module" | "fria" | "none";
+                            remoteIdSerial: string | null;
+                            takeoffMassKg: number | null;
+                            firmwareVersion: string | null;
+                            /** @enum {string} */
+                            status: "active" | "grounded" | "retired";
+                            groundedReason: string | null;
+                            totalFlightSeconds: number;
+                            totalFlights: number;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/aircraft/{aircraftId}/ground": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ground an aircraft (blocks readiness until returned to service) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    aircraftId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            nickname: string | null;
+                            make: string;
+                            model: string;
+                            serialNumber: string;
+                            registrationNumber: string | null;
+                            registrationExpiresOn: string | null;
+                            /** @enum {string} */
+                            remoteIdMethod: "standard" | "broadcast_module" | "fria" | "none";
+                            remoteIdSerial: string | null;
+                            takeoffMassKg: number | null;
+                            firmwareVersion: string | null;
+                            /** @enum {string} */
+                            status: "active" | "grounded" | "retired";
+                            groundedReason: string | null;
+                            totalFlightSeconds: number;
+                            totalFlights: number;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/aircraft/{aircraftId}/return-to-service": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Clear a grounding; the reason is recorded as a maintenance event */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    aircraftId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        reason: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            nickname: string | null;
+                            make: string;
+                            model: string;
+                            serialNumber: string;
+                            registrationNumber: string | null;
+                            registrationExpiresOn: string | null;
+                            /** @enum {string} */
+                            remoteIdMethod: "standard" | "broadcast_module" | "fria" | "none";
+                            remoteIdSerial: string | null;
+                            takeoffMassKg: number | null;
+                            firmwareVersion: string | null;
+                            /** @enum {string} */
+                            status: "active" | "grounded" | "retired";
+                            groundedReason: string | null;
+                            totalFlightSeconds: number;
+                            totalFlights: number;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/batteries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        serialNumber: string;
+                        label?: string | null;
+                        /**
+                         * @default lipo
+                         * @enum {string}
+                         */
+                        chemistry?: "lipo" | "lihv" | "liion" | "other";
+                        cellCount?: number | null;
+                        ratedCapacityMah?: number | null;
+                        aircraftModel?: string | null;
+                        purchasedOn?: string | null;
+                        thresholds?: {
+                            maxCycles?: number | null;
+                            minCapacityPct?: number | null;
+                            maxCellDeviationMv?: number | null;
+                            maxAgeDays?: number | null;
+                        };
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            serialNumber: string;
+                            label: string | null;
+                            /** @enum {string} */
+                            chemistry: "lipo" | "lihv" | "liion" | "other";
+                            cellCount: number | null;
+                            ratedCapacityMah: number | null;
+                            cycleCount: number;
+                            /** @enum {string} */
+                            status: "active" | "watch" | "retired";
+                            aircraftModel: string | null;
+                            purchasedOn: string | null;
+                            thresholds: {
+                                maxCycles: number | null;
+                                minCapacityPct: number | null;
+                                maxCellDeviationMv: number | null;
+                                maxAgeDays: number | null;
+                            };
+                            notes: string | null;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/batteries/{batteryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    batteryId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    batteryId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        serialNumber?: string;
+                        label?: string | null;
+                        /**
+                         * @default lipo
+                         * @enum {string}
+                         */
+                        chemistry?: "lipo" | "lihv" | "liion" | "other";
+                        cellCount?: number | null;
+                        ratedCapacityMah?: number | null;
+                        aircraftModel?: string | null;
+                        purchasedOn?: string | null;
+                        thresholds?: {
+                            maxCycles?: number | null;
+                            minCapacityPct?: number | null;
+                            maxCellDeviationMv?: number | null;
+                            maxAgeDays?: number | null;
+                        };
+                        notes?: string | null;
+                        /** @enum {string} */
+                        status?: "active" | "watch" | "retired";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            serialNumber: string;
+                            label: string | null;
+                            /** @enum {string} */
+                            chemistry: "lipo" | "lihv" | "liion" | "other";
+                            cellCount: number | null;
+                            ratedCapacityMah: number | null;
+                            cycleCount: number;
+                            /** @enum {string} */
+                            status: "active" | "watch" | "retired";
+                            aircraftModel: string | null;
+                            purchasedOn: string | null;
+                            thresholds: {
+                                maxCycles: number | null;
+                                minCapacityPct: number | null;
+                                maxCellDeviationMv: number | null;
+                                maxAgeDays: number | null;
+                            };
+                            notes: string | null;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/insurance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        carrier: string;
+                        policyNumber: string;
+                        coverageSummary?: string | null;
+                        liabilityLimitCents?: number | null;
+                        /** Format: date */
+                        effectiveOn: string;
+                        /** Format: date */
+                        expiresOn: string;
+                        /** @default [] */
+                        coveredAircraftIds?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            carrier: string;
+                            policyNumber: string;
+                            coverageSummary: string | null;
+                            liabilityLimitCents: number | null;
+                            /** Format: date */
+                            effectiveOn: string;
+                            /** Format: date */
+                            expiresOn: string;
+                            coveredAircraftIds: string[];
+                            documentIds: string[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/insurance/{policyId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    policyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    policyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        carrier?: string;
+                        policyNumber?: string;
+                        coverageSummary?: string | null;
+                        liabilityLimitCents?: number | null;
+                        /** Format: date */
+                        effectiveOn?: string;
+                        /** Format: date */
+                        expiresOn?: string;
+                        /** @default [] */
+                        coveredAircraftIds?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            carrier: string;
+                            policyNumber: string;
+                            coverageSummary: string | null;
+                            liabilityLimitCents: number | null;
+                            /** Format: date */
+                            effectiveOn: string;
+                            /** Format: date */
+                            expiresOn: string;
+                            coveredAircraftIds: string[];
+                            documentIds: string[];
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/maintenance/schedules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        target: {
+                            /** @enum {string} */
+                            type: "aircraft" | "component" | "battery";
+                            /** Format: uuid */
+                            id: string;
+                        };
+                        everyFlightSeconds?: number | null;
+                        everyFlights?: number | null;
+                        everyDays?: number | null;
+                        /** @default true */
+                        groundsWhenOverdue?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            name: string;
+                            target: {
+                                /** @enum {string} */
+                                type: "aircraft" | "component" | "battery";
+                                /** Format: uuid */
+                                id: string;
+                            };
+                            everyFlightSeconds: number | null;
+                            everyFlights: number | null;
+                            everyDays: number | null;
+                            lastDoneAt: string | null;
+                            lastDoneFlightSeconds: number | null;
+                            lastDoneFlights: number | null;
+                            groundsWhenOverdue: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/maintenance/schedules/{scheduleId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    scheduleId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/maintenance/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    targetId?: string;
+                };
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            events: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                /** @enum {string} */
+                                kind: "scheduled" | "unscheduled";
+                                scheduleId: string | null;
+                                target: {
+                                    /** @enum {string} */
+                                    type: "aircraft" | "component" | "battery";
+                                    /** Format: uuid */
+                                    id: string;
+                                };
+                                /** Format: date-time */
+                                performedAt: string;
+                                performedBy: string;
+                                description: string;
+                                partsReplaced: {
+                                    name: string;
+                                    serialNumber: string | null;
+                                }[];
+                                flightSecondsAtService: number | null;
+                                signedOffByUserId: string | null;
+                                signedOffAt: string | null;
+                                documentIds: string[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Log maintenance; completing a scheduled item resets its interval */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        scheduleId?: string | null;
+                        target: {
+                            /** @enum {string} */
+                            type: "aircraft" | "component" | "battery";
+                            /** Format: uuid */
+                            id: string;
+                        };
+                        /** Format: date-time */
+                        performedAt: string;
+                        performedBy: string;
+                        description: string;
+                        /** @default [] */
+                        partsReplaced?: {
+                            name: string;
+                            serialNumber: string | null;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/flights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Flights, newest first (cursor-paged) */
+        get: {
+            parameters: {
+                query?: {
+                    cursor?: string;
+                    limit?: number;
+                    pilotId?: string;
+                    aircraftId?: string;
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            items: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                /** Format: uuid */
+                                pilotInCommandId: string;
+                                visualObserverIds: string[];
+                                /** Format: uuid */
+                                aircraftId: string;
+                                batteries: {
+                                    /** Format: uuid */
+                                    batteryId: string;
+                                    startPct: number | null;
+                                    endPct: number | null;
+                                }[];
+                                /** Format: date-time */
+                                takeoffAt: string;
+                                /** Format: date-time */
+                                landingAt: string;
+                                localTimeZone: string;
+                                takeoffPoint: {
+                                    lat: number;
+                                    lon: number;
+                                    altMslM?: number | null;
+                                } | null;
+                                landingPoint: {
+                                    lat: number;
+                                    lon: number;
+                                    altMslM?: number | null;
+                                } | null;
+                                locationName: string | null;
+                                durationSeconds: number;
+                                maxAltitudeAglM: number | null;
+                                maxDistanceM: number | null;
+                                totalDistanceM: number | null;
+                                hasPath: boolean;
+                                weather: {
+                                    provider: string;
+                                    /** Format: date-time */
+                                    fetchedAt: string;
+                                    temperatureC: number | null;
+                                    windSpeedMps: number | null;
+                                    windGustMps: number | null;
+                                    windDirectionDeg: number | null;
+                                    visibilityM: number | null;
+                                    cloudBaseM: number | null;
+                                    precipitationMm: number | null;
+                                    summary: string | null;
+                                } | null;
+                                airspaceClass: ("A" | "B" | "C" | "D" | "E" | "G" | "unknown") | null;
+                                authorizationId: string | null;
+                                missionId: string | null;
+                                siteId: string | null;
+                                /** @enum {string} */
+                                operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                                notes: string | null;
+                                /** @enum {string} */
+                                source: "manual" | "import";
+                                importParser: string | null;
+                                rawLogDocumentId: string | null;
+                            }[];
+                            total: number;
+                            nextCursor: string | null;
+                            totals: {
+                                flights: number;
+                                flightSeconds: number;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Log a flight. Idempotent when the client supplies `id`: re-sending returns the stored flight. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        id?: string;
+                        /** Format: uuid */
+                        pilotInCommandId: string;
+                        /** @default [] */
+                        visualObserverIds?: string[];
+                        /** Format: uuid */
+                        aircraftId: string;
+                        /** @default [] */
+                        batteries?: {
+                            /** Format: uuid */
+                            batteryId: string;
+                            startPct: number | null;
+                            endPct: number | null;
+                        }[];
+                        /** Format: date-time */
+                        takeoffAt: string;
+                        /** Format: date-time */
+                        landingAt: string;
+                        localTimeZone: string;
+                        takeoffPoint?: {
+                            lat: number;
+                            lon: number;
+                            altMslM?: number | null;
+                        } | null;
+                        locationName?: string | null;
+                        maxAltitudeAglM?: number | null;
+                        maxDistanceM?: number | null;
+                        /**
+                         * @default commercial
+                         * @enum {string}
+                         */
+                        operationType?: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                        airspaceClass?: ("A" | "B" | "C" | "D" | "E" | "G" | "unknown") | null;
+                        weather?: {
+                            provider: string;
+                            /** Format: date-time */
+                            fetchedAt: string;
+                            temperatureC: number | null;
+                            windSpeedMps: number | null;
+                            windGustMps: number | null;
+                            windDirectionDeg: number | null;
+                            visibilityM: number | null;
+                            cloudBaseM: number | null;
+                            precipitationMm: number | null;
+                            summary: string | null;
+                        } | null;
+                        notes?: string | null;
+                        goNoGo?: {
+                            /** @enum {string} */
+                            decision: "go" | "caution" | "no_go";
+                            checks: {
+                                key: string;
+                                label: string;
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                detail: string;
+                            }[];
+                        } | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotInCommandId: string;
+                            visualObserverIds: string[];
+                            /** Format: uuid */
+                            aircraftId: string;
+                            batteries: {
+                                /** Format: uuid */
+                                batteryId: string;
+                                startPct: number | null;
+                                endPct: number | null;
+                            }[];
+                            /** Format: date-time */
+                            takeoffAt: string;
+                            /** Format: date-time */
+                            landingAt: string;
+                            localTimeZone: string;
+                            takeoffPoint: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            landingPoint: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            locationName: string | null;
+                            durationSeconds: number;
+                            maxAltitudeAglM: number | null;
+                            maxDistanceM: number | null;
+                            totalDistanceM: number | null;
+                            hasPath: boolean;
+                            weather: {
+                                provider: string;
+                                /** Format: date-time */
+                                fetchedAt: string;
+                                temperatureC: number | null;
+                                windSpeedMps: number | null;
+                                windGustMps: number | null;
+                                windDirectionDeg: number | null;
+                                visibilityM: number | null;
+                                cloudBaseM: number | null;
+                                precipitationMm: number | null;
+                                summary: string | null;
+                            } | null;
+                            airspaceClass: ("A" | "B" | "C" | "D" | "E" | "G" | "unknown") | null;
+                            authorizationId: string | null;
+                            missionId: string | null;
+                            siteId: string | null;
+                            /** @enum {string} */
+                            operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                            notes: string | null;
+                            /** @enum {string} */
+                            source: "manual" | "import";
+                            importParser: string | null;
+                            rawLogDocumentId: string | null;
+                            goNoGo: {
+                                /** @enum {string} */
+                                decision: "go" | "caution" | "no_go";
+                                checks: {
+                                    key: string;
+                                    label: string;
+                                    /** @enum {string} */
+                                    level: "green" | "amber" | "red";
+                                    detail: string;
+                                }[];
+                            } | null;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotInCommandId: string;
+                            visualObserverIds: string[];
+                            /** Format: uuid */
+                            aircraftId: string;
+                            batteries: {
+                                /** Format: uuid */
+                                batteryId: string;
+                                startPct: number | null;
+                                endPct: number | null;
+                            }[];
+                            /** Format: date-time */
+                            takeoffAt: string;
+                            /** Format: date-time */
+                            landingAt: string;
+                            localTimeZone: string;
+                            takeoffPoint: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            landingPoint: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            locationName: string | null;
+                            durationSeconds: number;
+                            maxAltitudeAglM: number | null;
+                            maxDistanceM: number | null;
+                            totalDistanceM: number | null;
+                            hasPath: boolean;
+                            weather: {
+                                provider: string;
+                                /** Format: date-time */
+                                fetchedAt: string;
+                                temperatureC: number | null;
+                                windSpeedMps: number | null;
+                                windGustMps: number | null;
+                                windDirectionDeg: number | null;
+                                visibilityM: number | null;
+                                cloudBaseM: number | null;
+                                precipitationMm: number | null;
+                                summary: string | null;
+                            } | null;
+                            airspaceClass: ("A" | "B" | "C" | "D" | "E" | "G" | "unknown") | null;
+                            authorizationId: string | null;
+                            missionId: string | null;
+                            siteId: string | null;
+                            /** @enum {string} */
+                            operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                            notes: string | null;
+                            /** @enum {string} */
+                            source: "manual" | "import";
+                            importParser: string | null;
+                            rawLogDocumentId: string | null;
+                            goNoGo: {
+                                /** @enum {string} */
+                                decision: "go" | "caution" | "no_go";
+                                checks: {
+                                    key: string;
+                                    label: string;
+                                    /** @enum {string} */
+                                    level: "green" | "amber" | "red";
+                                    detail: string;
+                                }[];
+                            } | null;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/flights/{flightId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    flightId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotInCommandId: string;
+                            visualObserverIds: string[];
+                            /** Format: uuid */
+                            aircraftId: string;
+                            batteries: {
+                                /** Format: uuid */
+                                batteryId: string;
+                                startPct: number | null;
+                                endPct: number | null;
+                            }[];
+                            /** Format: date-time */
+                            takeoffAt: string;
+                            /** Format: date-time */
+                            landingAt: string;
+                            localTimeZone: string;
+                            takeoffPoint: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            landingPoint: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            locationName: string | null;
+                            durationSeconds: number;
+                            maxAltitudeAglM: number | null;
+                            maxDistanceM: number | null;
+                            totalDistanceM: number | null;
+                            hasPath: boolean;
+                            weather: {
+                                provider: string;
+                                /** Format: date-time */
+                                fetchedAt: string;
+                                temperatureC: number | null;
+                                windSpeedMps: number | null;
+                                windGustMps: number | null;
+                                windDirectionDeg: number | null;
+                                visibilityM: number | null;
+                                cloudBaseM: number | null;
+                                precipitationMm: number | null;
+                                summary: string | null;
+                            } | null;
+                            airspaceClass: ("A" | "B" | "C" | "D" | "E" | "G" | "unknown") | null;
+                            authorizationId: string | null;
+                            missionId: string | null;
+                            siteId: string | null;
+                            /** @enum {string} */
+                            operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                            notes: string | null;
+                            /** @enum {string} */
+                            source: "manual" | "import";
+                            importParser: string | null;
+                            rawLogDocumentId: string | null;
+                            goNoGo: {
+                                /** @enum {string} */
+                                decision: "go" | "caution" | "no_go";
+                                checks: {
+                                    key: string;
+                                    label: string;
+                                    /** @enum {string} */
+                                    level: "green" | "amber" | "red";
+                                    detail: string;
+                                }[];
+                            } | null;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete a flight (kept in the audit log) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    flightId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    flightId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        pilotInCommandId?: string;
+                        /** @default [] */
+                        visualObserverIds?: string[];
+                        /** Format: uuid */
+                        aircraftId?: string;
+                        /** @default [] */
+                        batteries?: {
+                            /** Format: uuid */
+                            batteryId: string;
+                            startPct: number | null;
+                            endPct: number | null;
+                        }[];
+                        /** Format: date-time */
+                        takeoffAt?: string;
+                        /** Format: date-time */
+                        landingAt?: string;
+                        localTimeZone?: string;
+                        takeoffPoint?: {
+                            lat: number;
+                            lon: number;
+                            altMslM?: number | null;
+                        } | null;
+                        locationName?: string | null;
+                        maxAltitudeAglM?: number | null;
+                        maxDistanceM?: number | null;
+                        /**
+                         * @default commercial
+                         * @enum {string}
+                         */
+                        operationType?: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                        airspaceClass?: ("A" | "B" | "C" | "D" | "E" | "G" | "unknown") | null;
+                        weather?: {
+                            provider: string;
+                            /** Format: date-time */
+                            fetchedAt: string;
+                            temperatureC: number | null;
+                            windSpeedMps: number | null;
+                            windGustMps: number | null;
+                            windDirectionDeg: number | null;
+                            visibilityM: number | null;
+                            cloudBaseM: number | null;
+                            precipitationMm: number | null;
+                            summary: string | null;
+                        } | null;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotInCommandId: string;
+                            visualObserverIds: string[];
+                            /** Format: uuid */
+                            aircraftId: string;
+                            batteries: {
+                                /** Format: uuid */
+                                batteryId: string;
+                                startPct: number | null;
+                                endPct: number | null;
+                            }[];
+                            /** Format: date-time */
+                            takeoffAt: string;
+                            /** Format: date-time */
+                            landingAt: string;
+                            localTimeZone: string;
+                            takeoffPoint: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            landingPoint: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            locationName: string | null;
+                            durationSeconds: number;
+                            maxAltitudeAglM: number | null;
+                            maxDistanceM: number | null;
+                            totalDistanceM: number | null;
+                            hasPath: boolean;
+                            weather: {
+                                provider: string;
+                                /** Format: date-time */
+                                fetchedAt: string;
+                                temperatureC: number | null;
+                                windSpeedMps: number | null;
+                                windGustMps: number | null;
+                                windDirectionDeg: number | null;
+                                visibilityM: number | null;
+                                cloudBaseM: number | null;
+                                precipitationMm: number | null;
+                                summary: string | null;
+                            } | null;
+                            airspaceClass: ("A" | "B" | "C" | "D" | "E" | "G" | "unknown") | null;
+                            authorizationId: string | null;
+                            missionId: string | null;
+                            siteId: string | null;
+                            /** @enum {string} */
+                            operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                            notes: string | null;
+                            /** @enum {string} */
+                            source: "manual" | "import";
+                            importParser: string | null;
+                            rawLogDocumentId: string | null;
+                            goNoGo: {
+                                /** @enum {string} */
+                                decision: "go" | "caution" | "no_go";
+                                checks: {
+                                    key: string;
+                                    label: string;
+                                    /** @enum {string} */
+                                    level: "green" | "amber" | "red";
+                                    detail: string;
+                                }[];
+                            } | null;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

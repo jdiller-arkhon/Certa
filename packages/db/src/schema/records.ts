@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import {
   bigint,
   boolean,
@@ -196,3 +197,36 @@ export const syncConflicts = pgTable('sync_conflicts', {
   resolution: text('resolution', { enum: ['local', 'server'] }),
   resolutionNote: text('resolution_note'),
 });
+
+/** Time-boxed, read-only links to an inspector packet (pilot or aircraft records). */
+export const shareLinks = pgTable(
+  'share_links',
+  {
+    ...entityColumns(),
+    kind: text('kind', { enum: ['inspector_packet'] }).notNull().default('inspector_packet'),
+    subjectType: text('subject_type', { enum: ['pilot', 'aircraft'] }).notNull(),
+    subjectId: uuid('subject_id').notNull(),
+    label: text('label').notNull(),
+    /** SHA-256 of the token; the token itself is shown once and never stored. */
+    tokenHash: text('token_hash').notNull().unique(),
+    expiresAt: ts('expires_at').notNull(),
+    revokedAt: ts('revoked_at'),
+    viewCount: integer('view_count').notNull().default(0),
+    lastViewedAt: ts('last_viewed_at'),
+  },
+  (t) => [index('share_links_subject_idx').on(t.subjectType, t.subjectId)],
+);
+
+/** Web Push subscriptions for expiry and readiness notifications. */
+export const pushSubscriptions = pgTable(
+  'push_subscriptions',
+  {
+    ...entityColumns(),
+    userId: uuid('user_id').notNull(),
+    endpoint: text('endpoint').notNull(),
+    p256dh: text('p256dh').notNull(),
+    auth: text('auth').notNull(),
+    userAgent: text('user_agent'),
+  },
+  (t) => [uniqueIndex('push_subscriptions_endpoint_uq').on(t.orgId, t.endpoint).where(sql`deleted_at is null`)],
+);

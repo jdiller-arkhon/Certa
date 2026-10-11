@@ -457,40 +457,14 @@ export const empty = {
         "batteryIds": [],
         "siteId": null,
         "operationType": "commercial",
-        "takeoffAt": "2026-10-08T15:30:00.000Z",
+        "takeoffAt": "2026-10-08T16:00:00.000Z",
         "durationMinutes": null
       },
       "hasLastFlight": false,
       "pilotOptions": [],
       "aircraftOptions": [],
       "batteryOptions": [],
-      "siteOptions": [
-        {
-          "value": "site-1",
-          "label": "Henderson Solar Farm",
-          "recent": true
-        },
-        {
-          "value": "site-2",
-          "label": "Cherry Creek Bridge",
-          "recent": true
-        },
-        {
-          "value": "site-3",
-          "label": "Riverside Substation",
-          "recent": false
-        },
-        {
-          "value": "site-4",
-          "label": "Lakewood Water Tower",
-          "recent": false
-        },
-        {
-          "value": "site-5",
-          "label": "Golden Rooftop Survey",
-          "recent": false
-        }
-      ],
+      "siteOptions": [],
       "operationTypeOptions": [
         {
           "value": "commercial",

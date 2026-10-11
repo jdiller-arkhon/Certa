@@ -130,6 +130,8 @@ export const flights = pgTable(
     rawLogDocumentId: uuid('raw_log_document_id'),
     /** Dedupe key for imports: aircraft serial + takeoff time bucket. */
     dedupeKey: text('dedupe_key'),
+    /** Pre-flight go/no-go result shown to the pilot when the flight was logged. */
+    goNoGo: jsonb('go_no_go'),
   },
   (t) => [
     index('flights_org_takeoff_idx').on(t.orgId, t.takeoffAt),

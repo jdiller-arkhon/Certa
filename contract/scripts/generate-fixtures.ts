@@ -6,6 +6,15 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+  buildAircraftDetail,
+  buildAircraftList,
+  buildBatteryList,
+  buildFlightDetail,
+  buildFlightList,
+  buildLogFlight,
+  buildPilotDetail,
+  buildPilotList,
+  buildReadinessDashboard,
   aircraftName,
   aircraftReadiness,
   badgeFromSummary,
@@ -38,6 +47,8 @@ import {
   type AuditEvent,
   type Battery,
   type Credential,
+  type FleetSnapshot,
+  type BuildInput,
   type Flight,
   type MapContext,
   type Pilot,
@@ -346,165 +357,56 @@ function toScenario(w: World): FixtureScenario {
   const aircraftOptions = w.aircraft.map((a, i) => ({ value: a.id, label: aircraftName(a), status: toAircraftRow(a, aircraftSummaries.get(a.id)!).status, recent: i < 2 }));
   const warnings = p0 ? pilotSummaries.get(p0.id)!.reasons.map((r) => reasonFromItem(r, TODAY, `/pilots/${p0.id}`)) : [];
 
+  const snapshot: FleetSnapshot = {
+    organization: { id: w.org.id, name: w.org.name, timezone: TZ, units: DEFAULT_UNITS_US, defaultJurisdiction: 'US-FAA-Part107' },
+    rulePack: rules.pack,
+    overrides: w.overrides.map((o) => ({ ruleId: o.ruleId, value: o.value, reason: o.reason })),
+    pilots: w.pilots,
+    credentials: w.credentials,
+    aircraft: w.aircraft,
+    batteries: w.batteries,
+    insurancePolicies: [],
+    maintenanceSchedules: [],
+    pilotTotals: Object.fromEntries(
+      w.pilots.map((p) => {
+        const t = flightTotals((f) => f.pilotInCommandId === p.id);
+        const last90 = w.flights.filter((f) => f.pilotInCommandId === p.id && f.takeoffAt >= `${addDaysIso(TODAY, -90)}T00:00:00Z`).length;
+        return [p.id, { flights: t.count, flightSeconds: t.seconds, lastFlightAt: t.last, last90DaysFlights: last90 }];
+      }),
+    ),
+    batteryLastUsed: Object.fromEntries(w.batteries.map((b) => [b.id, lastFlightOf(b.id)])),
+    lastFlight: w.flights[0] ?? null,
+    recentLocations: [...new Set(w.flights.map((f) => f.locationName).filter((x): x is string => !!x))],
+    generatedAt: NOW.toISOString(),
+  };
+  const bi: BuildInput = { snapshot, ctx, role };
+
   return {
     id: w.id,
     description: w.description,
     shell: shellFor('/'),
     fieldShell: shellFor('/', w.fieldSync),
     screens: {
-      readinessDashboard: {
-        ...ok,
-        asOf: displayDate(TODAY, TODAY),
-        overall: { level: overall.level, label: overall.level === 'green' ? 'Everyone is legal to fly' : overall.level === 'amber' ? 'Attention needed soon' : 'Some pilots or aircraft are not legal to fly' },
-        counts,
-        pilots: w.pilots.map((p) => toPilotReadinessRow(p, pilotSummaries.get(p.id)!, ctx)),
-        aircraft: w.aircraft.map((a) => toAircraftReadinessRow(a, aircraftSummaries.get(a.id)!, ctx)),
-        upcoming,
-        empty: empty('Add your first pilot and aircraft', 'Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.', 'Add aircraft'),
-      },
-      pilotList: {
-        ...ok,
-        pilots: w.pilots.map((p) => {
-          const t = flightTotals((f) => f.pilotInCommandId === p.id);
-          return toPilotRow(p, pilotSummaries.get(p.id)!, { flightSeconds: t.seconds, lastFlightAt: t.last }, ctx);
-        }),
-        search: '',
-        canManage: canDo('pilots.manage'),
-        empty: empty('No pilots yet', 'Add pilots to track their certificates, recurrent training, and flight time.', 'Add pilot'),
-      },
-      pilotDetail: {
-        ...ok,
-        pilot: p0
-          ? (() => {
-              const t = flightTotals((f) => f.pilotInCommandId === p0.id);
-              const last90 = w.flights.filter((f) => f.pilotInCommandId === p0.id && f.takeoffAt >= `${addDaysIso(TODAY, -90)}T00:00:00Z`).length;
-              const s = pilotSummaries.get(p0.id)!;
-              return {
-                id: p0.id,
-                name: p0.displayName,
-                email: p0.email,
-                phone: p0.phone,
-                certificateNumber: p0.certificateNumber,
-                status: badgeFromSummary(s),
-                reasons: s.reasons.map((r) => reasonFromItem(r, TODAY, `/pilots/${p0.id}`)),
-                totals: { flights: t.count, flightTime: formatDuration(t.seconds), last90DaysFlights: last90 },
-              };
-            })()
-          : null,
-        credentials: p0 ? w.credentials.filter((c) => c.pilotId === p0.id).map((c) => toCredentialViewModel(c, resolved, ctx)) : [],
-        recentFlights: p0 ? flightRows.filter((_, i) => w.flights[i]!.pilotInCommandId === p0.id).slice(0, 10) : [],
-        credentialTypeOptions: resolved.pack.credentialTypes.map((t) => ({ value: t.id, label: t.label, expires: t.validityRuleId !== null })),
-        canEdit: canDo('credentials.manage'),
-      },
-      aircraftList: {
-        ...ok,
-        aircraft: w.aircraft.map((a) => toAircraftRow(a, aircraftSummaries.get(a.id)!)),
-        search: '',
-        statusFilter: 'all',
-        canManage: canDo('aircraft.manage'),
-        empty: empty('No aircraft yet', 'Add an aircraft to track its registration, Remote ID, flight hours, and maintenance.', 'Add aircraft'),
-      },
-      aircraftDetail: {
-        ...ok,
-        aircraft: a0
-          ? (() => {
-              const s = aircraftSummaries.get(a0.id)!;
-              return {
-                id: a0.id,
-                name: aircraftName(a0),
-                makeModel: `${a0.make} ${a0.model}`,
-                serialNumber: a0.serialNumber,
-                registrationNumber: a0.registrationNumber,
-                registrationExpires: a0.registrationExpiresOn ? displayDate(a0.registrationExpiresOn, TODAY) : null,
-                remoteId: a0.remoteIdMethod === 'standard' ? `Standard Remote ID · ${a0.remoteIdSerial}` : `Broadcast module · ${a0.remoteIdSerial}`,
-                takeoffMass: a0.takeoffMassKg ? formatMass(a0.takeoffMassKg, ctx.units) : null,
-                firmwareVersion: a0.firmwareVersion,
-                status: toAircraftRow(a0, s).status,
-                groundedReason: a0.groundedReason,
-                reasons: s.reasons.map((r) => reasonFromItem(r, TODAY, `/aircraft/${a0.id}`)),
-                totals: { flights: a0.totalFlights, flightTime: formatDuration(a0.totalFlightSeconds) },
-              };
-            })()
-          : null,
-        recentFlights: a0 ? flightRows.filter((_, i) => w.flights[i]!.aircraftId === a0.id).slice(0, 10) : [],
-        batteries: a0 ? w.batteries.filter((b) => b.aircraftModel === a0.model).map((b) => toBatteryRow(b, lastFlightOf(b.id), ctx)) : [],
-        canEdit: canDo('aircraft.manage'),
-        canGround: canDo('aircraft.ground'),
-      },
-      batteryList: {
-        ...ok,
-        batteries: w.batteries.map((b) => toBatteryRow(b, lastFlightOf(b.id), ctx)),
-        canManage: canDo('batteries.manage'),
-        empty: empty('No batteries yet', 'Add batteries to track cycle counts automatically from your flights and get retirement warnings.', 'Add battery'),
-      },
-      flightList: {
-        ...ok,
-        flights: { items: flightRows, total: flightRows.length, nextCursor: null },
-        filter: { pilotId: null, aircraftId: null, from: null, to: null },
-        pilotOptions: w.pilots.map((p) => ({ value: p.id, label: p.displayName })),
-        aircraftOptions: w.aircraft.map((a) => ({ value: a.id, label: aircraftName(a) })),
-        totals: { flights: w.flights.length, flightTime: formatDuration(w.flights.reduce((s, f) => s + f.durationSeconds, 0)) },
-        canLog: canDo('flights.log'),
-        empty: empty('No flights logged', 'Log a flight in seconds, or import logs from your flight controller to fill your logbook automatically.', 'Log a flight'),
-      },
-      flightDetail: {
-        ...ok,
-        flight: f0
-          ? {
-              id: f0.id,
-              takeoff: displayInstant(f0.takeoffAt, f0.localTimeZone, NOW),
-              landing: displayInstant(f0.landingAt, f0.localTimeZone, NOW),
-              duration: formatDuration(f0.durationSeconds),
-              pilot: userChip(f0.pilotInCommandId, pilotName(f0.pilotInCommandId)),
-              observers: f0.visualObserverIds.map((id) => userChip(id, pilotName(id))),
-              aircraft: { id: f0.aircraftId, name: acName(f0.aircraftId) },
-              batteries: f0.batteries.map((b) => ({ id: b.batteryId, label: w.batteries.find((x) => x.id === b.batteryId)?.label ?? 'Battery', startPct: b.startPct, endPct: b.endPct })),
-              locationName: f0.locationName,
-              maxAltitude: f0.maxAltitudeAglM == null ? null : formatLength(f0.maxAltitudeAglM, ctx.units),
-              maxDistance: f0.maxDistanceM == null ? null : formatLength(f0.maxDistanceM, ctx.units),
-              operationType: f0.operationType === 'commercial' ? 'Commercial (Part 107)' : 'Training',
-              airspaceClass: f0.airspaceClass ? `Class ${f0.airspaceClass}` : null,
-              authorizationRef: f0.airspaceClass === 'D' ? 'LAANC 7Q2R4K' : null,
-              weatherSummary: 'Clear, 64 °F, wind 9 mph gusting 15 mph from 270°',
-              notes: f0.notes,
-              source: f0.source === 'manual' ? 'Logged manually' : 'Imported from PX4 ULog',
-              integrity: null,
-            }
-          : null,
+      readinessDashboard: buildReadinessDashboard(bi),
+      pilotList: buildPilotList(bi),
+      pilotDetail: p0 ? buildPilotDetail(bi, p0.id, w.flights) : { ...buildPilotDetail(bi, '', []), pilot: null },
+      aircraftList: buildAircraftList(bi),
+      aircraftDetail: a0 ? buildAircraftDetail(bi, a0.id, w.flights) : buildAircraftDetail(bi, '', []),
+      batteryList: buildBatteryList(bi),
+      flightList: buildFlightList(
+        bi,
+        { items: w.flights.map((f, i) => ({ ...f, pendingSync: w.fieldSync.pendingChanges > 0 && i < w.fieldSync.pendingChanges })), total: w.flights.length, nextCursor: null },
+        { pilotId: null, aircraftId: null, from: null, to: null },
+        { flights: w.flights.length, flightSeconds: w.flights.reduce((t, f) => t + f.durationSeconds, 0) },
+      ),
+      flightDetail: buildFlightDetail(bi, f0 ?? null, {
+        // Fixtures have no recorded track; draw a plausible one so the map and profile render.
         path: f0?.hasPath
           ? { type: 'LineString', coordinates: Array.from({ length: 24 }, (_, i) => [f0.takeoffPoint!.lon + Math.sin(i / 4) * 0.002, f0.takeoffPoint!.lat + i * 0.0001, 1650 + Math.min(i, 12) * 6]) }
           : null,
         altitudeProfile: f0 ? Array.from({ length: 24 }, (_, i) => ({ t: Math.round((f0.durationSeconds / 23) * i), altitude: Math.round(Math.min(i, 12, 23 - i) * ((f0.maxAltitudeAglM ?? 60) / 12) / 0.3048) })) : [],
-        canEdit: canDo('flights.edit'),
-      },
-      logFlight: {
-        ...ok,
-        defaults: {
-          pilotId: p0?.id ?? '',
-          aircraftId: f0?.aircraftId ?? a0?.id ?? null,
-          batteryIds: f0?.batteries.map((b) => b.batteryId) ?? [],
-          siteId: null,
-          operationType: 'commercial',
-          takeoffAt: '2026-10-08T15:30:00.000Z',
-          durationMinutes: f0 ? Math.round(f0.durationSeconds / 60) : null,
-        },
-        hasLastFlight: !!f0,
-        pilotOptions,
-        aircraftOptions,
-        batteryOptions: w.batteries.filter((b) => b.status !== 'retired').map((b) => ({ value: b.id, label: b.label ?? b.serialNumber, status: toBatteryRow(b, null, ctx).status })),
-        siteOptions: SITES.slice(0, 5).map((s, i) => ({ value: `site-${i + 1}`, label: s, recent: i < 2 })),
-        operationTypeOptions: [
-          { value: 'commercial', label: 'Commercial (Part 107)' },
-          { value: 'training', label: 'Training' },
-          { value: 'public_safety', label: 'Public safety' },
-          { value: 'maintenance_test', label: 'Maintenance test flight' },
-          { value: 'other', label: 'Other' },
-        ],
-        warnings,
-        altitudeUnitLabel: 'ft',
-        fieldErrors: {},
-        saving: false,
-      },
+      }),
+      logFlight: buildLogFlight(bi, { currentPilotId: p0?.id ?? null, now: NOW }),
       rulePackAdmin: {
         ...ok,
         pack: {

@@ -27,7 +27,9 @@ export type ExpiringItemKind =
   | 'insurance'
   | 'maintenance'
   | 'battery'
-  | 'grounding';
+  | 'grounding'
+  | 'remote_id'
+  | 'mass_limit';
 
 export interface ExpiringItem {
   kind: ExpiringItemKind;

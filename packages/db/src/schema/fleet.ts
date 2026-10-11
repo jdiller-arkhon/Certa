@@ -38,6 +38,8 @@ export const aircraft = pgTable(
     /** Derived server-side from flights; never written by clients. */
     totalFlightSeconds: bigint('total_flight_seconds', { mode: 'number' }).notNull().default(0),
     totalFlights: integer('total_flights').notNull().default(0),
+    /** Optional customer-supplied 3D model (glTF binary) shown in the hangar. */
+    modelDocumentId: uuid('model_document_id'),
   },
   (t) => [
     uniqueIndex('aircraft_org_serial_uq')

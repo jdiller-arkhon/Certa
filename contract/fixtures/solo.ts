@@ -2339,7 +2339,7 @@ export const solo = {
         "operationType": "Commercial (Part 107)",
         "airspaceClass": "Class G",
         "authorizationRef": null,
-        "weatherSummary": "Clear, 64 °F, wind 9 mph gusting 15 mph from 270°",
+        "weatherSummary": null,
         "notes": "Gusty winds above 200 ft; RTH tested before mission.",
         "source": "Logged manually",
         "integrity": null
@@ -2456,7 +2456,7 @@ export const solo = {
         ],
         "siteId": null,
         "operationType": "commercial",
-        "takeoffAt": "2026-10-08T15:30:00.000Z",
+        "takeoffAt": "2026-10-08T16:00:00.000Z",
         "durationMinutes": 8
       },
       "hasLastFlight": true,
@@ -2487,7 +2487,7 @@ export const solo = {
             "level": "green",
             "label": "Airworthy"
           },
-          "recent": true
+          "recent": false
         }
       ],
       "batteryOptions": [
@@ -2542,27 +2542,42 @@ export const solo = {
       ],
       "siteOptions": [
         {
-          "value": "site-1",
-          "label": "Henderson Solar Farm",
-          "recent": true
-        },
-        {
-          "value": "site-2",
+          "value": "Cherry Creek Bridge",
           "label": "Cherry Creek Bridge",
           "recent": true
         },
         {
-          "value": "site-3",
+          "value": "Lakewood Water Tower",
+          "label": "Lakewood Water Tower",
+          "recent": true
+        },
+        {
+          "value": "Castle Rock Quarry",
+          "label": "Castle Rock Quarry",
+          "recent": true
+        },
+        {
+          "value": "Boulder Creek Levee",
+          "label": "Boulder Creek Levee",
+          "recent": false
+        },
+        {
+          "value": "Aurora Distribution Center",
+          "label": "Aurora Distribution Center",
+          "recent": false
+        },
+        {
+          "value": "Henderson Solar Farm",
+          "label": "Henderson Solar Farm",
+          "recent": false
+        },
+        {
+          "value": "Riverside Substation",
           "label": "Riverside Substation",
           "recent": false
         },
         {
-          "value": "site-4",
-          "label": "Lakewood Water Tower",
-          "recent": false
-        },
-        {
-          "value": "site-5",
+          "value": "Golden Rooftop Survey",
           "label": "Golden Rooftop Survey",
           "recent": false
         }

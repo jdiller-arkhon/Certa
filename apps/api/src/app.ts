@@ -20,6 +20,8 @@ import type { Mailer } from './lib/mailer.js';
 import { iso } from './lib/mappers.js';
 import { auditRoutes } from './routes/audit.js';
 import { authRoutes } from './routes/auth.js';
+import { fleetRoutes } from './routes/fleet.js';
+import { flightRoutes } from './routes/flights.js';
 import { healthRoutes } from './routes/health.js';
 import { memberRoutes } from './routes/members.js';
 import { orgRoutes } from './routes/orgs.js';
@@ -142,6 +144,8 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(memberRoutes(ctx), { prefix: v1 });
   await app.register(ruleRoutes(ctx), { prefix: v1 });
   await app.register(auditRoutes(ctx), { prefix: v1 });
+  await app.register(fleetRoutes(ctx), { prefix: v1 });
+  await app.register(flightRoutes(ctx), { prefix: v1 });
 
   return app;
 }

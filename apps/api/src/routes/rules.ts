@@ -1,17 +1,16 @@
 import { api, JurisdictionId, newId, resolveRulePack, validateRulePack, type RuleOverride, type RulePack } from '@certa/core';
-import { and, authUsers, eq, globalDb, isNull, orgRuleOverrides, organizations, rulePacks, sql, type Db } from '@certa/db';
+import { and, authUsers, eq, globalDb, isNull, orgRuleOverrides, organizations, rulePacks, sql } from '@certa/db';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { AppContext } from '../app.js';
 import { authorize, inOrg, resolveOrg } from '../lib/context.js';
 import { badRequest, notFound } from '../lib/errors.js';
 import { iso } from '../lib/mappers.js';
+import { latestPackRow, type PackRow } from '../lib/rulepack.js';
 import { OrgParams } from './orgs.js';
 
 const RuleParams = OrgParams.extend({ ruleId: z.string().min(3).max(200) });
 const JurisdictionQuery = z.object({ jurisdiction: JurisdictionId.optional() });
-
-type PackRow = typeof rulePacks.$inferSelect;
 
 function summary(row: PackRow, pack: RulePack): api.RulePackSummary {
   return {
@@ -27,17 +26,6 @@ function summary(row: PackRow, pack: RulePack): api.RulePackSummary {
     active: row.active,
   };
 }
-
-/** Newest active pack per jurisdiction. Pack versions are semver and loaded in order. */
-async function latestPackRow(db: Db, jurisdiction: string): Promise<PackRow | undefined> {
-  const rows = await db.select().from(rulePacks).where(and(eq(rulePacks.jurisdiction, jurisdiction), eq(rulePacks.active, true)));
-  return rows.sort((a, b) => cmp(b.version, a.version))[0];
-}
-const cmp = (a: string, b: string) => {
-  const [pa, pb] = [a.split('.').map(Number), b.split('.').map(Number)];
-  for (let i = 0; i < 3; i++) if (pa[i] !== pb[i]) return pa[i]! - pb[i]!;
-  return 0;
-};
 
 export const ruleRoutes =
   (ctx: AppContext): FastifyPluginAsyncZod =>

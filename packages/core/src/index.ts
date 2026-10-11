@@ -13,3 +13,5 @@ export * as api from './api/schemas.js';
 export * from './viewmodels/common.js';
 export * from './viewmodels/screens.js';
 export * from './viewmodels/mappers.js';
+export * from './viewmodels/builders.js';
+export * from './fleet/fleet.js';

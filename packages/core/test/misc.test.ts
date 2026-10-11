@@ -69,3 +69,28 @@ describe('airframe from make and model', () => {
     expect(airframeOf({ make: 'Wingtra', model: 'WingtraOne Gen II' })).toBe('fixed_wing_vtol');
   });
 });
+
+import { maintenanceItems, massItems, resolveRulePack as resolvePack, summarize as summarizeItems, validateRulePack } from '../src/index.js';
+import { testPackInput } from './fixtures.js';
+describe('fleet readiness additions', () => {
+  const src = testPackInput.rules[0]!.source;
+  const rules = resolvePack(
+    validateRulePack({
+      ...testPackInput,
+      rules: [...testPackInput.rules, { id: 'aircraft.max_takeoff_mass', title: 't', description: 'd', appliesTo: 'aircraft', kind: 'mass', value: 24.9476, unit: 'kg', source: src, lastVerifiedOn: null, needsVerification: true }],
+    }),
+  );
+  const ac = (kg: number | null) => ({ id: 'a1', takeoffMassKg: kg, status: 'active' }) as Parameters<typeof massItems>[0];
+  it('flags aircraft at or over the pack takeoff-mass limit', () => {
+    expect(massItems(ac(10), rules)).toHaveLength(0);
+    expect(massItems(ac(null), rules)).toHaveLength(0);
+    expect(massItems(ac(25), rules)[0]?.blocking).toBe(true);
+  });
+  it('counts maintenance due by calendar days', () => {
+    const s = [{ id: 's1', name: 'Annual inspection', target: { type: 'aircraft', id: 'a1' }, everyDays: 30, everyFlights: null, everyFlightSeconds: null, lastDoneAt: '2026-09-01T00:00:00Z', lastDoneFlights: null, lastDoneFlightSeconds: null, groundsWhenOverdue: false, createdAt: '2026-01-01T00:00:00Z', deletedAt: null }] as unknown as Parameters<typeof maintenanceItems>[1];
+    const items = maintenanceItems({ type: 'aircraft', id: 'a1', flightSeconds: 0, flights: 0 }, s);
+    expect(items[0]?.dueOn).toBe('2026-10-01');
+    expect(summarizeItems(items, '2026-09-20').level).toBe('amber');
+    expect(summarizeItems(items, '2026-10-02').level).toBe('red');
+  });
+});
