@@ -1,13 +1,14 @@
 'use client';
 
-import { buildShell, type ThemeName } from '@certa/core';
+import { buildShell, displayInstant, type SyncStateViewModel, type ThemeName } from '@certa/core';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { mapContextFor, useMe, useOrgContext, useSignOut } from '@/data/session';
 import { CurrentOrgContext, readSelectedOrg, writeSelectedOrg, type CurrentOrg } from '@/lib/current-org';
 import { readTheme, writeTheme } from '@/lib/theme';
 import { BASE_PATH } from '@/lib/base-path';
+import { flushOutbox, setOutboxUser, useOutbox, useOutboxAutoFlush } from '@/lib/outbox';
 import { AppShell } from '@/screens';
 
 export function AuthenticatedLayout({ children }: { children: ReactNode }) {
@@ -18,6 +19,12 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   const signOut = useSignOut();
   const [selected, setSelected] = useState<string | null>(null);
   const [theme, setTheme] = useState<ThemeName>('light');
+  const outbox = useOutbox();
+  const userId = me.data?.user.id ?? null;
+  useEffect(() => setOutboxUser(userId), [userId]);
+  // When offline flights land, refresh that org's flights and derived totals.
+  const onSynced = useCallback((orgId: string) => void qc.invalidateQueries({ queryKey: ['org', orgId] }), [qc]);
+  useOutboxAutoFlush(onSynced);
 
   useEffect(() => {
     setSelected(readSelectedOrg());
@@ -54,6 +61,25 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   if (!me.data) return null;
   if (!current) return <p role="alert">Your account isn’t a member of any organization.</p>;
 
+  const pending = outbox.items.filter((i) => i.status === 'pending').length;
+  const conflicts = outbox.items.filter((i) => i.status === 'rejected').length;
+  const tz = current.org.organization.timezone;
+  const sync: SyncStateViewModel = {
+    status: !outbox.online ? 'offline' : outbox.flushing ? 'syncing' : conflicts || (pending && outbox.lastError) ? 'error' : 'online',
+    pendingChanges: pending,
+    lastSynced: outbox.lastSyncedAt ? displayInstant(outbox.lastSyncedAt, tz, new Date()) : null,
+    message: !outbox.online
+      ? pending
+        ? `Offline — ${pending} flight${pending === 1 ? '' : 's'} will sync when you reconnect`
+        : 'Offline — showing the last synced records'
+      : conflicts
+        ? `${conflicts} flight${conflicts === 1 ? '' : 's'} need review`
+        : pending && outbox.lastError
+          ? `${pending} waiting to sync: ${outbox.lastError}`
+          : null,
+    conflictCount: conflicts,
+  };
+
   const shell = buildShell({
     user: me.data.user,
     role: current.role,
@@ -62,6 +88,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
     activeHref: pathname,
     basePath: BASE_PATH,
     theme,
+    sync,
   });
 
   return (
@@ -78,7 +105,11 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
           setTheme(t);
           writeTheme(t);
         }}
-        onSyncNow={() => qc.invalidateQueries()}
+        onSyncNow={() => {
+          if (conflicts) return router.push('/sync/conflicts');
+          void flushOutbox(onSynced);
+          void qc.invalidateQueries();
+        }}
       >
         {children}
       </AppShell>

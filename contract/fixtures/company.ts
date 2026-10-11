@@ -9182,7 +9182,10 @@ export const company = {
         "siteId": null,
         "operationType": "commercial",
         "takeoffAt": "2026-10-08T16:00:00.000Z",
-        "durationMinutes": 28
+        "durationMinutes": 28,
+        "locationName": null,
+        "maxAltitude": null,
+        "notes": null
       },
       "hasLastFlight": true,
       "pilotOptions": [

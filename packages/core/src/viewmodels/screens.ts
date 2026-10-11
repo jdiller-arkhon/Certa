@@ -281,7 +281,10 @@ export interface PilotDetailScreenProps extends AsyncState {
     expiresOn: string | null;
     file: PickedFile | null;
   }) => void;
+  /** Opens the edit form (the screen owns the dialog). */
   onEditCredential: (credentialId: string) => void;
+  onUpdateCredential: (input: { credentialId: string; identifier: string | null; issuedOn: string | null; expiresOn: string | null }) => void;
+  onRemoveCredential: (credentialId: string) => void;
   onExportLogbook: () => void;
   onOpenFlight: (flightId: string) => void;
 }
@@ -479,6 +482,10 @@ export interface LogFlightScreenProps extends AsyncState {
     operationType: string;
     takeoffAt: string;
     durationMinutes: number | null;
+    /** Prefilled when editing an existing flight; null for a new one. Altitude is in `altitudeUnitLabel`. */
+    locationName: string | null;
+    maxAltitude: number | null;
+    notes: string | null;
   };
   hasLastFlight: boolean;
   pilotOptions: { value: string; label: string; status: StatusBadge }[];

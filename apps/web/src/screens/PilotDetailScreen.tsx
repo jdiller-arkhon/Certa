@@ -23,6 +23,14 @@ const initials = (name: string) =>
 
 export function PilotDetailScreen(props: PilotDetailScreenProps) {
   const [adding, setAdding] = useState(false);
+  const [editing, setEditing] = useState<{ id: string; identifier: string; issuedOn: string; expiresOn: string } | null>(null);
+  const editingCred = props.credentials.find((c) => c.id === editing?.id);
+  const openEdit = (id: string) => {
+    const c = props.credentials.find((x) => x.id === id);
+    if (!c) return;
+    props.onEditCredential(id);
+    setEditing({ id, identifier: c.identifier ?? '', issuedOn: c.issued?.iso.slice(0, 10) ?? '', expiresOn: c.expiryBasis.startsWith('Expiry date from') ? (c.expires?.iso.slice(0, 10) ?? '') : '' });
+  };
   const [form, setForm] = useState({ credentialType: props.credentialTypeOptions[0]?.value ?? '', identifier: '', issuedOn: '', expiresOn: '' });
   const type = props.credentialTypeOptions.find((o) => o.value === form.credentialType);
   const p = props.pilot;
@@ -70,7 +78,7 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
         >
           {props.credentials.length ? (
             props.credentials.map((c) => (
-              <RowButton key={c.id} onClick={props.canEdit ? () => props.onEditCredential(c.id) : undefined} label={`Edit ${c.typeLabel}`}>
+              <RowButton key={c.id} onClick={props.canEdit ? () => openEdit(c.id) : undefined} label={`Edit ${c.typeLabel}`}>
                 <RowTitle
                   title={c.typeLabel}
                   sub={
@@ -134,6 +142,39 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
             {type?.expires && <Field label="Expires" hint="Leave blank to compute">{(a) => <Input {...a} type="date" min={form.issuedOn || undefined} value={form.expiresOn} onChange={(e) => setForm({ ...form, expiresOn: e.target.value })} />}</Field>}
           </div>
         </form>
+      </Dialog>
+
+      <Dialog
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        title={editingCred?.typeLabel ?? 'Credential'}
+        description={editingCred?.expiryBasis}
+        footer={
+          <>
+            <Button variant="danger" onClick={() => (editing && props.onRemoveCredential(editing.id), setEditing(null))}>Remove</Button>
+            <span className="flex-1" />
+            <Button variant="secondary" onClick={() => setEditing(null)}>Cancel</Button>
+            <Button type="submit" form="credential-edit-form" arrow>Save</Button>
+          </>
+        }
+      >
+        {editing && (
+          <form
+            id="credential-edit-form"
+            className="space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              props.onUpdateCredential({ credentialId: editing.id, identifier: editing.identifier || null, issuedOn: editing.issuedOn || null, expiresOn: editing.expiresOn || null });
+              setEditing(null);
+            }}
+          >
+            <Field label="Number / identifier">{(a) => <Input {...a} className="tabular" value={editing.identifier} onChange={(e) => setEditing({ ...editing, identifier: e.target.value })} />}</Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Issued">{(a) => <Input {...a} type="date" value={editing.issuedOn} onChange={(e) => setEditing({ ...editing, issuedOn: e.target.value })} />}</Field>
+              <Field label="Expires" hint="Blank = computed">{(a) => <Input {...a} type="date" min={editing.issuedOn || undefined} value={editing.expiresOn} onChange={(e) => setEditing({ ...editing, expiresOn: e.target.value })} />}</Field>
+            </div>
+          </form>
+        )}
       </Dialog>
     </div>
   );

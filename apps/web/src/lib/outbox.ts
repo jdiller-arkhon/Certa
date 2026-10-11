@@ -28,6 +28,8 @@ let flushing = false;
 let lastError: string | null = null;
 let lastSyncedAt: string | null = null;
 let currentUser: string | null = null;
+/** Called after each flight lands, whoever triggered the flush (set by useOutboxAutoFlush). */
+let syncedListener: ((orgId: string) => void) | null = null;
 const listeners = new Set<() => void>();
 export interface OutboxState {
   items: OutboxItem[];
@@ -80,7 +82,7 @@ export async function enqueueFlight(orgId: string, userId: string, body: OutboxI
 }
 
 /** Posts pending flights oldest-first; stops at the first network failure. Returns how many synced. */
-export async function flushOutbox(onSynced?: (orgId: string) => void): Promise<number> {
+export async function flushOutbox(onSynced: ((orgId: string) => void) | null = syncedListener): Promise<number> {
   await load();
   if (flushing) return 0;
   flushing = true;
@@ -138,6 +140,7 @@ export function useOutbox() {
 /** Flushes on startup, when the browser comes back online, and every 60 s while items wait. */
 export function useOutboxAutoFlush(onSynced: (orgId: string) => void) {
   useEffect(() => {
+    syncedListener = onSynced;
     const flush = () => void flushOutbox(onSynced);
     const status = () => emit();
     flush();
@@ -152,6 +155,7 @@ export function useOutboxAutoFlush(onSynced: (orgId: string) => void) {
       window.removeEventListener('online', status);
       window.removeEventListener('offline', status);
       window.clearInterval(timer);
+      if (syncedListener === onSynced) syncedListener = null;
     };
   }, [onSynced]);
 }

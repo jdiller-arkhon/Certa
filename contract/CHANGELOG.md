@@ -3,6 +3,21 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.7.0 — 2026-10-11
+
+Phase 2 web: every Phase 2 screen is built, plus Maintenance and Insurance.
+
+- **Added** `MaintenanceScreenProps` (beta, was draft): due rows (`MaintenanceDueRowViewModel` with interval, usage, due date, status, `grounds`, `targetKey`), history (`MaintenanceHistoryRowViewModel`), `targetOptions`, `onAddSchedule`, `onLogMaintenance`, `onRemoveSchedule`. Builder `buildMaintenance(input, events)`.
+- **Added** `InsuranceScreenProps` (beta, route `/insurance`): policies with status and covered aircraft, `uncoveredAircraft`, `onAddPolicy`, `onRemovePolicy`. Builder `buildInsurance`. Nav items `maintenance` and `insurance` (`NavIcon` gains `'insurance'`).
+- **Added** `LogFlightScreenProps.preflight: GoNoGoResult | null` and `onSelectionChange` — the host recomputes the go / no-go (from records on file, offline too) as the pilot picks pilot, aircraft, and batteries. `defaults` gains `locationName`, `maxAltitude`, `notes` (prefilled when editing). Aircraft options gain `model`; battery options gain `aircraftModel` so the form can show only batteries that fit.
+- **Added** `FlightDetailScreenProps.preflight` — the check stored with the flight.
+- **Added** `BatteryListScreenProps`: `aircraftModelOptions`, `saving`, `fieldErrors`, `onCreateBattery`, `onRetireBattery` (the screen owns the add-battery dialog).
+- **Added** `PilotDetailScreenProps.onUpdateCredential` and `onRemoveCredential` (the screen owns the edit dialog).
+- **Changed** `buildReadinessDashboard`: with no aircraft and no credentials on file, Today shows first-run onboarding instead of flagging the owner's auto-created pilot record.
+- **Changed** fixtures: sample insurance policies and maintenance schedules/history, so readiness now includes insurance expiry and maintenance.
+
+Screens affected: **Log flight, Flight detail, Battery list, Pilot detail, Today**, new **Maintenance** and **Insurance**.
+
 ## 0.6.0 — 2026-10-11
 
 Phase 2 API and shared screen builders.

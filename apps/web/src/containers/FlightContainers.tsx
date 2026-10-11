@@ -1,0 +1,293 @@
+'use client';
+
+import {
+  buildFlightDetail,
+  buildFlightList,
+  buildLogFlight,
+  displayInstant,
+  fleetNames,
+  goNoGo,
+  metresTo,
+  toMetres,
+  type Flight,
+  type GoNoGoResult,
+  type SyncConflictViewModel,
+} from '@certa/core';
+import { CertaApiError, unwrap } from '@certa/sdk';
+import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { CloudUpload } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/feedback';
+import { ensureOk, fleetKeys, useFlight, useFleetMutation, useFlights, type FlightFilter } from '@/data/fleet';
+import { api } from '@/lib/api';
+import { uuidv7 } from '@/lib/idb';
+import { discardOutboxItem, enqueueFlight, retryRejected, useOutbox, type OutboxItem } from '@/lib/outbox';
+import { FlightDetailScreen, FlightListScreen, LogFlightScreen, SyncConflictsScreen } from '@/screens';
+import { FleetPending, useFleetContext } from './_fleet';
+
+/** An unsynced outbox entry, shaped like a server flight so lists and details can show it. */
+export function outboxFlight(i: OutboxItem): Flight & { pendingSync: true } {
+  const b = i.body;
+  return {
+    id: b.id,
+    orgId: i.orgId,
+    createdAt: i.createdAt,
+    updatedAt: i.createdAt,
+    createdBy: i.userId,
+    deletedAt: null,
+    pilotInCommandId: b.pilotInCommandId,
+    visualObserverIds: b.visualObserverIds ?? [],
+    aircraftId: b.aircraftId,
+    batteries: b.batteries ?? [],
+    takeoffAt: b.takeoffAt,
+    landingAt: b.landingAt,
+    localTimeZone: b.localTimeZone,
+    takeoffPoint: b.takeoffPoint ?? null,
+    landingPoint: null,
+    locationName: b.locationName ?? null,
+    durationSeconds: Math.max(0, Math.round((Date.parse(b.landingAt) - Date.parse(b.takeoffAt)) / 1000)),
+    maxAltitudeAglM: b.maxAltitudeAglM ?? null,
+    maxDistanceM: b.maxDistanceM ?? null,
+    totalDistanceM: null,
+    hasPath: false,
+    weather: b.weather ?? null,
+    airspaceClass: b.airspaceClass ?? null,
+    authorizationId: null,
+    missionId: null,
+    siteId: null,
+    operationType: b.operationType ?? 'commercial',
+    notes: b.notes ?? null,
+    source: 'manual',
+    importParser: null,
+    rawLogDocumentId: null,
+    pendingSync: true,
+  };
+}
+
+const NO_FILTER: FlightFilter = { pilotId: null, aircraftId: null, from: null, to: null };
+
+export function FlightListContainer() {
+  const f = useFleetContext();
+  const router = useRouter();
+  const outbox = useOutbox();
+  const [filter, setFilter] = useState<FlightFilter>(NO_FILTER);
+  const q = useFlights(f.orgId, filter);
+  if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
+  const pages = q.data?.pages ?? [];
+  const server = pages.flatMap((p) => p.items) as Flight[];
+  const serverIds = new Set(server.map((x) => x.id));
+  const pending = outbox.items
+    .filter((i) => i.orgId === f.orgId && i.status === 'pending' && !serverIds.has(i.id))
+    .map(outboxFlight)
+    .filter((x) => (!filter.pilotId || x.pilotInCommandId === filter.pilotId) && (!filter.aircraftId || x.aircraftId === filter.aircraftId));
+  const totals = pages[0]?.totals ?? { flights: 0, flightSeconds: 0 };
+  const data = buildFlightList(
+    f.bi,
+    { items: [...pending, ...server], total: (pages[0]?.total ?? 0) + pending.length, nextCursor: pages.at(-1)?.nextCursor ?? null },
+    filter,
+    { flights: totals.flights + pending.length, flightSeconds: totals.flightSeconds + pending.reduce((s, x) => s + x.durationSeconds, 0) },
+  );
+  return (
+    <FlightListScreen
+      {...data}
+      loading={q.isLoading || q.isFetchingNextPage}
+      error={q.error ? 'We couldn’t load flights.' : f.loadError}
+      onFilterChange={setFilter}
+      onLoadMore={() => q.fetchNextPage()}
+      onLogFlight={() => router.push('/flights/new')}
+      onImport={() => router.push('/flights/import')}
+      onOpenFlight={(id) => router.push(`/flights/${id}`)}
+    />
+  );
+}
+
+export function FlightDetailContainer({ flightId }: { flightId: string }) {
+  const f = useFleetContext();
+  const router = useRouter();
+  const outbox = useOutbox();
+  const q = useFlight(f.orgId, flightId);
+  const local = outbox.items.find((i) => i.id === flightId);
+  const remove = useFleetMutation(f.orgId, async () => ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/flights/{flightId}', { params: { path: { orgId: f.orgId, flightId } } })), {
+    flights: true,
+    onSuccess: () => router.replace('/flights'),
+  });
+  if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
+  const flight: Flight | null = (q.data as Flight | undefined) ?? (local ? outboxFlight(local) : null);
+  const preflight = (q.data?.goNoGo ?? local?.body.goNoGo ?? null) as GoNoGoResult | null;
+  const data = buildFlightDetail(f.bi, flight, { preflight });
+  const notFound = q.error instanceof CertaApiError && q.error.status === 404;
+  return (
+    <FlightDetailScreen
+      {...data}
+      // Unsynced flights can't be edited or deleted on the server yet.
+      canEdit={data.canEdit && !!q.data}
+      loading={(q.isLoading && !local) || remove.isPending}
+      error={remove.error ?? (q.error && !local && !notFound ? 'We couldn’t load this flight.' : null)}
+      onEdit={() => router.push(`/flights/${flightId}/edit`)}
+      onDelete={() => remove.mutate(undefined)}
+    />
+  );
+}
+
+function SavedOnDevice({ onAnother, onView }: { onAnother: () => void; onView: () => void }) {
+  return (
+    <div className="mx-auto max-w-xl">
+      <EmptyState
+        empty={{ title: 'Flight saved on this device', body: 'You’re offline. It syncs automatically when you’re back in coverage — nothing else to do.', actionLabel: 'Log another flight' }}
+        icon={<CloudUpload className="size-7" aria-hidden />}
+        onAction={onAnother}
+        secondary={<Button variant="secondary" onClick={onView}>View flights</Button>}
+      />
+    </div>
+  );
+}
+
+const deviceZone = () => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+  } catch {
+    return 'UTC';
+  }
+};
+
+export function LogFlightContainer({ flightId }: { flightId?: string }) {
+  const f = useFleetContext();
+  const router = useRouter();
+  const qc = useQueryClient();
+  const existing = useFlight(f.orgId, flightId ?? '');
+  const [selection, setSelection] = useState<{ pilotId: string; aircraftId: string | null; batteryIds: string[] } | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [savedOffline, setSavedOffline] = useState<string | null>(null);
+  const [formKey, setFormKey] = useState(0);
+  const update = useFleetMutation(f.orgId, async (body: Record<string, unknown>) => unwrap(await api.PATCH('/api/v1/orgs/{orgId}/flights/{flightId}', { params: { path: { orgId: f.orgId, flightId: flightId! } }, body: body as never })), {
+    flights: true,
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: fleetKeys.flight(f.orgId, flightId!) });
+      router.replace(`/flights/${flightId}`);
+    },
+  });
+
+  const preflight = useMemo(() => {
+    if (!f.bi || !selection?.pilotId || !selection.aircraftId) return null;
+    return goNoGo(f.bi.snapshot, { pilotId: selection.pilotId, aircraftId: selection.aircraftId, batteryIds: selection.batteryIds }, f.mapCtx);
+  }, [f.bi, f.mapCtx, selection]);
+
+  if (!f.bi || (flightId && existing.isLoading)) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
+  if (savedOffline)
+    return (
+      <SavedOnDevice
+        onAnother={() => {
+          setSavedOffline(null);
+          setFormKey((k) => k + 1);
+        }}
+        onView={() => router.push('/flights')}
+      />
+    );
+  const base = buildLogFlight(f.bi, { currentPilotId: f.myPilotId, now: new Date() });
+  const ex = flightId ? (existing.data as Flight | undefined) : undefined;
+  const defaults = ex
+    ? {
+        pilotId: ex.pilotInCommandId,
+        aircraftId: ex.aircraftId,
+        batteryIds: ex.batteries.map((b) => b.batteryId),
+        siteId: null,
+        operationType: ex.operationType,
+        takeoffAt: ex.takeoffAt,
+        durationMinutes: Math.round(ex.durationSeconds / 60),
+        locationName: ex.locationName,
+        maxAltitude: ex.maxAltitudeAglM == null ? null : Math.round(metresTo(ex.maxAltitudeAglM, f.mapCtx.units.length)),
+        notes: ex.notes,
+      }
+    : base.defaults;
+  const lengthUnit = f.mapCtx.units.length;
+
+  return (
+    <LogFlightScreen
+      key={formKey}
+      {...base}
+      defaults={defaults}
+      hasLastFlight={!ex && base.hasLastFlight}
+      preflight={preflight}
+      loading={false}
+      error={error ?? update.error ?? (flightId && !ex ? 'Flight not found, or it hasn’t synced yet.' : null)}
+      fieldErrors={update.fieldErrors}
+      saving={saving || update.isPending}
+      onSelectionChange={setSelection}
+      onSameAsLast={() => {}}
+      onSubmit={async (v) => {
+        const body = {
+          pilotInCommandId: v.pilotId,
+          aircraftId: v.aircraftId,
+          // Keep recorded charge levels for batteries that stay on the flight.
+          batteries: v.batteryIds.map((batteryId) => ex?.batteries.find((b) => b.batteryId === batteryId) ?? { batteryId, startPct: null, endPct: null }),
+          takeoffAt: v.takeoffAt,
+          landingAt: v.landingAt,
+          localTimeZone: ex?.localTimeZone ?? deviceZone(),
+          locationName: v.locationName,
+          maxAltitudeAglM: v.maxAltitude == null ? null : Math.round(toMetres(v.maxAltitude, lengthUnit) * 10) / 10,
+          operationType: v.operationType as Flight['operationType'],
+          notes: v.notes,
+        };
+        if (ex) return update.mutate(body);
+        setSaving(true);
+        setError(null);
+        try {
+          const id = uuidv7();
+          // Outbox first: the flight is safe on the device even if the request never lands.
+          await enqueueFlight(f.orgId, f.me.user.id, { ...body, id, visualObserverIds: [], goNoGo: preflight });
+          // Offline, a route change needs the server; confirm in place so the pilot can keep logging.
+          if (navigator.onLine) router.replace(`/flights/${id}`);
+          else setSavedOffline(id);
+        } catch {
+          setError('Could not save the flight on this device.');
+        } finally {
+          setSaving(false);
+        }
+      }}
+      onCancel={() => router.back()}
+      altitudeUnitLabel={lengthUnit}
+    />
+  );
+}
+
+export function SyncConflictsContainer() {
+  const f = useFleetContext();
+  const outbox = useOutbox();
+  const qc = useQueryClient();
+  const n = f.bi ? fleetNames(f.bi.snapshot) : null;
+  const conflicts: SyncConflictViewModel[] = outbox.items
+    .filter((i) => i.status === 'rejected')
+    .map((i) => {
+      const at = displayInstant(i.createdAt, f.mapCtx.orgTimeZone, f.mapCtx.now);
+      const takeoff = displayInstant(i.body.takeoffAt, i.body.localTimeZone, f.mapCtx.now);
+      const minutes = Math.round((Date.parse(i.body.landingAt) - Date.parse(i.body.takeoffAt)) / 60000);
+      return {
+        id: i.id,
+        entityLabel: `Flight · ${takeoff.absolute}`,
+        field: 'record',
+        fieldLabel: 'New flight',
+        localValue: [n?.pilot(i.body.pilotInCommandId), n?.aircraft(i.body.aircraftId), `${minutes} min`, i.body.locationName].filter(Boolean).join(' · '),
+        serverValue: i.error ?? 'Rejected',
+        localChangedBy: f.me.user.name,
+        serverChangedBy: 'Certa server',
+        localAt: at,
+        serverAt: at,
+      };
+    });
+  return (
+    <SyncConflictsScreen
+      loading={false}
+      error={null}
+      conflicts={conflicts}
+      empty={{ title: 'Everything is synced', body: 'Flights logged offline appear here only if the server can’t accept them.', actionLabel: null }}
+      onResolve={async ({ conflictId, choose }) => {
+        if (choose === 'server') await discardOutboxItem(conflictId);
+        else await retryRejected(conflictId);
+        void qc.invalidateQueries({ queryKey: fleetKeys.flights(f.orgId) });
+      }}
+    />
+  );
+}

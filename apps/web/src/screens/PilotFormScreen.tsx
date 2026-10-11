@@ -10,7 +10,10 @@ import { PageHeader } from '@/components/ui/text';
 
 export function PilotFormScreen(props: PilotFormScreenProps) {
   const [v, setV] = useState(props.values);
-  useEffect(() => setV(props.values), [props.values]);
+  // Reset only when the record itself changes, not on every parent render.
+  const valuesKey = JSON.stringify(props.values);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setV(props.values), [valuesKey]);
   const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement>) => setV({ ...v, [k]: e.target.value });
   return (
     <div className="mx-auto max-w-2xl">

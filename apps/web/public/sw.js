@@ -1,12 +1,13 @@
 /*
  * Certa service worker: makes the installed app open and navigate with no signal.
- * Phase 1 caches the app shell only. Phase 2 adds the IndexedDB data store and the sync
- * outbox (docs/ARCHITECTURE_PLAN.md §8) so flights can be logged offline for days.
+ * It caches the app shell, build assets, and visited pages (HTML and their RSC payloads, so
+ * in-app navigation between visited screens works offline). Records live in IndexedDB and new
+ * flights in the outbox (src/lib/outbox.ts); see docs/ARCHITECTURE_PLAN.md §8.
  *
  * Scope is the registration scope (e.g. /certa/), so nothing outside Certa is ever touched.
  * API responses are never cached here: authenticated data lives in IndexedDB, not the HTTP cache.
  */
-const VERSION = 'certa-shell-v1';
+const VERSION = 'certa-shell-v2';
 const SCOPE = new URL(self.registration.scope).pathname; // '/certa/' or '/'
 const API = `${SCOPE}api/`;
 const STATIC = `${SCOPE}_next/static/`;
@@ -41,6 +42,23 @@ self.addEventListener('fetch', (event) => {
             return res;
           }),
       ),
+    );
+    return;
+  }
+
+  // In-app navigation payloads (React Server Components): network first, cached per route.
+  // The `_rsc` query is a cache-buster that changes per build, so the key drops it.
+  if (req.headers.get('RSC') === '1') {
+    const key = new URL(url);
+    key.searchParams.delete('_rsc');
+    key.searchParams.set('__certa_rsc', '1');
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.ok) caches.open(VERSION).then((c) => c.put(key.href, res.clone()));
+          return res;
+        })
+        .catch(() => caches.match(key.href).then((hit) => hit || Response.error())),
     );
     return;
   }

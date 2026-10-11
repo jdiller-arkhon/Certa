@@ -44,12 +44,12 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
   const [pilotId, setPilotId] = useState(d.pilotId);
   const [aircraftId, setAircraftId] = useState(d.aircraftId ?? '');
   const [batteryIds, setBatteryIds] = useState<string[]>(d.batteryIds);
-  const [location, setLocation] = useState(props.siteOptions.find((s) => s.recent)?.value ?? '');
+  const [location, setLocation] = useState(d.locationName ?? props.siteOptions.find((s) => s.recent)?.value ?? '');
   const [operationType, setOperationType] = useState(d.operationType);
   const [takeoff, setTakeoff] = useState(() => toLocalInput(d.takeoffAt));
   const [minutes, setMinutes] = useState(d.durationMinutes ? String(d.durationMinutes) : '');
-  const [altitude, setAltitude] = useState('');
-  const [notes, setNotes] = useState('');
+  const [altitude, setAltitude] = useState(d.maxAltitude != null ? String(d.maxAltitude) : '');
+  const [notes, setNotes] = useState(d.notes ?? '');
 
   // Report selection changes so the host can recompute the go / no-go.
   const onSel = useRef(props.onSelectionChange);

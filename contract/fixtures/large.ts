@@ -15058,7 +15058,10 @@ export const large = {
         "siteId": null,
         "operationType": "commercial",
         "takeoffAt": "2026-10-08T16:00:00.000Z",
-        "durationMinutes": 19
+        "durationMinutes": 19,
+        "locationName": null,
+        "maxAltitude": null,
+        "notes": null
       },
       "hasLastFlight": true,
       "pilotOptions": [

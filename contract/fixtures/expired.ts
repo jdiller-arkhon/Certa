@@ -2534,7 +2534,10 @@ export const expired = {
         "siteId": null,
         "operationType": "training",
         "takeoffAt": "2026-10-08T16:00:00.000Z",
-        "durationMinutes": 23
+        "durationMinutes": 23,
+        "locationName": null,
+        "maxAltitude": null,
+        "notes": null
       },
       "hasLastFlight": true,
       "pilotOptions": [

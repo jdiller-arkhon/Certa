@@ -68,6 +68,7 @@ export function useRecentFlights(orgId: string, filter: Partial<FlightFilter>) {
 export function useFlight(orgId: string, flightId: string) {
   return useQuery({
     queryKey: fleetKeys.flight(orgId, flightId),
+    enabled: !!flightId,
     queryFn: () =>
       networkFirst(`flight:${orgId}:${flightId}`, async () =>
         unwrap(await api.GET('/api/v1/orgs/{orgId}/flights/{flightId}', { params: { path: { orgId, flightId } } })),

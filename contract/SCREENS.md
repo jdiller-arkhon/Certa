@@ -1,6 +1,6 @@
 # Certa Screen Inventory
 
-**Contract version 0.6.0** (see `CHANGELOG.md`). Types: `contract/types.ts`. Fixtures: `contract/fixtures/`.
+**Contract version 0.7.0** (see `CHANGELOG.md`). Types: `contract/types.ts`. Fixtures: `contract/fixtures/`.
 
 Each screen is one presentational component that takes `XxxScreenProps` from `types.ts`. It
 renders inside `<AppShell>` and never fetches data, holds server state, or computes anything
@@ -92,11 +92,13 @@ Audit log notes: show `actorLabel`. **"Direct database change"** (no actor) is a
 | Aircraft | `/aircraft` | `AircraftListScreenProps` | `onSearch`, `onStatusFilter`, `onAddAircraft`, `onOpenAircraft` | `onAddAircraft` | `screens.aircraftList` |
 | Aircraft detail | `/aircraft/[aircraftId]` | `AircraftDetailScreenProps` | `onEdit`, `onGround`, `onUnground`, `onExportLogbook`, `onOpenFlight` | — | `screens.aircraftDetail` |
 | Aircraft form | `/aircraft/new`, `/aircraft/[aircraftId]/edit` | `AircraftFormScreenProps` | `onSubmit`, `onCancel` | `onSubmit` | — |
-| Batteries | `/batteries` | `BatteryListScreenProps` | `onAddBattery`, `onOpenBattery` | `onAddBattery` | `screens.batteryList` |
+| Batteries | `/batteries` | `BatteryListScreenProps` | `onAddBattery`, `onCreateBattery`, `onRetireBattery`, `onOpenBattery` | `onAddBattery` | `screens.batteryList` |
 | Flights | `/flights` | `FlightListScreenProps` | `onFilterChange`, `onLoadMore`, `onLogFlight`, `onImport`, `onOpenFlight` | `onLogFlight` | `screens.flightList` |
 | Flight detail | `/flights/[flightId]` | `FlightDetailScreenProps` | `onEdit`, `onDelete` | — | `screens.flightDetail` |
-| **Quick log flight** | `/flights/new` | `LogFlightScreenProps` | `onSameAsLast`, `onSubmit`, `onCancel` | `onSubmit` | `screens.logFlight` |
+| **Quick log flight** | `/flights/new`, `/flights/[flightId]/edit` | `LogFlightScreenProps` | `onSelectionChange`, `onSameAsLast`, `onSubmit`, `onCancel` | `onSubmit` | `screens.logFlight` |
 | Sync conflicts | `/sync/conflicts` | `SyncConflictsScreenProps` | `onResolve` | — | `screens.syncConflicts` |
+| Maintenance | `/maintenance` | `MaintenanceScreenProps` | `onAddSchedule`, `onLogMaintenance`, `onRemoveSchedule`, `onOpenTarget` | `onAddSchedule` | `screens.maintenance` |
+| Insurance | `/insurance` | `InsuranceScreenProps` | `onAddPolicy`, `onRemovePolicy`, `onOpenAircraft` | `onAddPolicy` | `screens.insurance` |
 
 Today notes: answer **"Is every pilot and aircraft legal to fly today?"** at a glance using `overall`, `counts`, and two lists (pilots, aircraft) with `reasons`. `upcoming` is the soonest-first list of everything due within 90 days.
 
@@ -105,6 +107,7 @@ Quick log flight notes (phone, installed app, under 30 seconds):
 - Large touch targets: 48px minimum, 56px for primary field actions.
 - Pickers show `recent` items first and each option's `status` badge.
 - `warnings` (for example "Recurrent training expired") are **informational and never block submission**. The pilot remains responsible.
+- `preflight` is the go / no-go for the current selection. Report changes through `onSelectionChange`; the host recomputes it (offline too) and stores it with the flight. It never blocks submission either.
 - `onSubmit` sends ISO instants (`takeoffAt`, `landingAt`) and `maxAltitude` in the **display unit** shown by `altitudeUnitLabel`. The host converts to SI.
 - Works fully offline in the installed app. The host stores the flight in IndexedDB, and it appears in lists with `pendingSync: true` until synced.
 
@@ -115,7 +118,6 @@ Flight detail: `path` is GeoJSON (`LineString`, coordinates `[lon, lat, altMslM]
 | Screen | Phase | Route | Props |
 |---|---|---|---|
 | Import logs | 3 | `/flights/import` | `ImportScreenProps` |
-| Maintenance | 4 | `/maintenance` | `MaintenanceScreenProps` |
 | Checklists | 4 | `/checklists` | `ChecklistsScreenProps` |
 | Incidents | 4 | `/incidents` | `IncidentsScreenProps` |
 | Records & exports | 5 | `/records` | `RecordsScreenProps` |

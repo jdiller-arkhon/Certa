@@ -81,8 +81,11 @@ export function buildReadinessDashboard(i: BuildInput): ScreenData<ReadinessDash
   const r = readinessOf(i);
   const { snapshot: s, ctx } = i;
   const n = fleetNames(s);
-  const pilots = s.pilots.filter((p) => r.pilots.has(p.id));
   const aircraft = s.aircraft.filter((a) => r.aircraft.has(a.id));
+  // Until anything is tracked (no aircraft, no credentials), show first-run onboarding rather
+  // than flagging the owner's auto-created pilot record as not current.
+  const nothingTracked = aircraft.length === 0 && !s.credentials.some((c) => !c.deletedAt);
+  const pilots = nothingTracked ? [] : s.pilots.filter((p) => r.pilots.has(p.id));
   const upcoming = [
     ...pilots.flatMap((p) => r.pilots.get(p.id)!.items.map((it) => ({ it, subject: n.pilot(p.id), href: `/pilots/${p.id}` }))),
     ...aircraft.flatMap((a) => r.aircraft.get(a.id)!.items.map((it) => ({ it, subject: n.aircraft(a.id), href: `/aircraft/${a.id}` }))),
@@ -93,8 +96,8 @@ export function buildReadinessDashboard(i: BuildInput): ScreenData<ReadinessDash
   return {
     ...OK,
     asOf: displayDate(ctx.today, ctx.today),
-    overall: { level: r.overall, label: OVERALL_LABEL[r.overall] },
-    counts: r.counts,
+    overall: nothingTracked ? { level: 'green', label: 'Nothing tracked yet' } : { level: r.overall, label: OVERALL_LABEL[r.overall] },
+    counts: nothingTracked ? { green: 0, amber: 0, red: 0 } : r.counts,
     pilots: pilots.map((p) => toPilotReadinessRow(p, r.pilots.get(p.id)!, ctx)),
     aircraft: aircraft.map((a) => toAircraftReadinessRow(a, r.aircraft.get(a.id)!, ctx)),
     upcoming,
@@ -319,6 +322,9 @@ export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | n
       operationType: last?.operationType ?? 'commercial',
       takeoffAt: takeoff.toISOString(),
       durationMinutes: last ? Math.round(last.durationSeconds / 60) : null,
+      locationName: null,
+      maxAltitude: null,
+      notes: null,
     },
     hasLastFlight: !!last,
     pilotOptions: activePilots.map((p) => ({ value: p.id, label: p.displayName, status: badgeFromSummary(r.pilots.get(p.id)!) })),

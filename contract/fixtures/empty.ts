@@ -340,7 +340,7 @@ export const empty = {
       },
       "overall": {
         "level": "green",
-        "label": "Everyone is legal to fly"
+        "label": "Nothing tracked yet"
       },
       "counts": {
         "green": 0,
@@ -494,7 +494,10 @@ export const empty = {
         "siteId": null,
         "operationType": "commercial",
         "takeoffAt": "2026-10-08T16:00:00.000Z",
-        "durationMinutes": null
+        "durationMinutes": null,
+        "locationName": null,
+        "maxAltitude": null,
+        "notes": null
       },
       "hasLastFlight": false,
       "pilotOptions": [],

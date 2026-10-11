@@ -1870,7 +1870,10 @@ export const longNames = {
         "siteId": null,
         "operationType": "commercial",
         "takeoffAt": "2026-10-08T16:00:00.000Z",
-        "durationMinutes": 13
+        "durationMinutes": 13,
+        "locationName": null,
+        "maxAltitude": null,
+        "notes": null
       },
       "hasLastFlight": true,
       "pilotOptions": [

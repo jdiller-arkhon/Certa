@@ -12,7 +12,10 @@ type Values = AircraftFormScreenProps['values'];
 
 export function AircraftFormScreen(props: AircraftFormScreenProps) {
   const [v, setV] = useState(props.values);
-  useEffect(() => setV(props.values), [props.values]);
+  // Reset only when the record itself changes, not on every parent render.
+  const valuesKey = JSON.stringify(props.values);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setV(props.values), [valuesKey]);
   const set = (k: keyof Values) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setV({ ...v, [k]: e.target.value });
   const err = (k: keyof Values) => props.fieldErrors[k];
   const noRid = v.remoteIdMethod === 'none' || v.remoteIdMethod === 'fria';
