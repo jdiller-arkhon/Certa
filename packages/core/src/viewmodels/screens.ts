@@ -518,8 +518,21 @@ export interface LogFlightScreenProps extends AsyncState {
    * (it recomputes when `onSelectionChange` fires). Advisory: never blocks logging. Stored with the flight.
    */
   preflight: GoNoGoResult | null;
+  /**
+   * Airspace / weather / daylight advisories at the pilot's location, on request. Advisory only.
+   * When ready, the host stores the point, weather, and airspace class with the flight.
+   */
+  conditions: {
+    status: 'idle' | 'locating' | 'loading' | 'ready' | 'error';
+    advisories: { level: ReadinessLevel; title: string; detail: string; source: string }[];
+    /** e.g. "Clear, 14°C, wind 8 mph from 150°". */
+    weatherSummary: string | null;
+    checkedAt: DateDisplay | null;
+    error: string | null;
+  };
   fieldErrors: Record<string, string>;
   saving: boolean;
+  onCheckConditions: () => void;
   onSelectionChange: (selection: { pilotId: string; aircraftId: string | null; batteryIds: string[] }) => void;
   onSameAsLast: () => void;
   onSubmit: (input: {

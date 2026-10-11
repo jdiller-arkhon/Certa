@@ -10455,6 +10455,196 @@ paths:
                   - ruleSet
                   - notice
                 additionalProperties: false
+  /api/v1/orgs/{orgId}/conditions:
+    get:
+      summary: Airspace, weather, and daylight advisories at a point (US; advisory only)
+      tags:
+        - flights
+      parameters:
+        - schema:
+            type: number
+            minimum: -90
+            maximum: 90
+          in: query
+          name: lat
+          required: true
+        - schema:
+            type: number
+            minimum: -180
+            maximum: 180
+          in: query
+          name: lon
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  point:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                      lon:
+                        type: number
+                    required:
+                      - lat
+                      - lon
+                    additionalProperties: false
+                  checkedAt:
+                    type: string
+                  airspace:
+                    anyOf:
+                      - anyOf:
+                          - type: object
+                            properties:
+                              class:
+                                type: string
+                                enum:
+                                  - A
+                                  - B
+                                  - C
+                                  - D
+                                  - E
+                                  - G
+                                  - unknown
+                              ceilingFt:
+                                type:
+                                  - number
+                                  - "null"
+                              airport:
+                                type:
+                                  - string
+                                  - "null"
+                              laanc:
+                                type: boolean
+                            required:
+                              - class
+                              - ceilingFt
+                              - airport
+                              - laanc
+                            additionalProperties: false
+                          - type: string
+                            enum:
+                              - unavailable
+                      - type: "null"
+                  weather:
+                    anyOf:
+                      - type: object
+                        properties:
+                          provider:
+                            type: string
+                          fetchedAt:
+                            type: string
+                            format: date-time
+                            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                          temperatureC:
+                            type:
+                              - number
+                              - "null"
+                          windSpeedMps:
+                            type:
+                              - number
+                              - "null"
+                          windGustMps:
+                            type:
+                              - number
+                              - "null"
+                          windDirectionDeg:
+                            type:
+                              - number
+                              - "null"
+                          visibilityM:
+                            type:
+                              - number
+                              - "null"
+                          cloudBaseM:
+                            type:
+                              - number
+                              - "null"
+                          precipitationMm:
+                            type:
+                              - number
+                              - "null"
+                          summary:
+                            type:
+                              - string
+                              - "null"
+                        required:
+                          - provider
+                          - fetchedAt
+                          - temperatureC
+                          - windSpeedMps
+                          - windGustMps
+                          - windDirectionDeg
+                          - visibilityM
+                          - cloudBaseM
+                          - precipitationMm
+                          - summary
+                        additionalProperties: false
+                      - type: "null"
+                  daylight:
+                    type: object
+                    properties:
+                      civilDawn:
+                        type:
+                          - string
+                          - "null"
+                      civilDusk:
+                        type:
+                          - string
+                          - "null"
+                      isDaylight:
+                        type: boolean
+                    required:
+                      - civilDawn
+                      - civilDusk
+                      - isDaylight
+                    additionalProperties: false
+                  advisories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                        level:
+                          type: string
+                          enum:
+                            - green
+                            - amber
+                            - red
+                        title:
+                          type: string
+                        detail:
+                          type: string
+                        source:
+                          type: string
+                      required:
+                        - key
+                        - level
+                        - title
+                        - detail
+                        - source
+                      additionalProperties: false
+                required:
+                  - point
+                  - checkedAt
+                  - airspace
+                  - weather
+                  - daylight
+                  - advisories
+                additionalProperties: false
 security:
   - session: []
   - bearer: []

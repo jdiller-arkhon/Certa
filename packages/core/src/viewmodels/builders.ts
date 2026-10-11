@@ -339,6 +339,7 @@ export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | n
     warnings: ps ? ps.reasons.map((x) => reasonFromItem(x, ctx.today, `/pilots/${pilotId}`)) : [],
     altitudeUnitLabel: ctx.units.length,
     preflight: null,
+    conditions: { status: 'idle', advisories: [], weatherSummary: null, checkedAt: null, error: null },
     fieldErrors: {},
     saving: false,
   };

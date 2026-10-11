@@ -257,9 +257,27 @@ export const SCREENS: PreviewScreen[] = [
     group: 'App',
     route: '/flights',
     shell: true,
-    render: ({ scenario, state }) => {
-      const d = withState(scenarios[scenario]!.screens.logFlight, state, (x) => x);
-      return <LogFlightScreen {...d} onSelectionChange={noop} onSameAsLast={noop} onSubmit={noop} onCancel={noop} />;
+    variants: ['default', 'conditions'],
+    render: ({ scenario, state, variant }) => {
+      const base = withState(scenarios[scenario]!.screens.logFlight, state, (x) => x);
+      const d =
+        variant === 'conditions'
+          ? {
+              ...base,
+              conditions: {
+                status: 'ready' as const,
+                weatherSummary: 'Clear, 57°F, wind 8 mph from 150°',
+                checkedAt: { iso: '2026-10-08T16:00:00Z', absolute: 'Oct 8, 2026, 10:00 AM MDT', relative: 'just now', display: 'just now', daysFromToday: 0 },
+                error: null,
+                advisories: [
+                  { level: 'amber' as const, title: 'Class D near Centennial', detail: 'Authorization required (14 CFR 107.41). LAANC available up to 200 ft AGL.', source: 'FAA UAS Facility Map' },
+                  { level: 'green' as const, title: 'Weather within typical limits', detail: 'Clear', source: 'National Weather Service' },
+                  { level: 'amber' as const, title: 'Check TFRs and NOTAMs', detail: 'Temporary flight restrictions are not checked by Certa. Use B4UFLY or an FAA-approved LAANC provider.', source: 'Reminder' },
+                ],
+              },
+            }
+          : base;
+      return <LogFlightScreen {...d} onCheckConditions={noop} onSelectionChange={noop} onSameAsLast={noop} onSubmit={noop} onCancel={noop} />;
     },
   },
   {

@@ -557,6 +557,13 @@ export const empty = {
       "warnings": [],
       "altitudeUnitLabel": "ft",
       "preflight": null,
+      "conditions": {
+        "status": "idle",
+        "advisories": [],
+        "weatherSummary": null,
+        "checkedAt": null,
+        "error": null
+      },
       "fieldErrors": {},
       "saving": false
     },

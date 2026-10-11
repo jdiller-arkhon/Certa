@@ -24,6 +24,7 @@ import { fleetRoutes } from './routes/fleet.js';
 import { flightRoutes } from './routes/flights.js';
 import { shareRoutes } from './routes/share.js';
 import { integrationRoutes } from './routes/integrations.js';
+import { conditionsRoutes } from './routes/conditions.js';
 import { healthRoutes } from './routes/health.js';
 import { memberRoutes } from './routes/members.js';
 import { orgRoutes } from './routes/orgs.js';
@@ -39,6 +40,8 @@ export interface AppDeps {
   config: Config;
   pool: pg.Pool;
   mailer: Mailer;
+  /** Outbound HTTP for public data (weather, airspace); tests inject a fake. */
+  fetch?: typeof fetch;
 }
 
 export interface AppContext extends AppDeps {
@@ -150,6 +153,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(flightRoutes(ctx), { prefix: v1 });
   await app.register(shareRoutes(ctx), { prefix: v1 });
   await app.register(integrationRoutes(ctx), { prefix: v1 });
+  await app.register(conditionsRoutes(ctx), { prefix: v1 });
 
   return app;
 }

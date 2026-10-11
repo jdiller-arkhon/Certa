@@ -15403,6 +15403,13 @@ export const large = {
           }
         ]
       },
+      "conditions": {
+        "status": "idle",
+        "advisories": [],
+        "weatherSummary": null,
+        "checkedAt": null,
+        "error": null
+      },
       "fieldErrors": {},
       "saving": false
     },

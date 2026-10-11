@@ -4411,6 +4411,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orgs/{orgId}/conditions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Airspace, weather, and daylight advisories at a point (US; advisory only) */
+        get: {
+            parameters: {
+                query: {
+                    lat: number;
+                    lon: number;
+                };
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            point: {
+                                lat: number;
+                                lon: number;
+                            };
+                            checkedAt: string;
+                            airspace: ({
+                                /** @enum {string} */
+                                class: "A" | "B" | "C" | "D" | "E" | "G" | "unknown";
+                                ceilingFt: number | null;
+                                airport: string | null;
+                                laanc: boolean;
+                            } | "unavailable") | null;
+                            weather: {
+                                provider: string;
+                                /** Format: date-time */
+                                fetchedAt: string;
+                                temperatureC: number | null;
+                                windSpeedMps: number | null;
+                                windGustMps: number | null;
+                                windDirectionDeg: number | null;
+                                visibilityM: number | null;
+                                cloudBaseM: number | null;
+                                precipitationMm: number | null;
+                                summary: string | null;
+                            } | null;
+                            daylight: {
+                                civilDawn: string | null;
+                                civilDusk: string | null;
+                                isDaylight: boolean;
+                            };
+                            advisories: {
+                                key: string;
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                title: string;
+                                detail: string;
+                                source: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

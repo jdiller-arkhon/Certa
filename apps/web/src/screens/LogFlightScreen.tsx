@@ -1,7 +1,7 @@
 'use client';
 
 import type { LogFlightScreenProps } from '@certa/contract';
-import { History, MapPin } from 'lucide-react';
+import { CloudSun, History, LocateFixed, MapPin } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/components/cn';
 import { GoNoGoPanel } from '@/components/go-no-go';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Banner, Banners } from '@/components/ui/feedback';
 import { Field, Input, Select } from '@/components/ui/field';
-import { LevelDot } from '@/components/ui/status';
+import { LEVEL_COLOR, LevelDot, LevelIcon } from '@/components/ui/status';
 import { Label, PageHeader } from '@/components/ui/text';
 import { TextArea, num } from './_parts';
 
@@ -36,6 +36,39 @@ function Chip({ active, onClick, children, label }: { active: boolean; onClick: 
     >
       {children}
     </button>
+  );
+}
+
+function ConditionsPanel({ conditions: c, onCheck }: { conditions: LogFlightScreenProps['conditions']; onCheck: () => void }) {
+  const busy = c.status === 'locating' || c.status === 'loading';
+  return (
+    <Card className="overflow-hidden">
+      <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3">
+        <div>
+          <Label>Conditions here</Label>
+          {c.checkedAt && <div className="mt-0.5 text-[12px] text-[var(--certa-muted)]">Checked {c.checkedAt.relative}</div>}
+        </div>
+        <Button size="sm" variant="secondary" loading={busy} icon={c.status === 'ready' ? <CloudSun className="size-4" aria-hidden /> : <LocateFixed className="size-4" aria-hidden />} onClick={onCheck}>
+          {c.status === 'locating' ? 'Locating…' : c.status === 'loading' ? 'Checking…' : c.status === 'ready' ? 'Refresh' : 'Check'}
+        </Button>
+      </div>
+      {c.status === 'idle' && <p className="px-5 pb-4 text-[13px] text-[var(--certa-muted)]">Airspace, weather, and daylight at your location. Advisory only; saved with the flight.</p>}
+      {c.error && <p role="alert" className="px-5 pb-4 text-[13px] text-[var(--certa-expired)]">{c.error}</p>}
+      {c.status === 'ready' && (
+        <ul aria-label="Conditions advisories" className="border-t border-[var(--certa-border)]">
+          {c.weatherSummary && <li className="border-b border-[var(--certa-border)] px-5 py-2.5 text-[13px]">{c.weatherSummary}</li>}
+          {c.advisories.map((a, i) => (
+            <li key={i} className="flex items-start gap-2.5 border-b border-[var(--certa-border)] px-5 py-2.5 last:border-b-0">
+              <span className="mt-[3px]" style={{ color: LEVEL_COLOR[a.level] }}><LevelIcon level={a.level} /></span>
+              <span className="min-w-0 text-[13px]">
+                <span className="font-semibold">{a.title}</span>
+                <span className="block text-[var(--certa-muted)]">{a.detail}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }
 
@@ -194,6 +227,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
               <p className="mt-2">Choose a pilot and aircraft to check them against records on file.</p>
             </Card>
           )}
+          <ConditionsPanel conditions={props.conditions} onCheck={props.onCheckConditions} />
           <div className="flex flex-col gap-2">
             <Button type="submit" size="lg" arrow loading={props.saving} disabled={!aircraftId || !mins}>Log flight</Button>
             <Button variant="ghost" onClick={props.onCancel}>Cancel</Button>

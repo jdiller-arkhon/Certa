@@ -12,6 +12,8 @@ import {
   type Flight,
   type GoNoGoResult,
   type SyncConflictViewModel,
+  type ConditionsResponse,
+  weatherSummary,
 } from '@certa/core';
 import { CertaApiError, unwrap } from '@certa/sdk';
 import { useQueryClient } from '@tanstack/react-query';
@@ -161,6 +163,26 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedOffline, setSavedOffline] = useState<string | null>(null);
+  const [conditions, setConditions] = useState<{ status: 'idle' | 'locating' | 'loading' | 'ready' | 'error'; data: ConditionsResponse | null; error: string | null }>({ status: 'idle', data: null, error: null });
+  const checkConditions = () => {
+    if (!('geolocation' in navigator)) return setConditions({ status: 'error', data: null, error: 'This device can’t share its location.' });
+    setConditions((c) => ({ ...c, status: 'locating', error: null }));
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        setConditions((c) => ({ ...c, status: 'loading' }));
+        try {
+          const lat = Math.round(pos.coords.latitude * 1e5) / 1e5;
+          const lon = Math.round(pos.coords.longitude * 1e5) / 1e5;
+          const data = unwrap(await api.GET('/api/v1/orgs/{orgId}/conditions', { params: { path: { orgId: f.orgId }, query: { lat, lon } } })) as ConditionsResponse;
+          setConditions({ status: 'ready', data, error: null });
+        } catch (err) {
+          setConditions({ status: 'error', data: null, error: err instanceof TypeError ? 'No connection — conditions need a signal.' : 'Couldn’t check conditions right now.' });
+        }
+      },
+      () => setConditions({ status: 'error', data: null, error: 'Location permission is needed to check conditions here.' }),
+      { enableHighAccuracy: true, timeout: 15_000, maximumAge: 60_000 },
+    );
+  };
   const [formKey, setFormKey] = useState(0);
   const update = useFleetMutation(f.orgId, async (body: Record<string, unknown>) => unwrap(await api.PATCH('/api/v1/orgs/{orgId}/flights/{flightId}', { params: { path: { orgId: f.orgId, flightId: flightId! } }, body: body as never })), {
     flights: true,
@@ -211,6 +233,14 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
       defaults={defaults}
       hasLastFlight={!ex && base.hasLastFlight}
       preflight={preflight}
+      conditions={{
+        status: conditions.status,
+        advisories: conditions.data?.advisories ?? [],
+        weatherSummary: weatherSummary(conditions.data?.weather ?? null, f.mapCtx.units),
+        checkedAt: conditions.data ? displayInstant(conditions.data.checkedAt, f.mapCtx.orgTimeZone, new Date()) : null,
+        error: conditions.error,
+      }}
+      onCheckConditions={checkConditions}
       loading={false}
       error={error ?? update.error ?? (flightId && !ex ? 'Flight not found, or it hasn’t synced yet.' : null)}
       fieldErrors={update.fieldErrors}
@@ -230,6 +260,14 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
           maxAltitudeAglM: v.maxAltitude == null ? null : Math.round(toMetres(v.maxAltitude, lengthUnit) * 10) / 10,
           operationType: v.operationType as Flight['operationType'],
           notes: v.notes,
+          // Conditions checked at the site: keep where and in what weather the flight happened.
+          ...(conditions.data && !ex
+            ? {
+                takeoffPoint: { lat: conditions.data.point.lat, lon: conditions.data.point.lon },
+                weather: conditions.data.weather,
+                airspaceClass: conditions.data.airspace && conditions.data.airspace !== 'unavailable' ? conditions.data.airspace.class : conditions.data.airspace === null ? ('G' as const) : null,
+              }
+            : {}),
         };
         if (ex) return update.mutate(body);
         setSaving(true);
