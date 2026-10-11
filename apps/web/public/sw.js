@@ -7,10 +7,12 @@
  * Scope is the registration scope (e.g. /certa/), so nothing outside Certa is ever touched.
  * API responses are never cached here: authenticated data lives in IndexedDB, not the HTTP cache.
  */
-const VERSION = 'certa-shell-v2';
+const VERSION = 'certa-shell-v3';
 const SCOPE = new URL(self.registration.scope).pathname; // '/certa/' or '/'
 const API = `${SCOPE}api/`;
 const STATIC = `${SCOPE}_next/static/`;
+// Secret-link pages (inspector packets) are never stored on the viewer's device.
+const SHARE = `${SCOPE}share/`;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(VERSION).then((c) => c.addAll([SCOPE, `${SCOPE}sign-in`])).then(() => self.skipWaiting()));
@@ -29,7 +31,7 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE) || url.pathname.startsWith(API)) return;
+  if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE) || url.pathname.startsWith(API) || url.pathname.startsWith(SHARE)) return;
 
   // Immutable build assets: cache first.
   if (url.pathname.startsWith(STATIC)) {

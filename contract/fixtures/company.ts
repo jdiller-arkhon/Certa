@@ -1612,7 +1612,13 @@ export const company = {
           "expires": false
         }
       ],
-      "canEdit": true
+      "canEdit": true,
+      "share": {
+        "canShare": true,
+        "links": [],
+        "createdUrl": null,
+        "creating": false
+      }
     },
     "aircraftList": {
       "loading": false,
@@ -2159,7 +2165,13 @@ export const company = {
         }
       ],
       "canEdit": true,
-      "canGround": true
+      "canGround": true,
+      "share": {
+        "canShare": true,
+        "links": [],
+        "createdUrl": null,
+        "creating": false
+      }
     },
     "batteryList": {
       "loading": false,

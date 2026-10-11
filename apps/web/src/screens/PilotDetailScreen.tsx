@@ -11,6 +11,7 @@ import { Banner, Banners, EmptyState, SkeletonRows } from '@/components/ui/feedb
 import { Field, Input, Select } from '@/components/ui/field';
 import { StatusBadge } from '@/components/ui/status';
 import { PageHeader } from '@/components/ui/text';
+import { ShareButton, ShareDialog } from './_share';
 import { FlightRows, ListCard, Reasons, RowButton, RowTitle, Section, Stat, StatGrid, When } from './_parts';
 
 const initials = (name: string) =>
@@ -23,6 +24,7 @@ const initials = (name: string) =>
 
 export function PilotDetailScreen(props: PilotDetailScreenProps) {
   const [adding, setAdding] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [editing, setEditing] = useState<{ id: string; identifier: string; issuedOn: string; expiresOn: string } | null>(null);
   const editingCred = props.credentials.find((c) => c.id === editing?.id);
   const openEdit = (id: string) => {
@@ -51,6 +53,7 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
         description={[p.certificateNumber && `Certificate ${p.certificateNumber}`, p.email, p.phone].filter(Boolean).join(' · ') || undefined}
         actions={
           <>
+            <ShareButton share={props.share} onOpen={() => setSharing(true)} />
             <Button variant="secondary" icon={<FileDown className="size-4" aria-hidden />} onClick={props.onExportLogbook}>Logbook</Button>
             {props.canEdit && <Button variant="secondary" icon={<Pencil className="size-4" aria-hidden />} onClick={props.onEditPilot}>Edit</Button>}
           </>
@@ -176,6 +179,7 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
           </form>
         )}
       </Dialog>
+      <ShareDialog open={sharing} onClose={() => setSharing(false)} subject={p.name} share={props.share} onCreate={props.onCreateShareLink} onRevoke={props.onRevokeShareLink} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { buildPilotDetail, buildPilotList, type Flight } from '@certa/core';
+import { buildPilotDetail, buildPilotList, can, type Flight } from '@certa/core';
 import { unwrap } from '@certa/sdk';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import { PilotDetailScreen, PilotFormScreen, PilotListScreen } from '@/screens';
 import { exportLogbook } from './logbook';
 import { FleetPending, useFleetContext } from './_fleet';
+import { useSharePacket } from './_share';
 
 export function PilotListContainer() {
   const f = useFleetContext();
@@ -36,6 +37,7 @@ export function PilotDetailContainer({ pilotId }: { pilotId: string }) {
   const updateCred = useFleetMutation(f.orgId, async ({ credentialId, ...body }: { credentialId: string; identifier: string | null; issuedOn: string | null; expiresOn: string | null }) =>
     unwrap(await api.PATCH('/api/v1/orgs/{orgId}/credentials/{credentialId}', { params: { path: { orgId: f.orgId, credentialId } }, body })),
   );
+  const sharing = useSharePacket(f.orgId, { type: 'pilot', id: pilotId }, can(f.role, 'exports.create', { actorPilotId: f.myPilotId, resourcePilotId: pilotId }), f.mapCtx);
   const removeCred = useFleetMutation(f.orgId, async (credentialId: string) =>
     ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/credentials/{credentialId}', { params: { path: { orgId: f.orgId, credentialId } } })),
   );
@@ -45,7 +47,10 @@ export function PilotDetailContainer({ pilotId }: { pilotId: string }) {
     <PilotDetailScreen
       {...data}
       loading={addCred.isPending || updateCred.isPending || removeCred.isPending}
-      error={addCred.error ?? updateCred.error ?? removeCred.error ?? f.loadError}
+      error={addCred.error ?? updateCred.error ?? removeCred.error ?? sharing.error ?? f.loadError}
+      share={sharing.share}
+      onCreateShareLink={sharing.onCreateShareLink}
+      onRevokeShareLink={sharing.onRevokeShareLink}
       onEditPilot={() => router.push(`/pilots/${pilotId}/edit`)}
       onAddCredential={({ file: _file, ...v }) => addCred.mutate(v)}
       onEditCredential={() => {}}

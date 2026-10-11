@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Aircraft, AuditEvent, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
 import { AirspaceClass, BatteryChemistry, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
 import { FleetSnapshot, GoNoGoResult } from '../fleet/fleet.js';
+import { InspectorPacket } from '../fleet/packet.js';
 import { ACTIONS } from '../domain/permissions.js';
 import { Rule, RuleSource } from '../rules/schema.js';
 
@@ -360,3 +361,40 @@ export type LogMaintenanceRequest = z.infer<typeof LogMaintenanceRequest>;
 export const MaintenanceEventListResponse = z.object({ events: z.array(MaintenanceEvent) });
 
 export { Aircraft as AircraftResponse, Battery as BatteryResponse, Credential as CredentialResponse, Pilot as PilotResponse };
+
+// ---------- Inspector packet share links ----------
+
+export const CreateShareLinkRequest = z.object({
+  subjectType: z.enum(['pilot', 'aircraft']),
+  subjectId: Id,
+  label: z.string().min(1).max(200).optional(),
+  /** Link lifetime; inspectors usually need it for a few days. */
+  expiresInDays: z.number().int().min(1).max(30).default(7),
+});
+export type CreateShareLinkRequest = z.infer<typeof CreateShareLinkRequest>;
+
+export const ShareLink = z.object({
+  id: Id,
+  subjectType: z.enum(['pilot', 'aircraft']),
+  subjectId: Id,
+  label: z.string(),
+  expiresAt: IsoDateTime,
+  revokedAt: IsoDateTime.nullable(),
+  viewCount: z.number().int(),
+  lastViewedAt: IsoDateTime.nullable(),
+  createdAt: IsoDateTime,
+});
+export type ShareLink = z.infer<typeof ShareLink>;
+
+/** Returned once at creation: the only time the secret URL is available. */
+export const CreatedShareLink = ShareLink.extend({ url: z.url() });
+export const ShareLinkListResponse = z.object({ links: z.array(ShareLink) });
+
+export const PublicPacketResponse = z.object({
+  label: z.string(),
+  expiresAt: IsoDateTime,
+  /** SHA-256 of the canonical packet JSON; printed on the PDF. */
+  seal: z.string().regex(/^[a-f0-9]{64}$/),
+  packet: InspectorPacket,
+});
+export type PublicPacketResponse = z.infer<typeof PublicPacketResponse>;

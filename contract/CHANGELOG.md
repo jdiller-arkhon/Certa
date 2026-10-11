@@ -3,6 +3,15 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.8.0 — 2026-10-11
+
+Inspector packets.
+
+- **Added** share links: `POST /orgs/{orgId}/share-links` (time-boxed 1–30 days; the secret URL is returned once and stored only as a SHA-256 hash), `GET /orgs/{orgId}/share-links`, `POST /orgs/{orgId}/share-links/{linkId}/revoke`.
+- **Added** public, no-account `GET /public/share/{token}` → `PublicPacketResponse` (`InspectorPacket` + seal) and `GET /public/share/{token}/packet.pdf` (sealed PDF). Responses are `no-store`, `noindex`, `no-referrer`, rate-limited; unknown, expired, and revoked links all return 404.
+- **Added** `InspectorPacket` and `buildInspectorPacket` in `@certa/core`; the seal is `contentHash(packet)` (RFC 8785 + SHA-256).
+- **Added** `SharePacketViewModel` with `share`, `onCreateShareLink`, `onRevokeShareLink` on **Pilot detail** and **Aircraft detail**; new public screen `SharedPacketScreenProps` at `/share/[token]`.
+
 ## 0.7.0 — 2026-10-11
 
 Phase 2 web: every Phase 2 screen is built, plus Maintenance and Insurance.

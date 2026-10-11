@@ -849,7 +849,13 @@ export const longNames = {
           "expires": false
         }
       ],
-      "canEdit": true
+      "canEdit": true,
+      "share": {
+        "canShare": true,
+        "links": [],
+        "createdUrl": null,
+        "creating": false
+      }
     },
     "aircraftList": {
       "loading": false,
@@ -1183,7 +1189,13 @@ export const longNames = {
         }
       ],
       "canEdit": true,
-      "canGround": true
+      "canGround": true,
+      "share": {
+        "canShare": true,
+        "links": [],
+        "createdUrl": null,
+        "creating": false
+      }
     },
     "batteryList": {
       "loading": false,

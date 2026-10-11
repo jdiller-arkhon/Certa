@@ -1,6 +1,6 @@
 'use client';
 
-import { buildAircraftDetail, buildAircraftList, buildBatteryList, kgTo, REMOTE_ID_LABEL, toKg, type AircraftListScreenProps, type Flight } from '@certa/core';
+import { buildAircraftDetail, buildAircraftList, buildBatteryList, can, kgTo, REMOTE_ID_LABEL, toKg, type AircraftListScreenProps, type Flight } from '@certa/core';
 import { unwrap } from '@certa/sdk';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import { AircraftDetailScreen, AircraftFormScreen, AircraftListScreen, BatteryListScreen } from '@/screens';
 import { exportLogbook } from './logbook';
 import { FleetPending, useFleetContext } from './_fleet';
+import { useSharePacket } from './_share';
 
 export function AircraftListContainer() {
   const f = useFleetContext();
@@ -32,6 +33,7 @@ export function AircraftDetailContainer({ aircraftId }: { aircraftId: string }) 
   const f = useFleetContext();
   const router = useRouter();
   const recent = useRecentFlights(f.orgId, { aircraftId });
+  const sharing = useSharePacket(f.orgId, { type: 'aircraft', id: aircraftId }, can(f.role, 'exports.create'), f.mapCtx);
   const ground = useFleetMutation(f.orgId, async (v: { reason: string }) =>
     unwrap(await api.POST('/api/v1/orgs/{orgId}/aircraft/{aircraftId}/ground', { params: { path: { orgId: f.orgId, aircraftId } }, body: v })),
   );
@@ -46,7 +48,10 @@ export function AircraftDetailContainer({ aircraftId }: { aircraftId: string }) 
     <AircraftDetailScreen
       {...data}
       loading={ground.isPending || unground.isPending}
-      error={ground.error ?? unground.error ?? f.loadError}
+      error={ground.error ?? unground.error ?? sharing.error ?? f.loadError}
+      share={sharing.share}
+      onCreateShareLink={sharing.onCreateShareLink}
+      onRevokeShareLink={sharing.onRevokeShareLink}
       onEdit={() => router.push(`/aircraft/${aircraftId}/edit`)}
       onGround={(v) => ground.mutate(v)}
       onUnground={(v) => unground.mutate(v)}

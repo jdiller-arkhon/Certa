@@ -3754,6 +3754,289 @@ export interface paths {
         };
         trace?: never;
     };
+    "/api/v1/orgs/{orgId}/share-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    subjectId?: string;
+                };
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            links: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                subjectType: "pilot" | "aircraft";
+                                /** Format: uuid */
+                                subjectId: string;
+                                label: string;
+                                /** Format: date-time */
+                                expiresAt: string;
+                                revokedAt: string | null;
+                                viewCount: number;
+                                lastViewedAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create a time-boxed inspector packet link (the URL is returned once) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        subjectType: "pilot" | "aircraft";
+                        /** Format: uuid */
+                        subjectId: string;
+                        label?: string;
+                        /** @default 7 */
+                        expiresInDays?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            subjectType: "pilot" | "aircraft";
+                            /** Format: uuid */
+                            subjectId: string;
+                            label: string;
+                            /** Format: date-time */
+                            expiresAt: string;
+                            revokedAt: string | null;
+                            viewCount: number;
+                            lastViewedAt: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: uri */
+                            url: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/share-links/{linkId}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke a share link immediately */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    linkId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** @enum {string} */
+                            subjectType: "pilot" | "aircraft";
+                            /** Format: uuid */
+                            subjectId: string;
+                            label: string;
+                            /** Format: date-time */
+                            expiresAt: string;
+                            revokedAt: string | null;
+                            viewCount: number;
+                            lastViewedAt: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/share/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inspector packet behind a share link (no account needed) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    token: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            label: string;
+                            /** Format: date-time */
+                            expiresAt: string;
+                            seal: string;
+                            packet: {
+                                /** @enum {number} */
+                                version: 1;
+                                organization: string;
+                                generatedAt: string;
+                                asOf: string;
+                                ruleSet: string;
+                                subject: {
+                                    /** @enum {string} */
+                                    type: "pilot" | "aircraft";
+                                    name: string;
+                                    facts: [
+                                        string,
+                                        string
+                                    ][];
+                                };
+                                status: {
+                                    /** @enum {string} */
+                                    level: "green" | "amber" | "red";
+                                    label: string;
+                                };
+                                records: {
+                                    label: string;
+                                    /** @enum {string} */
+                                    level: "green" | "amber" | "red";
+                                    status: string;
+                                    due: string | null;
+                                    detail: string;
+                                }[];
+                                activity: {
+                                    flights: number;
+                                    flightTime: string;
+                                    last90Flights: number;
+                                    last90FlightTime: string;
+                                };
+                                recentFlights: {
+                                    date: string;
+                                    duration: string;
+                                    with: string;
+                                    location: string | null;
+                                }[];
+                                disclaimer: string;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/share/{token}/packet.pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sealed PDF of the inspector packet */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    token: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

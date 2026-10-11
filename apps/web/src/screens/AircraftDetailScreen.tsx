@@ -10,11 +10,13 @@ import { Banner, Banners, EmptyState, SkeletonRows } from '@/components/ui/feedb
 import { Field } from '@/components/ui/field';
 import { StatusBadge } from '@/components/ui/status';
 import { PageHeader } from '@/components/ui/text';
+import { ShareButton, ShareDialog } from './_share';
 import { Facts, FlightRows, ListCard, Reasons, RowButton, RowMetric, RowTitle, Section, Stat, StatGrid, TextArea, When } from './_parts';
 
 export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
   const [dialog, setDialog] = useState<'ground' | 'unground' | null>(null);
   const [reason, setReason] = useState('');
+  const [sharing, setSharing] = useState(false);
   const a = props.aircraft;
 
   if (props.loading && !a) return <Card className="p-6"><SkeletonRows rows={5} /></Card>;
@@ -29,6 +31,7 @@ export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
         description={[a.name !== a.makeModel && a.makeModel, a.registrationNumber, `S/N ${a.serialNumber}`].filter(Boolean).join(' · ')}
         actions={
           <>
+            <ShareButton share={props.share} onOpen={() => setSharing(true)} />
             <Button variant="secondary" icon={<FileDown className="size-4" aria-hidden />} onClick={props.onExportLogbook}>Logbook</Button>
             {props.canEdit && <Button variant="secondary" icon={<Pencil className="size-4" aria-hidden />} onClick={props.onEdit}>Edit</Button>}
             {props.canGround &&
@@ -118,6 +121,7 @@ export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
           <Field label={dialog === 'ground' ? 'Reason' : 'Work performed'}>{(f) => <TextArea {...f} required minLength={3} value={reason} onChange={(e) => setReason(e.target.value)} />}</Field>
         </form>
       </Dialog>
+      <ShareDialog open={sharing} onClose={() => setSharing(false)} subject={a.name} share={props.share} onCreate={props.onCreateShareLink} onRevoke={props.onRevokeShareLink} />
     </div>
   );
 }

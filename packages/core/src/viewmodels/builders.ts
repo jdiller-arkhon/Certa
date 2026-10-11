@@ -55,6 +55,8 @@ export interface BuildInput {
 const OK = { loading: false, error: null } as const;
 const empty = (title: string, body: string, actionLabel: string | null): EmptyState => ({ title, body, actionLabel });
 
+const emptyShare = (role: Role) => ({ canShare: can(role, 'exports.create'), links: [], createdUrl: null, creating: false });
+
 const readinessOf = (i: BuildInput) => i.readiness ?? fleetReadiness(i.snapshot, i.ctx);
 
 export function fleetNames(s: FleetSnapshot) {
@@ -155,6 +157,7 @@ export function buildPilotDetail(i: BuildInput, pilotId: string, recentFlights: 
     recentFlights: flightRows(i, recentFlights.filter((f) => f.pilotInCommandId === pilotId).slice(0, 10)),
     credentialTypeOptions: r.rules.pack.credentialTypes.map((ct) => ({ value: ct.id, label: ct.label, expires: ct.validityRuleId !== null })),
     canEdit: can(i.role, 'credentials.manage'),
+    share: emptyShare(i.role),
   };
 }
 
@@ -209,6 +212,7 @@ export function buildAircraftDetail(i: BuildInput, aircraftId: string, recentFli
     batteries: a ? s.batteries.filter((b) => !b.deletedAt && b.aircraftModel === a.model).map((b) => toBatteryRow(b, s.batteryLastUsed[b.id] ?? null, ctx)) : [],
     canEdit: can(i.role, 'aircraft.manage'),
     canGround: can(i.role, 'aircraft.ground'),
+    share: emptyShare(i.role),
   };
 }
 

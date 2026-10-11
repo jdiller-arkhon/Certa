@@ -10,6 +10,7 @@
  */
 import type { Airframe, ReadinessLevel, Role } from '../domain/enums.js';
 import type { GoNoGoResult } from '../fleet/fleet.js';
+import type { InspectorPacket } from '../fleet/packet.js';
 import type {
   AppShellCallbacks,
   AsyncState,
@@ -257,6 +258,15 @@ export interface CredentialViewModel {
   documentCount: number;
 }
 
+/** Time-boxed, read-only inspector packet links for one pilot or aircraft. */
+export interface SharePacketViewModel {
+  canShare: boolean;
+  links: { id: string; label: string; expires: DateDisplay; viewCount: number; status: StatusBadge; active: boolean }[];
+  /** The secret URL, available only right after creating a link. */
+  createdUrl: string | null;
+  creating: boolean;
+}
+
 /** @status beta — route: /pilots/[pilotId] */
 export interface PilotDetailScreenProps extends AsyncState {
   pilot: {
@@ -287,6 +297,9 @@ export interface PilotDetailScreenProps extends AsyncState {
   onRemoveCredential: (credentialId: string) => void;
   onExportLogbook: () => void;
   onOpenFlight: (flightId: string) => void;
+  share: SharePacketViewModel;
+  onCreateShareLink: (input: { expiresInDays: number }) => void;
+  onRevokeShareLink: (linkId: string) => void;
 }
 
 /** @status beta — route: /pilots/new, /pilots/[pilotId]/edit */
@@ -349,6 +362,9 @@ export interface AircraftDetailScreenProps extends AsyncState {
   onUnground: (input: { reason: string }) => void;
   onExportLogbook: () => void;
   onOpenFlight: (flightId: string) => void;
+  share: SharePacketViewModel;
+  onCreateShareLink: (input: { expiresInDays: number }) => void;
+  onRevokeShareLink: (linkId: string) => void;
 }
 
 /** @status beta — route: /aircraft/new, /aircraft/[aircraftId]/edit */
@@ -539,6 +555,16 @@ export interface SyncConflictsScreenProps extends AsyncState {
   conflicts: SyncConflictViewModel[];
   empty: EmptyState;
   onResolve: (input: { conflictId: string; choose: 'local' | 'server'; note: string | null }) => void;
+}
+
+/**
+ * @status beta — route: /share/[token] (public, no account, no shell)
+ * Read-only inspector packet behind a time-boxed link. Dates in `packet` are ISO dates (YYYY-MM-DD),
+ * shown as-is: inspectors compare them against documents.
+ */
+export interface SharedPacketScreenProps extends AsyncState {
+  data: { label: string; seal: string; packet: InspectorPacket; expires: string } | null;
+  pdfHref: string;
 }
 
 // =====================================================================================

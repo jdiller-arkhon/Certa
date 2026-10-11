@@ -152,3 +152,37 @@ test('maintenance schedule and insurance policy feed readiness', async ({ page }
   await page.getByRole('link', { name: 'Today' }).click();
   await expect(page.getByText('Insurance (Skyward Aviation)').first()).toBeVisible();
 });
+
+test('inspector packet: share a read-only link that works without an account', async ({ page, browser }) => {
+  await signUp(page, 'Packet Air');
+  const origin = new URL(page.url()).origin;
+  const me = await (await page.request.get(`${origin}/certa/api/v1/me`)).json();
+  const org = me.memberships[0].orgId;
+  const ac = await (await page.request.post(`${origin}/certa/api/v1/orgs/${org}/aircraft`, { data: { nickname: 'Osprey 3', make: 'DJI', model: 'Matrice 350 RTK', serialNumber: 'M350-1', registrationNumber: 'FA3OSP', registrationExpiresOn: '2028-01-01' }, headers: { origin } })).json();
+
+  await page.goto(`aircraft/${ac.id}`);
+  await page.getByRole('button', { name: 'Share with inspector' }).click();
+  await page.getByRole('button', { name: 'Create link' }).click();
+  const url = await page.getByLabel('Share link').inputValue();
+  expect(url).toMatch(/\/certa\/share\/[A-Za-z0-9_-]{43}$/);
+
+  // A stranger with the link: no cookies.
+  const guest = await browser.newContext();
+  const g = await guest.newPage();
+  await g.goto(url);
+  await expect(g.getByRole('heading', { name: 'Osprey 3' })).toBeVisible();
+  await expect(g.getByText('FA3OSP')).toBeVisible();
+  await expect(g.getByText('Packet Air').first()).toBeVisible();
+  const pdfHref = await g.getByRole('link', { name: 'Sealed PDF' }).getAttribute('href');
+  const pdf = await g.request.get(new URL(pdfHref!, url).href);
+  expect(pdf.headers()['content-type']).toBe('application/pdf');
+
+  // Revoked: the guest's link stops working.
+  await page.getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('button', { name: 'Share with inspector' }).click();
+  await page.getByRole('button', { name: 'Revoke' }).click();
+  await expect(page.getByText('Revoked')).toBeVisible();
+  await g.reload();
+  await expect(g.getByRole('heading', { name: 'Link not available' })).toBeVisible();
+  await guest.close();
+});

@@ -124,7 +124,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.pilotDetail, state, (x) => ({ ...x, pilot: null, credentials: [], recentFlights: [] }));
-      return <PilotDetailScreen {...d} onEditPilot={noop} onAddCredential={noop} onEditCredential={noop} onUpdateCredential={noop} onRemoveCredential={noop} onExportLogbook={noop} onOpenFlight={noop} />;
+      return <PilotDetailScreen {...d} onEditPilot={noop} onAddCredential={noop} onEditCredential={noop} onUpdateCredential={noop} onRemoveCredential={noop} onExportLogbook={noop} onOpenFlight={noop} onCreateShareLink={noop} onRevokeShareLink={noop} />;
     },
   },
   {
@@ -166,7 +166,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.aircraftDetail, state, (x) => ({ ...x, aircraft: null, recentFlights: [], batteries: [] }));
-      return <AircraftDetailScreen {...d} onEdit={noop} onGround={noop} onUnground={noop} onExportLogbook={noop} onOpenFlight={noop} />;
+      return <AircraftDetailScreen {...d} onEdit={noop} onGround={noop} onUnground={noop} onExportLogbook={noop} onOpenFlight={noop} onCreateShareLink={noop} onRevokeShareLink={noop} />;
     },
   },
   {
