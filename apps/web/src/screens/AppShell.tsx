@@ -27,6 +27,7 @@ import {
   TriangleAlert,
   UserCog,
   Users,
+  Umbrella,
   Wrench,
   type LucideIcon,
 } from 'lucide-react';
@@ -48,6 +49,7 @@ const BY_ICON: Record<NavItem['icon'], LucideIcon> = {
   aircraft: Plane,
   batteries: BatteryMedium,
   maintenance: Wrench,
+  insurance: Umbrella,
   missions: Briefcase,
   incidents: TriangleAlert,
   records: ScrollText,

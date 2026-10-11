@@ -3,7 +3,29 @@
 import { auth, scenarios, states } from '@certa/contract/fixtures';
 import type { AsyncState, ThemeName } from '@certa/contract';
 import { useMemo, useState, type ReactNode } from 'react';
-import { AppShell, AuditLogScreen, MembersAdminScreen, OrgSettingsScreen, RulePackAdminScreen, SignInScreen, SignUpScreen, TodayScreen } from '@/screens';
+import {
+  AircraftDetailScreen,
+  AircraftFormScreen,
+  AircraftListScreen,
+  AppShell,
+  AuditLogScreen,
+  BatteryListScreen,
+  FlightDetailScreen,
+  FlightListScreen,
+  InsuranceScreen,
+  LogFlightScreen,
+  MaintenanceScreen,
+  MembersAdminScreen,
+  OrgSettingsScreen,
+  PilotDetailScreen,
+  PilotFormScreen,
+  PilotListScreen,
+  RulePackAdminScreen,
+  SignInScreen,
+  SignUpScreen,
+  SyncConflictsScreen,
+  TodayScreen,
+} from '@/screens';
 
 const noop = () => {};
 export const SCENARIOS = ['solo', 'company', 'expired', 'empty', 'longNames', 'large'] as const;
@@ -14,7 +36,7 @@ export type State = (typeof STATES)[number];
 export interface PreviewScreen {
   id: string;
   title: string;
-  group: 'Auth' | 'App' | 'Admin';
+  group: 'Auth' | 'App' | 'Fleet' | 'Admin';
   route: string;
   shell: boolean;
   /** Variants that don't come from scenarios (auth). */
@@ -81,6 +103,173 @@ export const SCREENS: PreviewScreen[] = [
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.readinessDashboard, state, (x) => ({ ...x, pilots: [], aircraft: [], upcoming: [] }));
       return <TodayScreen {...d} onAddPilot={noop} onAddAircraft={noop} onLogFlight={noop} onOpen={noop} />;
+    },
+  },
+  {
+    id: 'pilots',
+    title: 'Pilots',
+    group: 'Fleet',
+    route: '/pilots',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.pilotList, state, (x) => ({ ...x, pilots: [] }));
+      return <PilotListScreen {...d} onSearch={noop} onAddPilot={noop} onOpenPilot={noop} />;
+    },
+  },
+  {
+    id: 'pilot',
+    title: 'Pilot detail',
+    group: 'Fleet',
+    route: '/pilots',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.pilotDetail, state, (x) => ({ ...x, pilot: null, credentials: [], recentFlights: [] }));
+      return <PilotDetailScreen {...d} onEditPilot={noop} onAddCredential={noop} onEditCredential={noop} onExportLogbook={noop} onOpenFlight={noop} />;
+    },
+  },
+  {
+    id: 'pilot-form',
+    title: 'Add pilot',
+    group: 'Fleet',
+    route: '/pilots',
+    shell: true,
+    variants: ['create', 'errors'],
+    render: ({ variant }) => (
+      <PilotFormScreen
+        mode="create"
+        loading={false}
+        error={null}
+        saving={false}
+        values={{ displayName: variant === 'errors' ? 'Maya Thornton' : '', email: variant === 'errors' ? 'maya@' : '', phone: '', certificateNumber: '', inviteAsUser: false, role: 'pilot' }}
+        fieldErrors={variant === 'errors' ? { email: 'Enter a valid email address' } : {}}
+        onSubmit={noop}
+        onCancel={noop}
+      />
+    ),
+  },
+  {
+    id: 'aircraft',
+    title: 'Aircraft',
+    group: 'Fleet',
+    route: '/aircraft',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.aircraftList, state, (x) => ({ ...x, aircraft: [] }));
+      return <AircraftListScreen {...d} onSearch={noop} onStatusFilter={noop} onAddAircraft={noop} onOpenAircraft={noop} />;
+    },
+  },
+  {
+    id: 'aircraft-detail',
+    title: 'Aircraft detail',
+    group: 'Fleet',
+    route: '/aircraft',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.aircraftDetail, state, (x) => ({ ...x, aircraft: null, recentFlights: [], batteries: [] }));
+      return <AircraftDetailScreen {...d} onEdit={noop} onGround={noop} onUnground={noop} onExportLogbook={noop} onOpenFlight={noop} />;
+    },
+  },
+  {
+    id: 'aircraft-form',
+    title: 'Add aircraft',
+    group: 'Fleet',
+    route: '/aircraft',
+    shell: true,
+    render: () => (
+      <AircraftFormScreen
+        mode="create"
+        loading={false}
+        error={null}
+        saving={false}
+        values={{ nickname: '', make: '', model: '', serialNumber: '', registrationNumber: '', registrationExpiresOn: '', remoteIdMethod: 'standard', remoteIdSerial: '', takeoffMass: '', firmwareVersion: '' }}
+        massUnitLabel="lb"
+        remoteIdOptions={[
+          { value: 'standard', label: 'Standard Remote ID' },
+          { value: 'broadcast_module', label: 'Broadcast module' },
+          { value: 'fria', label: 'FRIA only (no Remote ID equipment)' },
+          { value: 'none', label: 'None' },
+        ]}
+        fieldErrors={{}}
+        onSubmit={noop}
+        onCancel={noop}
+      />
+    ),
+  },
+  {
+    id: 'batteries',
+    title: 'Batteries',
+    group: 'Fleet',
+    route: '/batteries',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.batteryList, state, (x) => ({ ...x, batteries: [] }));
+      return <BatteryListScreen {...d} onAddBattery={noop} onCreateBattery={noop} onRetireBattery={noop} onOpenBattery={noop} />;
+    },
+  },
+  {
+    id: 'maintenance',
+    title: 'Maintenance',
+    group: 'Fleet',
+    route: '/maintenance',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.maintenance, state, (x) => ({ ...x, due: [], history: [] }));
+      return <MaintenanceScreen {...d} onAddSchedule={noop} onLogMaintenance={noop} onRemoveSchedule={noop} onOpenTarget={noop} />;
+    },
+  },
+  {
+    id: 'insurance',
+    title: 'Insurance',
+    group: 'Fleet',
+    route: '/insurance',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.insurance, state, (x) => ({ ...x, policies: [], uncoveredAircraft: [] }));
+      return <InsuranceScreen {...d} onAddPolicy={noop} onRemovePolicy={noop} onOpenAircraft={noop} />;
+    },
+  },
+  {
+    id: 'flights',
+    title: 'Flights',
+    group: 'App',
+    route: '/flights',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.flightList, state, (x) => ({ ...x, flights: { items: [], total: 0, nextCursor: null } }));
+      return <FlightListScreen {...d} onFilterChange={noop} onLoadMore={noop} onLogFlight={noop} onImport={noop} onOpenFlight={noop} />;
+    },
+  },
+  {
+    id: 'flight',
+    title: 'Flight detail',
+    group: 'App',
+    route: '/flights',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.flightDetail, state, (x) => ({ ...x, flight: null, path: null, altitudeProfile: [] }));
+      return <FlightDetailScreen {...d} onEdit={noop} onDelete={noop} />;
+    },
+  },
+  {
+    id: 'log-flight',
+    title: 'Log a flight',
+    group: 'App',
+    route: '/flights',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.logFlight, state, (x) => x);
+      return <LogFlightScreen {...d} onSelectionChange={noop} onSameAsLast={noop} onSubmit={noop} onCancel={noop} />;
+    },
+  },
+  {
+    id: 'sync-conflicts',
+    title: 'Sync: needs review',
+    group: 'App',
+    route: '/sync/conflicts',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.syncConflicts, state, (x) => ({ ...x, conflicts: [] }));
+      return <SyncConflictsScreen {...d} onResolve={noop} />;
     },
   },
   { id: 'rules', title: 'Rule pack', group: 'Admin', route: '/admin/rules', shell: true, render: ({ scenario, state }) => <RulesPreview scenario={scenario} state={state} /> },

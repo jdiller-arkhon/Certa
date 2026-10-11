@@ -68,6 +68,22 @@ export const large = {
         "badge": null
       },
       {
+        "id": "maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "icon": "maintenance",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "icon": "insurance",
+        "active": false,
+        "badge": null
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -210,6 +226,22 @@ export const large = {
         "badge": null
       },
       {
+        "id": "maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "icon": "maintenance",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "icon": "insurance",
+        "active": false,
+        "badge": null
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -307,12 +339,12 @@ export const large = {
         "daysFromToday": 0
       },
       "overall": {
-        "level": "green",
-        "label": "Everyone is legal to fly"
+        "level": "amber",
+        "label": "Attention needed soon"
       },
       "counts": {
-        "green": 8,
-        "amber": 0,
+        "green": 5,
+        "amber": 3,
         "red": 0
       },
       "pilots": [
@@ -367,10 +399,23 @@ export const large = {
           "name": "Falcon 1",
           "subtitle": "Reg. FA3XXX1179",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c",
           "airframe": "quad"
         },
@@ -379,10 +424,29 @@ export const large = {
           "name": "DJI Matrice 30T",
           "subtitle": "Reg. FA3XXX11YE",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Attention"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Propeller replacement nearing limit",
+              "due": null,
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1"
+            },
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1",
           "airframe": "quad"
         },
@@ -391,10 +455,23 @@ export const large = {
           "name": "Osprey 3",
           "subtitle": "Reg. FA3XXX12PJ",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6",
           "airframe": "quad"
         },
@@ -411,7 +488,47 @@ export const large = {
           "airframe": "quad"
         }
       ],
-      "upcoming": [],
+      "upcoming": [
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Falcon 1",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "DJI Matrice 30T",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Osprey 3",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6"
+        }
+      ],
       "empty": {
         "title": "Add your first pilot and aircraft",
         "body": "Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.",
@@ -901,8 +1018,8 @@ export const large = {
           "serialNumber": "DJ17X10000",
           "registrationNumber": "FA3XXX1179",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
           "totalFlightTime": {
             "value": 143267,
@@ -918,8 +1035,8 @@ export const large = {
           "serialNumber": "DJ7BW10313",
           "registrationNumber": "FA3XXX11YE",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Attention"
           },
           "totalFlightTime": {
             "value": 119524,
@@ -935,8 +1052,8 @@ export const large = {
           "serialNumber": "DJDFV10626",
           "registrationNumber": "FA3XXX12PJ",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
           "totalFlightTime": {
             "value": 132069,
@@ -996,11 +1113,24 @@ export const large = {
         },
         "firmwareVersion": "v1.0.0",
         "status": {
-          "level": "green",
-          "label": "Airworthy"
+          "level": "amber",
+          "label": "Expires in 23 days"
         },
         "groundedReason": null,
-        "reasons": [],
+        "reasons": [
+          {
+            "level": "amber",
+            "text": "Insurance (Skyward Aviation Insurance) due soon",
+            "due": {
+              "iso": "2026-10-31",
+              "absolute": "Oct 31, 2026",
+              "relative": "in 23 days",
+              "display": "Oct 31, 2026 — in 23 days",
+              "daysFromToday": 23
+            },
+            "href": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c"
+          }
+        ],
         "totals": {
           "flights": 140,
           "flightTime": {
@@ -1633,6 +1763,26 @@ export const large = {
         }
       ],
       "canManage": true,
+      "aircraftModelOptions": [
+        {
+          "value": "Matrice 30T",
+          "label": "Matrice 30T"
+        },
+        {
+          "value": "Matrice 350 RTK",
+          "label": "Matrice 350 RTK"
+        },
+        {
+          "value": "Mavic 3 Enterprise",
+          "label": "Mavic 3 Enterprise"
+        },
+        {
+          "value": "X10",
+          "label": "X10"
+        }
+      ],
+      "saving": false,
+      "fieldErrors": {},
       "empty": {
         "title": "No batteries yet",
         "body": "Add batteries to track cycle counts automatically from your flights and get retirement warnings.",
@@ -14871,6 +15021,29 @@ export const large = {
           "altitude": 0
         }
       ],
+      "preflight": {
+        "decision": "caution",
+        "checks": [
+          {
+            "key": "pilot",
+            "label": "Pilot · Sam Patel",
+            "level": "green",
+            "detail": "Certificate and recurrent training current"
+          },
+          {
+            "key": "aircraft",
+            "label": "Aircraft · Falcon 1",
+            "level": "amber",
+            "detail": "Insurance (Skyward Aviation Insurance) due soon"
+          },
+          {
+            "key": "battery:0199c4a0-0000-7000-8000-0000005b8d9e",
+            "label": "Battery · Falcon #2",
+            "level": "green",
+            "detail": "8 of 200 cycles"
+          }
+        ]
+      },
       "canEdit": true
     },
     "logFlight": {
@@ -14927,28 +15100,31 @@ export const large = {
           "value": "0199c4a0-0000-7000-8000-0000005b8d9c",
           "label": "Falcon 1",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "recent": true
+          "recent": true,
+          "model": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da1",
           "label": "DJI Matrice 30T",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Attention"
           },
-          "recent": false
+          "recent": false,
+          "model": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da6",
           "label": "Osprey 3",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "recent": false
+          "recent": false,
+          "model": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8dab",
@@ -14957,7 +15133,8 @@ export const large = {
             "level": "green",
             "label": "Airworthy"
           },
-          "recent": false
+          "recent": false,
+          "model": "X10"
         }
       ],
       "batteryOptions": [
@@ -14967,7 +15144,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8d9e",
@@ -14975,7 +15153,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8d9f",
@@ -14983,7 +15162,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da0",
@@ -14991,7 +15171,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da2",
@@ -14999,7 +15180,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da3",
@@ -15007,7 +15189,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da4",
@@ -15015,7 +15198,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da5",
@@ -15023,7 +15207,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da7",
@@ -15031,7 +15216,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da8",
@@ -15039,7 +15225,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8da9",
@@ -15047,7 +15234,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8daa",
@@ -15055,7 +15243,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8dac",
@@ -15063,7 +15252,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "X10"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8dad",
@@ -15071,7 +15261,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "X10"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8dae",
@@ -15079,7 +15270,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "X10"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000005b8daf",
@@ -15087,7 +15279,8 @@ export const large = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "X10"
         }
       ],
       "siteOptions": [
@@ -15156,8 +15349,516 @@ export const large = {
       ],
       "warnings": [],
       "altitudeUnitLabel": "ft",
+      "preflight": {
+        "decision": "caution",
+        "checks": [
+          {
+            "key": "pilot",
+            "label": "Pilot · Alex Rivera",
+            "level": "green",
+            "detail": "Certificate and recurrent training current"
+          },
+          {
+            "key": "aircraft",
+            "label": "Aircraft · Falcon 1",
+            "level": "amber",
+            "detail": "Insurance (Skyward Aviation Insurance) due soon"
+          },
+          {
+            "key": "battery:0199c4a0-0000-7000-8000-0000005b8d9e",
+            "label": "Battery · Falcon #2",
+            "level": "green",
+            "detail": "8 of 200 cycles"
+          }
+        ]
+      },
       "fieldErrors": {},
       "saving": false
+    },
+    "maintenance": {
+      "loading": false,
+      "error": null,
+      "due": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8ead",
+          "target": "DJI Matrice 30T",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8da1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1",
+          "name": "Propeller replacement",
+          "interval": "Every 25 flights",
+          "due": null,
+          "usage": "23 of 25 flights",
+          "status": {
+            "level": "amber",
+            "label": "Due soon"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8de5",
+          "target": "Falcon 1",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8d9c",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "40 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8de7",
+          "target": "DJI Matrice 30T",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8da1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "40 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8de9",
+          "target": "Osprey 3",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8da6",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "40 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8deb",
+          "target": "Skydio X10",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8dab",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8dab",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "40 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8de4",
+          "target": "Falcon 1",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8d9c",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8de6",
+          "target": "DJI Matrice 30T",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8da1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8de8",
+          "target": "Osprey 3",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8da6",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8dea",
+          "target": "Skydio X10",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000005b8dab",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8dab",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        }
+      ],
+      "history": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f76",
+          "target": "DJI Matrice 30T",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1",
+          "performed": {
+            "iso": "2026-08-10T16:00:00.000Z",
+            "absolute": "Aug 10, 2026, 10:00 AM MDT",
+            "relative": "59 days ago",
+            "display": "Aug 10, 2026, 10:00 AM MDT — 59 days ago",
+            "daysFromToday": -59
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Propeller replacement",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f75",
+          "target": "Falcon 1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f78",
+          "target": "DJI Matrice 30T",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f7a",
+          "target": "Osprey 3",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f7c",
+          "target": "Skydio X10",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8dab",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f74",
+          "target": "Falcon 1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8d9c",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f77",
+          "target": "DJI Matrice 30T",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da1",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f79",
+          "target": "Osprey 3",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8da6",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8f7b",
+          "target": "Skydio X10",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000005b8dab",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Alex Rivera",
+          "signedOff": false
+        }
+      ],
+      "targetOptions": [
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000005b8d9c",
+          "label": "Falcon 1"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000005b8da1",
+          "label": "DJI Matrice 30T"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000005b8da6",
+          "label": "Osprey 3"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000005b8dab",
+          "label": "Skydio X10"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8d9d",
+          "label": "Battery Falcon #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8d9e",
+          "label": "Battery Falcon #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8d9f",
+          "label": "Battery Falcon #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8da0",
+          "label": "Battery Falcon #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8da2",
+          "label": "Battery DJI #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8da3",
+          "label": "Battery DJI #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8da4",
+          "label": "Battery DJI #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8da5",
+          "label": "Battery DJI #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8da7",
+          "label": "Battery Osprey #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8da8",
+          "label": "Battery Osprey #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8da9",
+          "label": "Battery Osprey #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8daa",
+          "label": "Battery Osprey #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8dac",
+          "label": "Battery Skydio #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8dad",
+          "label": "Battery Skydio #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8dae",
+          "label": "Battery Skydio #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000005b8daf",
+          "label": "Battery Skydio #4"
+        }
+      ],
+      "canManage": true,
+      "saving": false,
+      "empty": {
+        "title": "No maintenance schedules",
+        "body": "Add schedules by flight hours, flights, or calendar days. Certa counts usage from your logbook and warns before anything is due.",
+        "actionLabel": "Add schedule"
+      }
+    },
+    "insurance": {
+      "loading": false,
+      "error": null,
+      "policies": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000005b8d81",
+          "carrier": "Skyward Aviation Insurance",
+          "policyNumber": "SAI-06-448812",
+          "coverageSummary": "Commercial UAS liability, $1M per occurrence; hull coverage at agreed value.",
+          "liabilityLimit": "$1,000,000",
+          "effective": {
+            "iso": "2025-11-01",
+            "absolute": "Nov 1, 2025",
+            "relative": "11 months ago",
+            "display": "Nov 1, 2025 — 11 months ago",
+            "daysFromToday": -341
+          },
+          "expires": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          },
+          "coveredAircraft": [
+            {
+              "id": "0199c4a0-0000-7000-8000-0000005b8d9c",
+              "name": "Falcon 1"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000005b8da1",
+              "name": "DJI Matrice 30T"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000005b8da6",
+              "name": "Osprey 3"
+            }
+          ]
+        }
+      ],
+      "uncoveredAircraft": [
+        {
+          "id": "0199c4a0-0000-7000-8000-0000005b8dab",
+          "name": "Skydio X10"
+        }
+      ],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000005b8d9c",
+          "label": "Falcon 1"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000005b8da1",
+          "label": "DJI Matrice 30T"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000005b8da6",
+          "label": "Osprey 3"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000005b8dab",
+          "label": "Skydio X10"
+        }
+      ],
+      "canManage": true,
+      "saving": false,
+      "empty": {
+        "title": "No insurance on file",
+        "body": "Add your liability and hull policies. Certa links them to aircraft and warns 30 days before they lapse.",
+        "actionLabel": "Add policy"
+      }
     },
     "rulePackAdmin": {
       "loading": false,

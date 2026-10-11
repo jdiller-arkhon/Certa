@@ -9,7 +9,7 @@ import { Eyebrow, Label } from '@/components/ui/text';
 import { SCENARIOS, SCREENS } from '@/preview/registry';
 
 export default function PreviewIndex() {
-  const groups = ['Auth', 'App', 'Admin'] as const;
+  const groups = ['Auth', 'App', 'Fleet', 'Admin'] as const;
   return (
     <div className="certa min-h-dvh">
       <div className="mx-auto max-w-6xl px-5 py-12 sm:px-10 sm:py-16">

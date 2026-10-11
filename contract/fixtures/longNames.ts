@@ -68,6 +68,22 @@ export const longNames = {
         "badge": null
       },
       {
+        "id": "maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "icon": "maintenance",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "icon": "insurance",
+        "active": false,
+        "badge": null
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -210,6 +226,22 @@ export const longNames = {
         "badge": null
       },
       {
+        "id": "maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "icon": "maintenance",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "icon": "insurance",
+        "active": false,
+        "badge": null
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -311,8 +343,8 @@ export const longNames = {
         "label": "Some pilots or aircraft are not legal to fly"
       },
       "counts": {
-        "green": 4,
-        "amber": 1,
+        "green": 3,
+        "amber": 2,
         "red": 1
       },
       "pilots": [
@@ -356,10 +388,23 @@ export const longNames = {
           "name": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
           "subtitle": "Reg. FA3XXX1179",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
           "airframe": "quad"
         },
@@ -376,6 +421,18 @@ export const longNames = {
               "level": "red",
               "text": "Grounded: Gimbal damage after hard landing — incident open",
               "due": null,
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58"
+            },
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58"
             }
           ],
@@ -421,6 +478,32 @@ export const longNames = {
           },
           "level": "amber",
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58"
         },
         {
           "label": "Recurrent training (Part 107)",
@@ -779,8 +862,8 @@ export const longNames = {
           "serialNumber": "DJ17X10000",
           "registrationNumber": "FA3XXX1179",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
           "totalFlightTime": {
             "value": 7329,
@@ -857,11 +940,24 @@ export const longNames = {
         },
         "firmwareVersion": "v1.0.0",
         "status": {
-          "level": "green",
-          "label": "Airworthy"
+          "level": "amber",
+          "label": "Expires in 23 days"
         },
         "groundedReason": null,
-        "reasons": [],
+        "reasons": [
+          {
+            "level": "amber",
+            "text": "Insurance (Skyward Aviation Insurance) due soon",
+            "due": {
+              "iso": "2026-10-31",
+              "absolute": "Oct 31, 2026",
+              "relative": "in 23 days",
+              "display": "Oct 31, 2026 — in 23 days",
+              "daysFromToday": 23
+            },
+            "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55"
+          }
+        ],
         "totals": {
           "flights": 7,
           "flightTime": {
@@ -1191,6 +1287,22 @@ export const longNames = {
         }
       ],
       "canManage": true,
+      "aircraftModelOptions": [
+        {
+          "value": "Matrice 30T",
+          "label": "Matrice 30T"
+        },
+        {
+          "value": "Matrice 350 RTK",
+          "label": "Matrice 350 RTK"
+        },
+        {
+          "value": "Mavic 3 Enterprise",
+          "label": "Mavic 3 Enterprise"
+        }
+      ],
+      "saving": false,
+      "fieldErrors": {},
       "empty": {
         "title": "No batteries yet",
         "body": "Add batteries to track cycle counts automatically from your flights and get retirement warnings.",
@@ -1721,6 +1833,29 @@ export const longNames = {
           "altitude": 0
         }
       ],
+      "preflight": {
+        "decision": "caution",
+        "checks": [
+          {
+            "key": "pilot",
+            "label": "Pilot · Maximilian Alexander Featherstonehaugh-Montgomery III",
+            "level": "green",
+            "detail": "Certificate and recurrent training current"
+          },
+          {
+            "key": "aircraft",
+            "label": "Aircraft · Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+            "level": "amber",
+            "detail": "Registration due soon"
+          },
+          {
+            "key": "battery:0199c4a0-0000-7000-8000-0000004c4b5c",
+            "label": "Battery · Northern #1",
+            "level": "green",
+            "detail": "132 of 200 cycles"
+          }
+        ]
+      },
       "canEdit": true
     },
     "logFlight": {
@@ -1769,10 +1904,11 @@ export const longNames = {
           "value": "0199c4a0-0000-7000-8000-0000004c4b55",
           "label": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "recent": false
+          "recent": false,
+          "model": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b58",
@@ -1781,7 +1917,8 @@ export const longNames = {
             "level": "red",
             "label": "Grounded"
           },
-          "recent": false
+          "recent": false,
+          "model": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b5b",
@@ -1790,7 +1927,8 @@ export const longNames = {
             "level": "amber",
             "label": "Expires in 19 days"
           },
-          "recent": true
+          "recent": true,
+          "model": "Matrice 350 RTK"
         }
       ],
       "batteryOptions": [
@@ -1800,7 +1938,8 @@ export const longNames = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b57",
@@ -1808,7 +1947,8 @@ export const longNames = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b59",
@@ -1816,7 +1956,8 @@ export const longNames = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b5a",
@@ -1824,7 +1965,8 @@ export const longNames = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b5c",
@@ -1832,7 +1974,8 @@ export const longNames = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000004c4b5d",
@@ -1840,7 +1983,8 @@ export const longNames = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         }
       ],
       "siteOptions": [
@@ -1904,8 +2048,362 @@ export const longNames = {
       ],
       "warnings": [],
       "altitudeUnitLabel": "ft",
+      "preflight": {
+        "decision": "caution",
+        "checks": [
+          {
+            "key": "pilot",
+            "label": "Pilot · Maximilian Alexander Featherstonehaugh-Montgomery III",
+            "level": "green",
+            "detail": "Certificate and recurrent training current"
+          },
+          {
+            "key": "aircraft",
+            "label": "Aircraft · Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+            "level": "amber",
+            "detail": "Registration due soon"
+          },
+          {
+            "key": "battery:0199c4a0-0000-7000-8000-0000004c4b5c",
+            "label": "Battery · Northern #1",
+            "level": "green",
+            "detail": "132 of 200 cycles"
+          }
+        ]
+      },
       "fieldErrors": {},
       "saving": false
+    },
+    "maintenance": {
+      "loading": false,
+      "error": null,
+      "due": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4ba4",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000004c4b55",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "2 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4ba5",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000004c4b55",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "7 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4ba9",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000004c4b5b",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "3 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4ba8",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000004c4b5b",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "0.6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4ba7",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000004c4b58",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "2 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4ba6",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000004c4b58",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "0.3 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        }
+      ],
+      "history": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4d35",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4d37",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4d39",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4d34",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4d36",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4d38",
+          "target": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "signedOff": false
+        }
+      ],
+      "targetOptions": [
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000004c4b55",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000004c4b58",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000004c4b5b",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000004c4b56",
+          "label": "Battery Northern #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000004c4b57",
+          "label": "Battery Northern #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000004c4b59",
+          "label": "Battery Northern #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000004c4b5a",
+          "label": "Battery Northern #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000004c4b5c",
+          "label": "Battery Northern #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000004c4b5d",
+          "label": "Battery Northern #2"
+        }
+      ],
+      "canManage": true,
+      "saving": false,
+      "empty": {
+        "title": "No maintenance schedules",
+        "body": "Add schedules by flight hours, flights, or calendar days. Certa counts usage from your logbook and warns before anything is due.",
+        "actionLabel": "Add schedule"
+      }
+    },
+    "insurance": {
+      "loading": false,
+      "error": null,
+      "policies": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000004c4b41",
+          "carrier": "Skyward Aviation Insurance",
+          "policyNumber": "SAI-05-448812",
+          "coverageSummary": "Commercial UAS liability, $1M per occurrence; hull coverage at agreed value.",
+          "liabilityLimit": "$1,000,000",
+          "effective": {
+            "iso": "2025-11-01",
+            "absolute": "Nov 1, 2025",
+            "relative": "11 months ago",
+            "display": "Nov 1, 2025 — 11 months ago",
+            "daysFromToday": -341
+          },
+          "expires": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          },
+          "coveredAircraft": [
+            {
+              "id": "0199c4a0-0000-7000-8000-0000004c4b55",
+              "name": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000004c4b58",
+              "name": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration"
+            }
+          ]
+        }
+      ],
+      "uncoveredAircraft": [
+        {
+          "id": "0199c4a0-0000-7000-8000-0000004c4b5b",
+          "name": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration"
+        }
+      ],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b55",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b58",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b5b",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration"
+        }
+      ],
+      "canManage": true,
+      "saving": false,
+      "empty": {
+        "title": "No insurance on file",
+        "body": "Add your liability and hull policies. Certa links them to aircraft and warns 30 days before they lapse.",
+        "actionLabel": "Add policy"
+      }
     },
     "rulePackAdmin": {
       "loading": false,

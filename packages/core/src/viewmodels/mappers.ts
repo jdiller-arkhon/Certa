@@ -429,6 +429,8 @@ const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; req
   { id: 'pilots', label: 'Pilots', href: '/pilots', icon: 'pilots', requires: 'pilots.read' },
   { id: 'aircraft', label: 'Aircraft', href: '/aircraft', icon: 'aircraft', requires: 'aircraft.read' },
   { id: 'batteries', label: 'Batteries', href: '/batteries', icon: 'batteries', requires: 'batteries.read' },
+  { id: 'maintenance', label: 'Maintenance', href: '/maintenance', icon: 'maintenance', requires: 'maintenance.read' },
+  { id: 'insurance', label: 'Insurance', href: '/insurance', icon: 'insurance', requires: 'aircraft.read' },
   { id: 'rules', label: 'Rule pack', href: '/admin/rules', icon: 'admin', requires: 'rules.read' },
   { id: 'members', label: 'Members', href: '/admin/members', icon: 'admin', requires: 'members.read' },
   { id: 'audit', label: 'Audit log', href: '/admin/audit', icon: 'records', requires: 'audit.read' },

@@ -9,6 +9,7 @@
  * receive shell props themselves.
  */
 import type { Airframe, ReadinessLevel, Role } from '../domain/enums.js';
+import type { GoNoGoResult } from '../fleet/fleet.js';
 import type {
   AppShellCallbacks,
   AsyncState,
@@ -385,7 +386,21 @@ export interface BatteryListScreenProps extends AsyncState {
   batteries: BatteryRowViewModel[];
   canManage: boolean;
   empty: EmptyState;
+  /** Aircraft models in the fleet, for "fits" on the add-battery form. */
+  aircraftModelOptions: { value: string; label: string }[];
+  saving: boolean;
+  fieldErrors: Record<string, string>;
+  /** Opens the add-battery form (the screen owns the dialog). */
   onAddBattery: () => void;
+  onCreateBattery: (input: {
+    serialNumber: string;
+    label: string | null;
+    aircraftModel: string | null;
+    cellCount: number | null;
+    ratedCapacityMah: number | null;
+    maxCycles: number | null;
+  }) => void;
+  onRetireBattery: (batteryId: string) => void;
   onOpenBattery: (batteryId: string) => void;
 }
 
@@ -444,6 +459,8 @@ export interface FlightDetailScreenProps extends AsyncState {
   /** GeoJSON LineString for the map; null when no path. */
   path: unknown | null;
   altitudeProfile: { t: number; altitude: number }[];
+  /** Pre-flight go / no-go recorded when the flight was logged; null for imports and older records. */
+  preflight: GoNoGoResult | null;
   canEdit: boolean;
   onEdit: () => void;
   onDelete: () => void;
@@ -465,15 +482,22 @@ export interface LogFlightScreenProps extends AsyncState {
   };
   hasLastFlight: boolean;
   pilotOptions: { value: string; label: string; status: StatusBadge }[];
-  aircraftOptions: { value: string; label: string; status: StatusBadge; recent: boolean }[];
-  batteryOptions: { value: string; label: string; status: StatusBadge }[];
+  aircraftOptions: { value: string; label: string; status: StatusBadge; recent: boolean; model: string }[];
+  /** `aircraftModel` null = fits any aircraft. */
+  batteryOptions: { value: string; label: string; status: StatusBadge; aircraftModel: string | null }[];
   siteOptions: { value: string; label: string; recent: boolean }[];
   operationTypeOptions: { value: string; label: string }[];
   /** Pre-flight warnings, e.g. "Recurrent training expired". Never blocks logging. */
   warnings: ReadinessReason[];
   altitudeUnitLabel: string;
+  /**
+   * Pre-flight go / no-go for the current selection, computed by the host from records on file
+   * (it recomputes when `onSelectionChange` fires). Advisory: never blocks logging. Stored with the flight.
+   */
+  preflight: GoNoGoResult | null;
   fieldErrors: Record<string, string>;
   saving: boolean;
+  onSelectionChange: (selection: { pilotId: string; aircraftId: string | null; batteryIds: string[] }) => void;
   onSameAsLast: () => void;
   onSubmit: (input: {
     pilotId: string;
@@ -533,12 +557,91 @@ export interface ImportScreenProps extends AsyncState {
   onCancel: () => void;
 }
 
-/** @status draft — Phase 4 — route: /maintenance */
+export interface MaintenanceDueRowViewModel {
+  /** Schedule id. */
+  id: string;
+  target: string;
+  /** Matches a `targetOptions` value. */
+  targetKey: string;
+  targetHref: string;
+  name: string;
+  /** e.g. "Every 50 h · 90 days". */
+  interval: string;
+  due: DateDisplay | null;
+  /** e.g. "42 h of 50 h · 120 of 200 flights"; null for calendar-only schedules. */
+  usage: string | null;
+  status: StatusBadge;
+  /** Overdue grounds the aircraft. */
+  grounds: boolean;
+}
+
+export interface MaintenanceHistoryRowViewModel {
+  id: string;
+  target: string;
+  targetHref: string;
+  performed: DateDisplay;
+  kind: 'Scheduled' | 'Unscheduled';
+  scheduleName: string | null;
+  description: string;
+  performedBy: string;
+  signedOff: boolean;
+}
+
+/** @status beta — route: /maintenance */
 export interface MaintenanceScreenProps extends AsyncState {
-  due: { id: string; target: string; name: string; due: DateDisplay | null; usage: string | null; status: StatusBadge }[];
-  history: { id: string; target: string; performed: DateDisplay; description: string; signedOff: boolean }[];
-  onLogMaintenance: (scheduleId: string | null) => void;
+  /** Worst-first. */
+  due: MaintenanceDueRowViewModel[];
+  history: MaintenanceHistoryRowViewModel[];
+  /** Value is `${type}:${id}`. */
+  targetOptions: { value: string; label: string }[];
+  canManage: boolean;
+  saving: boolean;
+  empty: EmptyState;
+  onAddSchedule: (input: {
+    target: string;
+    name: string;
+    everyHours: number | null;
+    everyFlights: number | null;
+    everyDays: number | null;
+    groundsWhenOverdue: boolean;
+  }) => void;
+  onLogMaintenance: (input: { scheduleId: string | null; target: string; performedOn: string; performedBy: string; description: string }) => void;
+  onRemoveSchedule: (scheduleId: string) => void;
   onOpenTarget: (href: string) => void;
+}
+
+export interface InsurancePolicyViewModel {
+  id: string;
+  carrier: string;
+  policyNumber: string;
+  coverageSummary: string | null;
+  liabilityLimit: string | null;
+  effective: DateDisplay;
+  expires: DateDisplay;
+  status: StatusBadge;
+  coveredAircraft: { id: string; name: string }[];
+}
+
+/** @status beta — route: /insurance */
+export interface InsuranceScreenProps extends AsyncState {
+  policies: InsurancePolicyViewModel[];
+  /** Active aircraft no policy covers today. */
+  uncoveredAircraft: { id: string; name: string }[];
+  aircraftOptions: { value: string; label: string }[];
+  canManage: boolean;
+  saving: boolean;
+  empty: EmptyState;
+  onAddPolicy: (input: {
+    carrier: string;
+    policyNumber: string;
+    coverageSummary: string | null;
+    liabilityLimitDollars: number | null;
+    effectiveOn: string;
+    expiresOn: string;
+    coveredAircraftIds: string[];
+  }) => void;
+  onRemovePolicy: (policyId: string) => void;
+  onOpenAircraft: (aircraftId: string) => void;
 }
 
 /** @status draft — Phase 4 — route: /checklists */

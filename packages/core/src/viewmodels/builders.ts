@@ -5,12 +5,12 @@
  * container adds the callbacks.
  */
 import { can } from '../domain/permissions.js';
-import type { Flight, WeatherSnapshot } from '../domain/entities.js';
+import type { Flight, MaintenanceEvent, WeatherSnapshot } from '../domain/entities.js';
 import type { Role, UnitsPreference } from '../domain/enums.js';
-import { fleetReadiness, type FleetReadiness, type FleetSnapshot } from '../fleet/fleet.js';
+import { fleetReadiness, maintenanceItems, type FleetReadiness, type FleetSnapshot, type GoNoGoResult } from '../fleet/fleet.js';
 import { addDays, displayDate, displayInstant } from '../format/dates.js';
 import { formatDuration, formatLength, formatMass, formatSpeed, formatTemperature } from '../format/units.js';
-import type { ReadinessSummary } from '../readiness/readiness.js';
+import { DEFAULT_READINESS_POLICY, evaluateItem, type ReadinessSummary } from '../readiness/readiness.js';
 import type { EmptyState, Paged } from './common.js';
 import {
   aircraftName,
@@ -33,7 +33,9 @@ import type {
   FlightDetailScreenProps,
   FlightListScreenProps,
   FlightRowViewModel,
+  InsuranceScreenProps,
   LogFlightScreenProps,
+  MaintenanceScreenProps,
   PilotDetailScreenProps,
   PilotListScreenProps,
   ReadinessDashboardScreenProps,
@@ -213,6 +215,9 @@ export function buildBatteryList(i: BuildInput): ScreenData<BatteryListScreenPro
     ...OK,
     batteries: s.batteries.filter((b) => !b.deletedAt).map((b) => toBatteryRow(b, s.batteryLastUsed[b.id] ?? null, ctx)),
     canManage: can(i.role, 'batteries.manage'),
+    aircraftModelOptions: [...new Set(s.aircraft.filter((a) => !a.deletedAt && a.status !== 'retired').map((a) => a.model))].sort().map((m) => ({ value: m, label: m })),
+    saving: false,
+    fieldErrors: {},
     empty: empty('No batteries yet', 'Add batteries to track cycle counts automatically from your flights and get retirement warnings.', 'Add battery'),
   };
 }
@@ -259,7 +264,7 @@ export function weatherSummary(w: WeatherSnapshot | null, units: UnitsPreference
   return parts.length ? parts.join(', ') : null;
 }
 
-export function buildFlightDetail(i: BuildInput, f: Flight | null, extra: { path?: unknown | null; altitudeProfile?: { t: number; altitude: number }[]; integrity?: { contentHash: string; verified: boolean | null } | null } = {}): ScreenData<FlightDetailScreenProps> {
+export function buildFlightDetail(i: BuildInput, f: Flight | null, extra: { path?: unknown | null; altitudeProfile?: { t: number; altitude: number }[]; integrity?: { contentHash: string; verified: boolean | null } | null; preflight?: GoNoGoResult | null } = {}): ScreenData<FlightDetailScreenProps> {
   const { snapshot: s, ctx } = i;
   const n = fleetNames(s);
   return {
@@ -288,6 +293,7 @@ export function buildFlightDetail(i: BuildInput, f: Flight | null, extra: { path
       : null,
     path: extra.path ?? null,
     altitudeProfile: extra.altitudeProfile ?? [],
+    preflight: extra.preflight ?? null,
     canEdit: can(i.role, 'flights.edit'),
   };
 }
@@ -316,14 +322,134 @@ export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | n
     },
     hasLastFlight: !!last,
     pilotOptions: activePilots.map((p) => ({ value: p.id, label: p.displayName, status: badgeFromSummary(r.pilots.get(p.id)!) })),
-    aircraftOptions: flyable.map((a) => ({ value: a.id, label: aircraftName(a), status: toAircraftRow(a, r.aircraft.get(a.id) ?? { level: 'green', items: [], reasons: [] }).status, recent: recentAircraft.has(a.id) })),
-    batteryOptions: s.batteries.filter((b) => !b.deletedAt && b.status !== 'retired').map((b) => ({ value: b.id, label: b.label ?? b.serialNumber, status: toBatteryRow(b, null, ctx).status })),
+    aircraftOptions: flyable.map((a) => ({ value: a.id, label: aircraftName(a), status: toAircraftRow(a, r.aircraft.get(a.id) ?? { level: 'green', items: [], reasons: [] }).status, recent: recentAircraft.has(a.id), model: a.model })),
+    batteryOptions: s.batteries.filter((b) => !b.deletedAt && b.status !== 'retired').map((b) => ({ value: b.id, label: b.label ?? b.serialNumber, status: toBatteryRow(b, null, ctx).status, aircraftModel: b.aircraftModel ?? null })),
     siteOptions: s.recentLocations.slice(0, 8).map((name, idx) => ({ value: name, label: name, recent: idx < 3 })),
     operationTypeOptions: ['commercial', 'training', 'public_safety', 'maintenance_test', 'other'].map((v) => ({ value: v, label: OPERATION_TYPE_LABEL[v]! })),
     warnings: ps ? ps.reasons.map((x) => reasonFromItem(x, ctx.today, `/pilots/${pilotId}`)) : [],
     altitudeUnitLabel: ctx.units.length,
+    preflight: null,
     fieldErrors: {},
     saving: false,
+  };
+}
+
+const LEVEL_RANK = { red: 0, amber: 1, green: 2 } as const;
+
+function hours(seconds: number): string {
+  const h = seconds / 3600;
+  return `${h >= 10 ? Math.round(h) : Math.round(h * 10) / 10} h`;
+}
+
+/** Maintenance targets in the fleet (aircraft and batteries), keyed `${type}:${id}`. */
+function maintenanceTargets(s: FleetSnapshot) {
+  const out = new Map<string, { label: string; href: string; flightSeconds: number; flights: number }>();
+  for (const a of s.aircraft.filter((x) => !x.deletedAt))
+    out.set(`aircraft:${a.id}`, { label: aircraftName(a), href: `/aircraft/${a.id}`, flightSeconds: a.totalFlightSeconds, flights: a.totalFlights });
+  for (const b of s.batteries.filter((x) => !x.deletedAt))
+    out.set(`battery:${b.id}`, { label: `Battery ${b.label ?? b.serialNumber}`, href: '/batteries', flightSeconds: 0, flights: b.cycleCount });
+  return out;
+}
+
+export function buildMaintenance(i: BuildInput, events: MaintenanceEvent[]): ScreenData<MaintenanceScreenProps> {
+  const { snapshot: s, ctx } = i;
+  const targets = maintenanceTargets(s);
+  const policy = ctx.policy ?? DEFAULT_READINESS_POLICY;
+  const scheduleNames = new Map(s.maintenanceSchedules.map((m) => [m.id, m.name]));
+  const due = s.maintenanceSchedules
+    .filter((m) => !m.deletedAt && targets.has(`${m.target.type}:${m.target.id}`))
+    .map((m) => {
+      const t = targets.get(`${m.target.type}:${m.target.id}`)!;
+      const item = evaluateItem(maintenanceItems({ type: m.target.type, id: m.target.id, flightSeconds: t.flightSeconds, flights: t.flights }, [m])[0]!, ctx.today, policy);
+      const interval = [m.everyFlightSeconds && hours(m.everyFlightSeconds), m.everyFlights && `${m.everyFlights} ${m.target.type === 'battery' ? 'cycles' : 'flights'}`, m.everyDays && `${m.everyDays} days`].filter(Boolean).join(' · ');
+      const usage = [
+        m.everyFlightSeconds && `${hours(Math.max(0, t.flightSeconds - (m.lastDoneFlightSeconds ?? 0)))} of ${hours(m.everyFlightSeconds)}`,
+        m.everyFlights && `${Math.max(0, t.flights - (m.lastDoneFlights ?? 0))} of ${m.everyFlights} ${m.target.type === 'battery' ? 'cycles' : 'flights'}`,
+      ].filter(Boolean).join(' · ');
+      const label =
+        item.level === 'green' ? 'Current' : item.blocking ? 'Overdue — grounds aircraft' : item.daysRemaining != null && item.daysRemaining < 0 ? 'Overdue' : (item.usageFraction ?? 0) >= 1 ? 'Overdue' : 'Due soon';
+      return {
+        row: {
+          id: m.id,
+          target: t.label,
+          targetKey: `${m.target.type}:${m.target.id}`,
+          targetHref: t.href,
+          name: m.name,
+          interval: interval ? `Every ${interval}` : 'No interval',
+          due: item.dueOn ? displayDate(item.dueOn, ctx.today) : null,
+          usage: usage || null,
+          status: { level: item.level, label },
+          grounds: m.groundsWhenOverdue,
+        },
+        sortKey: [LEVEL_RANK[item.level], -(item.usageFraction ?? 0), item.daysRemaining ?? Infinity] as const,
+      };
+    })
+    .sort((a, b) => a.sortKey[0] - b.sortKey[0] || a.sortKey[1] - b.sortKey[1] || a.sortKey[2] - b.sortKey[2])
+    .map((x) => x.row);
+  return {
+    ...OK,
+    due,
+    history: events
+      .filter((e) => !e.deletedAt)
+      .map((e) => {
+        const t = targets.get(`${e.target.type}:${e.target.id}`);
+        return {
+          id: e.id,
+          target: t?.label ?? 'Component',
+          targetHref: t?.href ?? '/maintenance',
+          performed: displayInstant(e.performedAt, ctx.orgTimeZone, ctx.now),
+          kind: e.kind === 'scheduled' ? ('Scheduled' as const) : ('Unscheduled' as const),
+          scheduleName: e.scheduleId ? (scheduleNames.get(e.scheduleId) ?? null) : null,
+          description: e.description,
+          performedBy: e.performedBy,
+          signedOff: !!e.signedOffAt,
+        };
+      }),
+    targetOptions: [...targets.entries()].filter(([k]) => !k.startsWith('aircraft:') || s.aircraft.find((a) => `aircraft:${a.id}` === k)?.status !== 'retired').map(([value, t]) => ({ value, label: t.label })),
+    canManage: can(i.role, 'maintenance.manage'),
+    saving: false,
+    empty: empty('No maintenance schedules', 'Add schedules by flight hours, flights, or calendar days. Certa counts usage from your logbook and warns before anything is due.', 'Add schedule'),
+  };
+}
+
+function money(cents: number | null): string | null {
+  if (cents == null) return null;
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(cents / 100);
+}
+
+export function buildInsurance(i: BuildInput): ScreenData<InsuranceScreenProps> {
+  const { snapshot: s, ctx } = i;
+  const policy = ctx.policy ?? DEFAULT_READINESS_POLICY;
+  const names = new Map(s.aircraft.map((a) => [a.id, aircraftName(a)]));
+  const policies = s.insurancePolicies
+    .filter((p) => !p.deletedAt)
+    .sort((a, b) => a.expiresOn.localeCompare(b.expiresOn))
+    .map((p) => {
+      const ev = evaluateItem({ kind: 'insurance', subjectType: 'aircraft', subjectId: p.id, key: p.id, label: 'Policy', dueOn: p.expiresOn, usageFraction: null, blocking: false, ruleId: null }, ctx.today, policy);
+      const notYet = p.effectiveOn > ctx.today;
+      const label = notYet ? `Starts ${displayDate(p.effectiveOn, ctx.today).relative}` : ev.level === 'green' ? 'In force' : ev.daysRemaining! < 0 ? 'Expired' : `Expires ${displayDate(p.expiresOn, ctx.today).relative}`;
+      return {
+        id: p.id,
+        carrier: p.carrier,
+        policyNumber: p.policyNumber,
+        coverageSummary: p.coverageSummary,
+        liabilityLimit: money(p.liabilityLimitCents),
+        effective: displayDate(p.effectiveOn, ctx.today),
+        expires: displayDate(p.expiresOn, ctx.today),
+        status: { level: notYet ? ('amber' as const) : ev.level, label },
+        coveredAircraft: p.coveredAircraftIds.filter((id) => names.has(id)).map((id) => ({ id, name: names.get(id)! })),
+      };
+    });
+  const covered = new Set(s.insurancePolicies.filter((p) => !p.deletedAt && p.effectiveOn <= ctx.today && p.expiresOn >= ctx.today).flatMap((p) => p.coveredAircraftIds));
+  const active = s.aircraft.filter((a) => !a.deletedAt && a.status !== 'retired');
+  return {
+    ...OK,
+    policies,
+    uncoveredAircraft: active.filter((a) => !covered.has(a.id)).map((a) => ({ id: a.id, name: aircraftName(a) })),
+    aircraftOptions: active.map((a) => ({ value: a.id, label: aircraftName(a) })),
+    canManage: can(i.role, 'aircraft.manage'),
+    saving: false,
+    empty: empty('No insurance on file', 'Add your liability and hull policies. Certa links them to aircraft and warns 30 days before they lapse.', 'Add policy'),
   };
 }
 

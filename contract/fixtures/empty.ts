@@ -68,6 +68,22 @@ export const empty = {
         "badge": null
       },
       {
+        "id": "maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "icon": "maintenance",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "icon": "insurance",
+        "active": false,
+        "badge": null
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -206,6 +222,22 @@ export const empty = {
         "label": "Batteries",
         "href": "/batteries",
         "icon": "batteries",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "icon": "maintenance",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "icon": "insurance",
         "active": false,
         "badge": null
       },
@@ -403,6 +435,9 @@ export const empty = {
       "error": null,
       "batteries": [],
       "canManage": true,
+      "aircraftModelOptions": [],
+      "saving": false,
+      "fieldErrors": {},
       "empty": {
         "title": "No batteries yet",
         "body": "Add batteries to track cycle counts automatically from your flights and get retirement warnings.",
@@ -446,6 +481,7 @@ export const empty = {
       "flight": null,
       "path": null,
       "altitudeProfile": [],
+      "preflight": null,
       "canEdit": true
     },
     "logFlight": {
@@ -489,8 +525,37 @@ export const empty = {
       ],
       "warnings": [],
       "altitudeUnitLabel": "ft",
+      "preflight": null,
       "fieldErrors": {},
       "saving": false
+    },
+    "maintenance": {
+      "loading": false,
+      "error": null,
+      "due": [],
+      "history": [],
+      "targetOptions": [],
+      "canManage": true,
+      "saving": false,
+      "empty": {
+        "title": "No maintenance schedules",
+        "body": "Add schedules by flight hours, flights, or calendar days. Certa counts usage from your logbook and warns before anything is due.",
+        "actionLabel": "Add schedule"
+      }
+    },
+    "insurance": {
+      "loading": false,
+      "error": null,
+      "policies": [],
+      "uncoveredAircraft": [],
+      "aircraftOptions": [],
+      "canManage": true,
+      "saving": false,
+      "empty": {
+        "title": "No insurance on file",
+        "body": "Add your liability and hull policies. Certa links them to aircraft and warns 30 days before they lapse.",
+        "actionLabel": "Add policy"
+      }
     },
     "rulePackAdmin": {
       "loading": false,

@@ -73,6 +73,7 @@ export type NavIcon =
   | 'aircraft'
   | 'batteries'
   | 'maintenance'
+  | 'insurance'
   | 'missions'
   | 'incidents'
   | 'records'

@@ -11,7 +11,10 @@ import {
   buildBatteryList,
   buildFlightDetail,
   buildFlightList,
+  buildInsurance,
   buildLogFlight,
+  buildMaintenance,
+  goNoGo,
   buildPilotDetail,
   buildPilotList,
   buildReadinessDashboard,
@@ -49,6 +52,9 @@ import {
   type Credential,
   type FleetSnapshot,
   type BuildInput,
+  type InsurancePolicy,
+  type MaintenanceEvent,
+  type MaintenanceSchedule,
   type Flight,
   type MapContext,
   type Pilot,
@@ -303,6 +309,110 @@ function buildWorld(opts: {
   };
 }
 
+// ---------------------------------------------------------------- insurance + maintenance (derived from the world, deterministic)
+
+const entityBase = (w: World, n: number) => ({
+  id: `0199c4a0-0000-7000-9000-${(w.seed * 1_000_000 + n).toString(16).padStart(12, '0')}`,
+  orgId: w.org.id,
+  createdAt: '2026-01-15T17:00:00.000Z',
+  updatedAt: '2026-01-15T17:00:00.000Z',
+  createdBy: w.currentUser.id,
+  deletedAt: null,
+});
+
+function insuranceFor(w: World): InsurancePolicy[] {
+  const active = w.aircraft.filter((a) => a.status !== 'retired');
+  if (!active.length) return [];
+  const lapsed = w.id === 'expired';
+  return [
+    {
+      ...entityBase(w, 1),
+      carrier: 'Skyward Aviation Insurance',
+      policyNumber: `SAI-${String(w.seed).padStart(2, '0')}-448812`,
+      coverageSummary: 'Commercial UAS liability, $1M per occurrence; hull coverage at agreed value.',
+      liabilityLimitCents: 100_000_000,
+      effectiveOn: lapsed ? '2025-09-01' : '2025-11-01',
+      expiresOn: lapsed ? '2026-09-01' : '2026-10-31',
+      // Leave the newest aircraft off the policy so "not covered" has something to show.
+      coveredAircraftIds: active.slice(0, Math.max(1, active.length - 1)).map((a) => a.id),
+      documentIds: [],
+    },
+  ];
+}
+
+function schedulesFor(w: World): MaintenanceSchedule[] {
+  const propsDue = w.aircraft.find((a, i) => i > 0 && a.status !== 'retired' && a.totalFlights >= 28)?.id;
+  return w.aircraft
+    .filter((a) => a.status !== 'retired')
+    .flatMap((a, i) => {
+      // One aircraft's props are nearly due (overdue in the "expired" scenario).
+      const props: MaintenanceSchedule[] =
+        a.id === propsDue
+          ? [
+              {
+                ...entityBase(w, 300 + i),
+                name: 'Propeller replacement',
+                target: { type: 'aircraft' as const, id: a.id },
+                everyFlightSeconds: null,
+                everyFlights: 25,
+                everyDays: null,
+                lastDoneAt: '2026-08-10T16:00:00.000Z',
+                lastDoneFlightSeconds: null,
+                lastDoneFlights: a.totalFlights - (w.id === 'expired' ? 27 : 23),
+                groundsWhenOverdue: true,
+              },
+            ]
+          : [];
+      return [
+        ...props,
+        {
+          ...entityBase(w, 100 + i * 2),
+          name: 'Motor and propeller inspection',
+          target: { type: 'aircraft' as const, id: a.id },
+          everyFlightSeconds: 50 * 3600,
+          everyFlights: null,
+          everyDays: null,
+          lastDoneAt: '2026-06-01T16:00:00.000Z',
+          lastDoneFlightSeconds: Math.max(0, a.totalFlightSeconds - 6 * 3600),
+          lastDoneFlights: null,
+          groundsWhenOverdue: true,
+        },
+        {
+          ...entityBase(w, 101 + i * 2),
+          name: 'Airframe and gimbal inspection',
+          target: { type: 'aircraft' as const, id: a.id },
+          everyFlightSeconds: null,
+          everyFlights: 200,
+          everyDays: 180,
+          lastDoneAt: w.id === 'expired' ? '2026-02-01T16:00:00.000Z' : '2026-07-20T16:00:00.000Z',
+          lastDoneFlightSeconds: null,
+          lastDoneFlights: Math.max(0, a.totalFlights - 40),
+          groundsWhenOverdue: false,
+        },
+      ];
+    });
+}
+
+function maintenanceHistoryFor(w: World, schedules: MaintenanceSchedule[]): MaintenanceEvent[] {
+  return schedules
+    .filter((s) => s.lastDoneAt)
+    .map((s, i) => ({
+      ...entityBase(w, 500 + i),
+      kind: 'scheduled' as const,
+      scheduleId: s.id,
+      target: s.target,
+      performedAt: s.lastDoneAt!,
+      performedBy: w.members.find((m) => m.role === 'maintenance_tech')?.name ?? w.currentUser.name,
+      description: s.name.startsWith('Motor') ? 'Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).' : 'Airframe, arms, and gimbal dampers inspected. No defects found.',
+      partsReplaced: s.name.startsWith('Motor') ? [{ name: 'Propeller', serialNumber: null }, { name: 'Propeller', serialNumber: null }] : [],
+      flightSecondsAtService: s.lastDoneFlightSeconds,
+      signedOffByUserId: null,
+      signedOffAt: null,
+      documentIds: [],
+    }))
+    .sort((a, b) => b.performedAt.localeCompare(a.performedAt));
+}
+
 // ---------------------------------------------------------------- world → screens
 
 function toScenario(w: World): FixtureScenario {
@@ -365,8 +475,8 @@ function toScenario(w: World): FixtureScenario {
     credentials: w.credentials,
     aircraft: w.aircraft,
     batteries: w.batteries,
-    insurancePolicies: [],
-    maintenanceSchedules: [],
+    insurancePolicies: insuranceFor(w),
+    maintenanceSchedules: schedulesFor(w),
     pilotTotals: Object.fromEntries(
       w.pilots.map((p) => {
         const t = flightTotals((f) => f.pilotInCommandId === p.id);
@@ -400,13 +510,20 @@ function toScenario(w: World): FixtureScenario {
         { flights: w.flights.length, flightSeconds: w.flights.reduce((t, f) => t + f.durationSeconds, 0) },
       ),
       flightDetail: buildFlightDetail(bi, f0 ?? null, {
+        preflight: f0 && f0.source === 'manual' ? goNoGo(snapshot, { pilotId: f0.pilotInCommandId, aircraftId: f0.aircraftId, batteryIds: f0.batteries.map((b) => b.batteryId) }, ctx) : null,
         // Fixtures have no recorded track; draw a plausible one so the map and profile render.
         path: f0?.hasPath
           ? { type: 'LineString', coordinates: Array.from({ length: 24 }, (_, i) => [f0.takeoffPoint!.lon + Math.sin(i / 4) * 0.002, f0.takeoffPoint!.lat + i * 0.0001, 1650 + Math.min(i, 12) * 6]) }
           : null,
         altitudeProfile: f0 ? Array.from({ length: 24 }, (_, i) => ({ t: Math.round((f0.durationSeconds / 23) * i), altitude: Math.round(Math.min(i, 12, 23 - i) * ((f0.maxAltitudeAglM ?? 60) / 12) / 0.3048) })) : [],
       }),
-      logFlight: buildLogFlight(bi, { currentPilotId: p0?.id ?? null, now: NOW }),
+      logFlight: (() => {
+        const lf = buildLogFlight(bi, { currentPilotId: p0?.id ?? null, now: NOW });
+        const d = lf.defaults;
+        return { ...lf, preflight: d.pilotId && d.aircraftId ? goNoGo(snapshot, { pilotId: d.pilotId, aircraftId: d.aircraftId, batteryIds: d.batteryIds }, ctx) : null };
+      })(),
+      maintenance: buildMaintenance(bi, maintenanceHistoryFor(w, snapshot.maintenanceSchedules)),
+      insurance: buildInsurance(bi),
       rulePackAdmin: {
         ...ok,
         pack: {

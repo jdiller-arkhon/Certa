@@ -68,6 +68,22 @@ export const company = {
         "badge": null
       },
       {
+        "id": "maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "icon": "maintenance",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "icon": "insurance",
+        "active": false,
+        "badge": null
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -210,6 +226,22 @@ export const company = {
         "badge": null
       },
       {
+        "id": "maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "icon": "maintenance",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "icon": "insurance",
+        "active": false,
+        "badge": null
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -311,8 +343,8 @@ export const company = {
         "label": "Some pilots or aircraft are not legal to fly"
       },
       "counts": {
-        "green": 14,
-        "amber": 2,
+        "green": 9,
+        "amber": 7,
         "red": 5
       },
       "pilots": [
@@ -501,10 +533,23 @@ export const company = {
           "name": "Falcon 1",
           "subtitle": "Reg. FA3XXX1179",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd",
           "airframe": "quad"
         },
@@ -522,6 +567,18 @@ export const company = {
               "text": "Grounded: Gimbal damage after hard landing — incident open",
               "due": null,
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2"
+            },
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2"
             }
           ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2",
@@ -533,9 +590,15 @@ export const company = {
           "subtitle": "Reg. FA3XXX12PJ",
           "status": {
             "level": "amber",
-            "label": "Expires in 19 days"
+            "label": "Attention"
           },
           "reasons": [
+            {
+              "level": "amber",
+              "text": "Propeller replacement nearing limit",
+              "due": null,
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7"
+            },
             {
               "level": "amber",
               "text": "Registration due soon",
@@ -545,6 +608,18 @@ export const company = {
                 "relative": "in 19 days",
                 "display": "Oct 27, 2026 — in 19 days",
                 "daysFromToday": 19
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7"
+            },
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
               },
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7"
             }
@@ -557,10 +632,23 @@ export const company = {
           "name": "Skydio X10",
           "subtitle": "Reg. FA3XXX13GO",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc",
           "airframe": "quad"
         },
@@ -578,6 +666,18 @@ export const company = {
               "text": "Registration not on file",
               "due": null,
               "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1"
+            },
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1"
             }
           ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1",
@@ -588,10 +688,23 @@ export const company = {
           "name": "Freefly Astro",
           "subtitle": "Reg. FA3XXX14YY",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6",
           "airframe": "quad"
         },
@@ -600,10 +713,23 @@ export const company = {
           "name": "Raven 7",
           "subtitle": "Reg. FA3XXX15Q3",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb",
           "airframe": "fixed_wing_vtol"
         },
@@ -612,10 +738,23 @@ export const company = {
           "name": "DJI Matrice 600 Pro",
           "subtitle": "Reg. FA3XXX16H8",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "reasons": [],
+          "reasons": [
+            {
+              "level": "amber",
+              "text": "Insurance (Skyward Aviation Insurance) due soon",
+              "due": {
+                "iso": "2026-10-31",
+                "absolute": "Oct 31, 2026",
+                "relative": "in 23 days",
+                "display": "Oct 31, 2026 — in 23 days",
+                "daysFromToday": 23
+              },
+              "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0"
+            }
+          ],
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0",
           "airframe": "hex"
         },
@@ -684,6 +823,110 @@ export const company = {
           },
           "level": "amber",
           "href": "/pilots/0199c4a0-0000-7000-8000-0000001e84b6"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Falcon 1",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "DJI Matrice 30T",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Osprey 3",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Skydio X10",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Merlin 5",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Freefly Astro",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "Raven 7",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb"
+        },
+        {
+          "label": "Insurance (Skyward Aviation Insurance)",
+          "subject": "DJI Matrice 600 Pro",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "level": "amber",
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0"
         },
         {
           "label": "Recurrent training (Part 107)",
@@ -1382,8 +1625,8 @@ export const company = {
           "serialNumber": "DJ17X10000",
           "registrationNumber": "FA3XXX1179",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
           "totalFlightTime": {
             "value": 31688,
@@ -1417,7 +1660,7 @@ export const company = {
           "registrationNumber": "FA3XXX12PJ",
           "status": {
             "level": "amber",
-            "label": "Expires in 19 days"
+            "label": "Attention"
           },
           "totalFlightTime": {
             "value": 32304,
@@ -1433,8 +1676,8 @@ export const company = {
           "serialNumber": "SKJJU10939",
           "registrationNumber": "FA3XXX13GO",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
           "totalFlightTime": {
             "value": 29723,
@@ -1467,8 +1710,8 @@ export const company = {
           "serialNumber": "FRVRS11565",
           "registrationNumber": "FA3XXX14YY",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
           "totalFlightTime": {
             "value": 25074,
@@ -1484,8 +1727,8 @@ export const company = {
           "serialNumber": "QU11VR11878",
           "registrationNumber": "FA3XXX15Q3",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
           "totalFlightTime": {
             "value": 17613,
@@ -1501,8 +1744,8 @@ export const company = {
           "serialNumber": "DJ17ZQ12191",
           "registrationNumber": "FA3XXX16H8",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
           "totalFlightTime": {
             "value": 20627,
@@ -1562,11 +1805,24 @@ export const company = {
         },
         "firmwareVersion": "v1.0.0",
         "status": {
-          "level": "green",
-          "label": "Airworthy"
+          "level": "amber",
+          "label": "Expires in 23 days"
         },
         "groundedReason": null,
-        "reasons": [],
+        "reasons": [
+          {
+            "level": "amber",
+            "text": "Insurance (Skyward Aviation Insurance) due soon",
+            "due": {
+              "iso": "2026-10-31",
+              "absolute": "Oct 31, 2026",
+              "relative": "in 23 days",
+              "display": "Oct 31, 2026 — in 23 days",
+              "daysFromToday": 23
+            },
+            "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd"
+          }
+        ],
         "totals": {
           "flights": 34,
           "flightTime": {
@@ -2559,6 +2815,46 @@ export const company = {
         }
       ],
       "canManage": true,
+      "aircraftModelOptions": [
+        {
+          "value": "Alta 8",
+          "label": "Alta 8"
+        },
+        {
+          "value": "Astro",
+          "label": "Astro"
+        },
+        {
+          "value": "EVO II Dual 640T",
+          "label": "EVO II Dual 640T"
+        },
+        {
+          "value": "Matrice 30T",
+          "label": "Matrice 30T"
+        },
+        {
+          "value": "Matrice 350 RTK",
+          "label": "Matrice 350 RTK"
+        },
+        {
+          "value": "Matrice 600 Pro",
+          "label": "Matrice 600 Pro"
+        },
+        {
+          "value": "Mavic 3 Enterprise",
+          "label": "Mavic 3 Enterprise"
+        },
+        {
+          "value": "Trinity F90+",
+          "label": "Trinity F90+"
+        },
+        {
+          "value": "X10",
+          "label": "X10"
+        }
+      ],
+      "saving": false,
+      "fieldErrors": {},
       "empty": {
         "title": "No batteries yet",
         "body": "Add batteries to track cycle counts automatically from your flights and get retirement warnings.",
@@ -8849,6 +9145,29 @@ export const company = {
           "altitude": 0
         }
       ],
+      "preflight": {
+        "decision": "no_go",
+        "checks": [
+          {
+            "key": "pilot",
+            "label": "Pilot · Hannah Kowalski",
+            "level": "red",
+            "detail": "Recurrent training (Part 107) expired"
+          },
+          {
+            "key": "aircraft",
+            "label": "Aircraft · Merlin 5",
+            "level": "red",
+            "detail": "Registration not on file"
+          },
+          {
+            "key": "battery:0199c4a0-0000-7000-8000-0000001e84e3",
+            "label": "Battery · Merlin #2",
+            "level": "green",
+            "detail": "165 of 200 cycles"
+          }
+        ]
+      },
       "canEdit": true
     },
     "logFlight": {
@@ -8969,10 +9288,11 @@ export const company = {
           "value": "0199c4a0-0000-7000-8000-0000001e84cd",
           "label": "Falcon 1",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "recent": false
+          "recent": false,
+          "model": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d2",
@@ -8981,25 +9301,28 @@ export const company = {
             "level": "red",
             "label": "Grounded"
           },
-          "recent": false
+          "recent": false,
+          "model": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d7",
           "label": "Osprey 3",
           "status": {
             "level": "amber",
-            "label": "Expires in 19 days"
+            "label": "Attention"
           },
-          "recent": false
+          "recent": false,
+          "model": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84dc",
           "label": "Skydio X10",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "recent": false
+          "recent": false,
+          "model": "X10"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e1",
@@ -9008,34 +9331,38 @@ export const company = {
             "level": "red",
             "label": "Not current"
           },
-          "recent": true
+          "recent": true,
+          "model": "EVO II Dual 640T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e6",
           "label": "Freefly Astro",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "recent": false
+          "recent": false,
+          "model": "Astro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84eb",
           "label": "Raven 7",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "recent": false
+          "recent": false,
+          "model": "Trinity F90+"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f0",
           "label": "DJI Matrice 600 Pro",
           "status": {
-            "level": "green",
-            "label": "Airworthy"
+            "level": "amber",
+            "label": "Expires in 23 days"
           },
-          "recent": false
+          "recent": false,
+          "model": "Matrice 600 Pro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f5",
@@ -9044,7 +9371,8 @@ export const company = {
             "level": "green",
             "label": "Airworthy"
           },
-          "recent": false
+          "recent": false,
+          "model": "Alta 8"
         }
       ],
       "batteryOptions": [
@@ -9054,7 +9382,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84cf",
@@ -9062,7 +9391,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d0",
@@ -9070,7 +9400,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d1",
@@ -9078,7 +9409,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Mavic 3 Enterprise"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d3",
@@ -9086,7 +9418,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d4",
@@ -9094,7 +9427,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d5",
@@ -9102,7 +9436,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d6",
@@ -9110,7 +9445,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 30T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d8",
@@ -9118,7 +9454,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84d9",
@@ -9126,7 +9463,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84da",
@@ -9134,7 +9472,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84db",
@@ -9142,7 +9481,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 350 RTK"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84dd",
@@ -9150,7 +9490,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "X10"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84de",
@@ -9158,7 +9499,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "X10"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84df",
@@ -9166,7 +9508,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "X10"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e0",
@@ -9174,7 +9517,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "X10"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e2",
@@ -9182,7 +9526,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "EVO II Dual 640T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e3",
@@ -9190,7 +9535,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "EVO II Dual 640T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e4",
@@ -9198,7 +9544,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "EVO II Dual 640T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e5",
@@ -9206,7 +9553,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "EVO II Dual 640T"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e7",
@@ -9214,7 +9562,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Astro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e8",
@@ -9222,7 +9571,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Astro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84e9",
@@ -9230,7 +9580,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Astro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84ea",
@@ -9238,7 +9589,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Astro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84ec",
@@ -9246,7 +9598,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Trinity F90+"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84ed",
@@ -9254,7 +9607,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Trinity F90+"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84ee",
@@ -9262,7 +9616,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Trinity F90+"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84ef",
@@ -9270,7 +9625,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Trinity F90+"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f1",
@@ -9278,7 +9634,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 600 Pro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f2",
@@ -9286,7 +9643,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 600 Pro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f3",
@@ -9294,7 +9652,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 600 Pro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f4",
@@ -9302,7 +9661,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Matrice 600 Pro"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f6",
@@ -9310,7 +9670,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Alta 8"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f7",
@@ -9318,7 +9679,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Alta 8"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f8",
@@ -9326,7 +9688,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Alta 8"
         },
         {
           "value": "0199c4a0-0000-7000-8000-0000001e84f9",
@@ -9334,7 +9697,8 @@ export const company = {
           "status": {
             "level": "green",
             "label": "Healthy"
-          }
+          },
+          "aircraftModel": "Alta 8"
         }
       ],
       "siteOptions": [
@@ -9403,8 +9767,1006 @@ export const company = {
       ],
       "warnings": [],
       "altitudeUnitLabel": "ft",
+      "preflight": {
+        "decision": "no_go",
+        "checks": [
+          {
+            "key": "pilot",
+            "label": "Pilot · Maya Thornton",
+            "level": "green",
+            "detail": "Certificate and recurrent training current"
+          },
+          {
+            "key": "aircraft",
+            "label": "Aircraft · Merlin 5",
+            "level": "red",
+            "detail": "Registration not on file"
+          },
+          {
+            "key": "battery:0199c4a0-0000-7000-8000-0000001e84e3",
+            "label": "Battery · Merlin #2",
+            "level": "green",
+            "detail": "165 of 200 cycles"
+          }
+        ]
+      },
       "fieldErrors": {},
       "saving": false
+    },
+    "maintenance": {
+      "loading": false,
+      "error": null,
+      "due": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e85ae",
+          "target": "Osprey 3",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84d7",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7",
+          "name": "Propeller replacement",
+          "interval": "Every 25 flights",
+          "due": null,
+          "usage": "23 of 25 flights",
+          "status": {
+            "level": "amber",
+            "label": "Due soon"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84e5",
+          "target": "Falcon 1",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84cd",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "34 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84e9",
+          "target": "Osprey 3",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84d7",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "33 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84ed",
+          "target": "Merlin 5",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84e1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "31 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84eb",
+          "target": "Skydio X10",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84dc",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "30 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84f5",
+          "target": "Heron 9",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84f5",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f5",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "26 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84f3",
+          "target": "DJI Matrice 600 Pro",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84f0",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "24 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84e4",
+          "target": "Falcon 1",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84cd",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84e8",
+          "target": "Osprey 3",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84d7",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84ea",
+          "target": "Skydio X10",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84dc",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84ec",
+          "target": "Merlin 5",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84e1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84ee",
+          "target": "Freefly Astro",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84e6",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84f4",
+          "target": "Heron 9",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84f5",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f5",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "6 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84f2",
+          "target": "DJI Matrice 600 Pro",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84f0",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "5.7 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84e6",
+          "target": "DJI Matrice 30T",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84d2",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "5.5 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84ef",
+          "target": "Freefly Astro",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84e6",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "22 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84e7",
+          "target": "DJI Matrice 30T",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84d2",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "21 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84f0",
+          "target": "Raven 7",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84eb",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb",
+          "name": "Motor and propeller inspection",
+          "interval": "Every 50 h",
+          "due": null,
+          "usage": "4.9 h of 50 h",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": true
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e84f1",
+          "target": "Raven 7",
+          "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000001e84eb",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb",
+          "name": "Airframe and gimbal inspection",
+          "interval": "Every 200 flights · 180 days",
+          "due": {
+            "iso": "2027-01-16",
+            "absolute": "Jan 16, 2027",
+            "relative": "in 3 months",
+            "display": "Jan 16, 2027 — in 3 months",
+            "daysFromToday": 100
+          },
+          "usage": "19 of 200 flights",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "grounds": false
+        }
+      ],
+      "history": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8678",
+          "target": "Osprey 3",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7",
+          "performed": {
+            "iso": "2026-08-10T16:00:00.000Z",
+            "absolute": "Aug 10, 2026, 10:00 AM MDT",
+            "relative": "59 days ago",
+            "display": "Aug 10, 2026, 10:00 AM MDT — 59 days ago",
+            "daysFromToday": -59
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Propeller replacement",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8675",
+          "target": "Falcon 1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8677",
+          "target": "DJI Matrice 30T",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e867a",
+          "target": "Osprey 3",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e867c",
+          "target": "Skydio X10",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e867e",
+          "target": "Merlin 5",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8680",
+          "target": "Freefly Astro",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8682",
+          "target": "Raven 7",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8684",
+          "target": "DJI Matrice 600 Pro",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8686",
+          "target": "Heron 9",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f5",
+          "performed": {
+            "iso": "2026-07-20T16:00:00.000Z",
+            "absolute": "Jul 20, 2026, 10:00 AM MDT",
+            "relative": "3 months ago",
+            "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+            "daysFromToday": -80
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Airframe and gimbal inspection",
+          "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8674",
+          "target": "Falcon 1",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84cd",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8676",
+          "target": "DJI Matrice 30T",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8679",
+          "target": "Osprey 3",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d7",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e867b",
+          "target": "Skydio X10",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84dc",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e867d",
+          "target": "Merlin 5",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e1",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e867f",
+          "target": "Freefly Astro",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84e6",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8681",
+          "target": "Raven 7",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84eb",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8683",
+          "target": "DJI Matrice 600 Pro",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f0",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8685",
+          "target": "Heron 9",
+          "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000001e84f5",
+          "performed": {
+            "iso": "2026-06-01T16:00:00.000Z",
+            "absolute": "Jun 1, 2026, 10:00 AM MDT",
+            "relative": "4 months ago",
+            "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+            "daysFromToday": -129
+          },
+          "kind": "Scheduled",
+          "scheduleName": "Motor and propeller inspection",
+          "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+          "performedBy": "Maya Thornton",
+          "signedOff": false
+        }
+      ],
+      "targetOptions": [
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84cd",
+          "label": "Falcon 1"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84d2",
+          "label": "DJI Matrice 30T"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84d7",
+          "label": "Osprey 3"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84dc",
+          "label": "Skydio X10"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84e1",
+          "label": "Merlin 5"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84e6",
+          "label": "Freefly Astro"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84eb",
+          "label": "Raven 7"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84f0",
+          "label": "DJI Matrice 600 Pro"
+        },
+        {
+          "value": "aircraft:0199c4a0-0000-7000-8000-0000001e84f5",
+          "label": "Heron 9"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84ce",
+          "label": "Battery Falcon #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84cf",
+          "label": "Battery Falcon #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84d0",
+          "label": "Battery Falcon #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84d1",
+          "label": "Battery Falcon #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84d3",
+          "label": "Battery DJI #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84d4",
+          "label": "Battery DJI #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84d5",
+          "label": "Battery DJI #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84d6",
+          "label": "Battery DJI #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84d8",
+          "label": "Battery Osprey #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84d9",
+          "label": "Battery Osprey #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84da",
+          "label": "Battery Osprey #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84db",
+          "label": "Battery Osprey #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84dd",
+          "label": "Battery Skydio #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84de",
+          "label": "Battery Skydio #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84df",
+          "label": "Battery Skydio #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84e0",
+          "label": "Battery Skydio #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84e2",
+          "label": "Battery Merlin #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84e3",
+          "label": "Battery Merlin #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84e4",
+          "label": "Battery Merlin #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84e5",
+          "label": "Battery Merlin #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84e7",
+          "label": "Battery Freefly #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84e8",
+          "label": "Battery Freefly #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84e9",
+          "label": "Battery Freefly #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84ea",
+          "label": "Battery Freefly #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84ec",
+          "label": "Battery Raven #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84ed",
+          "label": "Battery Raven #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84ee",
+          "label": "Battery Raven #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84ef",
+          "label": "Battery Raven #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84f1",
+          "label": "Battery DJI #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84f2",
+          "label": "Battery DJI #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84f3",
+          "label": "Battery DJI #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84f4",
+          "label": "Battery DJI #4"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84f6",
+          "label": "Battery Heron #1"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84f7",
+          "label": "Battery Heron #2"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84f8",
+          "label": "Battery Heron #3"
+        },
+        {
+          "value": "battery:0199c4a0-0000-7000-8000-0000001e84f9",
+          "label": "Battery Heron #4"
+        }
+      ],
+      "canManage": true,
+      "saving": false,
+      "empty": {
+        "title": "No maintenance schedules",
+        "body": "Add schedules by flight hours, flights, or calendar days. Certa counts usage from your logbook and warns before anything is due.",
+        "actionLabel": "Add schedule"
+      }
+    },
+    "insurance": {
+      "loading": false,
+      "error": null,
+      "policies": [
+        {
+          "id": "0199c4a0-0000-7000-9000-0000001e8481",
+          "carrier": "Skyward Aviation Insurance",
+          "policyNumber": "SAI-02-448812",
+          "coverageSummary": "Commercial UAS liability, $1M per occurrence; hull coverage at agreed value.",
+          "liabilityLimit": "$1,000,000",
+          "effective": {
+            "iso": "2025-11-01",
+            "absolute": "Nov 1, 2025",
+            "relative": "11 months ago",
+            "display": "Nov 1, 2025 — 11 months ago",
+            "daysFromToday": -341
+          },
+          "expires": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          },
+          "coveredAircraft": [
+            {
+              "id": "0199c4a0-0000-7000-8000-0000001e84cd",
+              "name": "Falcon 1"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000001e84d2",
+              "name": "DJI Matrice 30T"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000001e84d7",
+              "name": "Osprey 3"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000001e84dc",
+              "name": "Skydio X10"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000001e84e1",
+              "name": "Merlin 5"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000001e84e6",
+              "name": "Freefly Astro"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000001e84eb",
+              "name": "Raven 7"
+            },
+            {
+              "id": "0199c4a0-0000-7000-8000-0000001e84f0",
+              "name": "DJI Matrice 600 Pro"
+            }
+          ]
+        }
+      ],
+      "uncoveredAircraft": [
+        {
+          "id": "0199c4a0-0000-7000-8000-0000001e84f5",
+          "name": "Heron 9"
+        }
+      ],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84cd",
+          "label": "Falcon 1"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84d2",
+          "label": "DJI Matrice 30T"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84d7",
+          "label": "Osprey 3"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84dc",
+          "label": "Skydio X10"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84e1",
+          "label": "Merlin 5"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84e6",
+          "label": "Freefly Astro"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84eb",
+          "label": "Raven 7"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84f0",
+          "label": "DJI Matrice 600 Pro"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84f5",
+          "label": "Heron 9"
+        }
+      ],
+      "canManage": true,
+      "saving": false,
+      "empty": {
+        "title": "No insurance on file",
+        "body": "Add your liability and hull policies. Certa links them to aircraft and warns 30 days before they lapse.",
+        "actionLabel": "Add policy"
+      }
     },
     "rulePackAdmin": {
       "loading": false,
