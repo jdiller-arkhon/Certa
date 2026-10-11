@@ -29,6 +29,13 @@
       "when": 1791698197959,
       "tag": "0003_phase2",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791760000000,
+      "tag": "0004_jobs_and_api_keys",
+      "breakpoints": true
     }
   ]
 }
