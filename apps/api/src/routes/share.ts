@@ -8,7 +8,7 @@
  * view); the packet is then built under the owning org's normal row-level security.
  */
 import { createHash, randomBytes } from 'node:crypto';
-import { api, buildInspectorPacket, contentHash, Id, newId, type Flight } from '@certa/core';
+import { api, buildInspectorPacket, contentHash, grantFor, Id, newId, type Flight } from '@certa/core';
 import { aircraft, and, desc, eq, flights, isNull, pilots, shareLinks, withTenant, type Db } from '@certa/db';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
@@ -95,12 +95,20 @@ export const shareRoutes =
       { schema: { tags: ['share'], params: OrgParams, querystring: z.object({ subjectId: Id.optional() }), response: { 200: api.ShareLinkListResponse } } },
       async (req) => {
         const oc = await resolveOrg(ctx.pool, req, req.params.orgId);
-        authorize(oc, 'org.read');
+        authorize(oc, 'exports.create');
+        // Pilots (an "own" grant) see only links to their own packet.
+        const ownOnly = grantFor(oc.role, 'exports.create') === 'own';
         const rows = await inOrg(ctx.pool, req, oc, (db) =>
           db
             .select()
             .from(shareLinks)
-            .where(and(isNull(shareLinks.deletedAt), req.query.subjectId ? eq(shareLinks.subjectId, req.query.subjectId) : undefined))
+            .where(
+              and(
+                isNull(shareLinks.deletedAt),
+                req.query.subjectId ? eq(shareLinks.subjectId, req.query.subjectId) : undefined,
+                ownOnly ? and(eq(shareLinks.subjectType, 'pilot'), eq(shareLinks.subjectId, oc.pilotId ?? '00000000-0000-0000-0000-000000000000')) : undefined,
+              ),
+            )
             .orderBy(desc(shareLinks.createdAt))
             .limit(100),
         );

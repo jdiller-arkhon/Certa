@@ -5,6 +5,7 @@ import { CertaApiError, unwrap } from '@certa/sdk';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { withBase } from '@/lib/base-path';
+import { disablePush } from '@/lib/push-client';
 import { clearOfflineCache, networkFirst } from './offline';
 
 export const keys = {
@@ -46,6 +47,9 @@ export function useSignOut() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async () => {
+      // A shared device must stop receiving this user's alerts (needs the session, so first).
+      const me = qc.getQueryData<{ memberships: { orgId: string }[] } | null>(keys.me);
+      if (me?.memberships.length) await disablePush(me.memberships.map((m) => m.orgId)).catch(() => {});
       await fetch(withBase('/api/auth/sign-out'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
       // Cached records must not outlive the session on a shared device. Unsynced flights stay
       // in the outbox, tagged with their author, and only sync when that user signs in again.

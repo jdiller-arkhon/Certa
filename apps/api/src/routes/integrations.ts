@@ -14,7 +14,7 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { AppContext } from '../app.js';
 import { authorize, inOrg, resolveOrg } from '../lib/context.js';
-import { ApiError, notFound } from '../lib/errors.js';
+import { ApiError, badRequest, notFound } from '../lib/errors.js';
 import { loadFleet, orgMapContext } from '../lib/fleet.js';
 import { iso } from '../lib/mappers.js';
 import { OrgParams } from './orgs.js';
@@ -124,7 +124,11 @@ export const integrationRoutes =
     // ------------------------------------------------------------ verification (API key)
 
     const limit = {
-      rateLimit: { max: 300, timeWindow: '1 minute', keyGenerator: (r: FastifyRequest) => (r.headers.authorization ?? r.ip).slice(0, 40) },
+      // Per key for well-formed keys; per IP otherwise, so varying a bogus bearer string doesn't buy fresh buckets.
+      rateLimit: { max: 300, timeWindow: '1 minute', keyGenerator: (r: FastifyRequest) => {
+        const m = KEY.exec((r.headers.authorization ?? '').replace(/^Bearer\s+/i, '').trim());
+        return m ? `key:${m[1]}` : `ip:${r.ip}`;
+      } },
     };
     const security = [{ bearer: [] }];
     const withFleet = async <T>(req: FastifyRequest, fn: (s: FleetSnapshot, db: Db, k: KeyContext) => Promise<T> | T) => {
@@ -159,6 +163,8 @@ export const integrationRoutes =
       async (req) =>
         withFleet(req, (s, db, k) => {
           const q = req.query;
+          const wanted = norm(q.certificateNumber ?? q.registration ?? q.serialNumber);
+          if (!wanted) throw badRequest('The lookup value is empty');
           if (q.certificateNumber) {
             const p = s.pilots.find((x) => !x.deletedAt && norm(x.certificateNumber) === norm(q.certificateNumber));
             return answer(db, s, k.orgId, p ? { type: 'pilot', id: p.id } : null);

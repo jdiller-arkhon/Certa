@@ -43,11 +43,14 @@ export async function enablePush(orgId: string): Promise<PushAvailability> {
   return 'available';
 }
 
-export async function disablePush(orgId: string) {
+/** Removes this browser's subscription from each org, then from the push service. */
+export async function disablePush(orgIds: string | string[]) {
   const reg = await registration();
   const sub = await reg?.pushManager.getSubscription();
   if (!sub) return;
-  await api.POST('/api/v1/orgs/{orgId}/push-subscriptions/remove', { params: { path: { orgId } }, body: { endpoint: sub.endpoint } });
+  for (const orgId of Array.isArray(orgIds) ? orgIds : [orgIds]) {
+    await api.POST('/api/v1/orgs/{orgId}/push-subscriptions/remove', { params: { path: { orgId } }, body: { endpoint: sub.endpoint } }).catch(() => {});
+  }
   await sub.unsubscribe();
 }
 

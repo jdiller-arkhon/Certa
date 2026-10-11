@@ -1,4 +1,4 @@
-import { api, Id, newId, type GeoPoint } from '@certa/core';
+import { api, goNoGo, Id, newId, type GeoPoint } from '@certa/core';
 import {
   aircraft,
   and,
@@ -22,7 +22,7 @@ import { z } from 'zod';
 import type { AppContext } from '../app.js';
 import { authorize, inOrg, resolveOrg } from '../lib/context.js';
 import { badRequest, conflict, notFound } from '../lib/errors.js';
-import { flightSelection, recomputeDerived, toFlights, type FlightSelectRow } from '../lib/fleet.js';
+import { flightSelection, loadFleet, orgMapContext, recomputeDerived, toFlights, type FlightSelectRow } from '../lib/fleet.js';
 import { OrgParams } from './orgs.js';
 
 const FlightParams = OrgParams.extend({ flightId: Id });
@@ -141,10 +141,15 @@ export const flightRoutes =
         if (duration > 24 * 3600) throw badRequest('A flight cannot be longer than 24 hours');
         const { status, flight } = await inOrg(ctx.pool, req, oc, async (db) => {
           if (b.id) {
-            const [existing] = await db.select({ id: flights.id }).from(flights).where(eq(flights.id, b.id));
+            const [existing] = await db.select({ id: flights.id, deletedAt: flights.deletedAt, pilotInCommandId: flights.pilotInCommandId }).from(flights).where(eq(flights.id, b.id));
+            if (existing?.deletedAt) throw conflict('That flight was deleted');
+            // A retry is the same flight; a different pilot on a known id is not a retry.
+            if (existing && existing.pilotInCommandId !== b.pilotInCommandId) throw conflict('That flight id is already in use');
             if (existing) return { status: 200 as const, flight: await loadOne(db, b.id) };
           }
           await checkReferences(db, b);
+          // The stored pre-flight check is the server's, from records on file now; a client can't supply its own.
+          const check = goNoGo(await loadFleet(db, oc.orgId), { pilotId: b.pilotInCommandId, aircraftId: b.aircraftId, batteryIds: b.batteries.map((x) => x.batteryId) }, await orgMapContext(db, oc.orgId));
           const id = b.id ?? newId();
           try {
             await db.insert(flights).values({
@@ -164,7 +169,7 @@ export const flightRoutes =
               weather: b.weather ?? null,
               notes: b.notes ?? null,
               source: 'manual',
-              goNoGo: b.goNoGo ?? null,
+              goNoGo: check,
             });
           } catch (err) {
             // An id that exists in another org is invisible here (RLS) but still collides.
@@ -197,6 +202,7 @@ export const flightRoutes =
           const landingAt = b.landingAt ?? cur.landingAt;
           const duration = Math.round((Date.parse(landingAt) - Date.parse(takeoffAt)) / 1000);
           if (duration <= 0) throw badRequest('Landing must be after takeoff');
+          if (duration > 24 * 3600) throw badRequest('A flight cannot be longer than 24 hours');
           await db
             .update(flights)
             .set({

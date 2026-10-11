@@ -18,7 +18,8 @@ const LEVEL = { green: rgb(0.11, 0.5, 0.3), amber: rgb(0.7, 0.45, 0.05), red: rg
 /** Standard fonts are WinAnsi-only; replace anything else so rendering never throws. */
 const WIN_ANSI_EXTRA = new Set('—–·’‘“”•…€'.split(''));
 export function pdfSafe(s: string): string {
-  return [...s].map((c) => (c.charCodeAt(0) < 256 || WIN_ANSI_EXTRA.has(c) ? c : '?')).join('').replace(/[\u0000-\u001f]/g, ' ');
+  // 0x7F–0x9F are control codes WinAnsi can't encode (pdf-lib throws on them).
+  return [...s].map((c) => { const n = c.charCodeAt(0); return (n < 256 && !(n >= 0x7f && n <= 0x9f)) || WIN_ANSI_EXTRA.has(c) ? c : '?'; }).join('').replace(/[\u0000-\u001f]/g, ' ');
 }
 
 function wrap(text: string, font: PDFFont, size: number, width: number): string[] {

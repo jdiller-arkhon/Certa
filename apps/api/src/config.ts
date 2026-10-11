@@ -26,6 +26,8 @@ const Env = z.object({
    * through that proxy, otherwise clients can spoof it.
    */
   CLIENT_IP_HEADER: z.string().toLowerCase().optional(),
+  /** Reverse proxies in front of the API (bundled Caddy = 1). Only their X-Forwarded-For entries are trusted. */
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
   /**
    * Web Push (VAPID) keys. Generate once with `npx web-push generate-vapid-keys` and keep the
    * private key secret. Unset: push notifications are off and the app hides the toggle.

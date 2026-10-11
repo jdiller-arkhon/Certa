@@ -71,9 +71,12 @@ const kmhToMps = (v: number | null | undefined) => (v == null ? null : Math.roun
 export async function nearestObservation(f: Fetch, lat: number, lon: number): Promise<WeatherSnapshot | null> {
   try {
     const point = await getJson(f, `${NWS}/points/${lat.toFixed(4)},${lon.toFixed(4)}`);
-    const stations = await getJson(f, point.properties.observationStations);
-    const station = stations.features?.[0]?.properties?.stationIdentifier;
-    if (!station) return null;
+    // Follow only URLs on api.weather.gov, and only well-formed station ids.
+    const stationsUrl = String(point.properties?.observationStations ?? '');
+    if (!stationsUrl.startsWith(`${NWS}/`)) return null;
+    const stations = await getJson(f, stationsUrl);
+    const station = String(stations.features?.[0]?.properties?.stationIdentifier ?? '');
+    if (!/^[A-Z0-9]{3,6}$/.test(station)) return null;
     const o = (await getJson(f, `${NWS}/stations/${station}/observations/latest`)).properties;
     return {
       provider: `NWS ${station}`,

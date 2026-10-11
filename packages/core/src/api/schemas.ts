@@ -275,7 +275,7 @@ export const CreateFlightRequest = z.object({
   pilotInCommandId: Id,
   visualObserverIds: z.array(Id).max(10).default([]),
   aircraftId: Id,
-  batteries: z.array(FlightBatteryUse).max(12).default([]),
+  batteries: z.array(FlightBatteryUse).max(12).refine((bs) => new Set(bs.map((b) => b.batteryId)).size === bs.length, 'Each battery can be listed once per flight').default([]),
   takeoffAt: IsoDateTime,
   landingAt: IsoDateTime,
   localTimeZone: IanaTimeZone,
@@ -287,7 +287,10 @@ export const CreateFlightRequest = z.object({
   airspaceClass: AirspaceClass.nullable().optional(),
   weather: WeatherSnapshot.nullable().optional(),
   notes: opt(z.string().max(10000)),
-  /** Pre-flight go/no-go shown to the pilot at logging time, stored with the flight. */
+  /**
+   * Pre-flight go/no-go the pilot saw on the device. Informational: the server recomputes the
+   * check from records on file when it stores the flight and keeps its own result.
+   */
   goNoGo: GoNoGoResult.nullable().optional(),
 });
 export type CreateFlightRequest = z.infer<typeof CreateFlightRequest>;

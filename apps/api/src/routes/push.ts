@@ -5,7 +5,7 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { AppContext } from '../app.js';
 import { inOrg, resolveOrg } from '../lib/context.js';
-import { badRequest } from '../lib/errors.js';
+import { badRequest, conflict } from '../lib/errors.js';
 import { isPushEndpoint } from '../lib/push.js';
 import { OrgParams } from './orgs.js';
 
@@ -31,8 +31,12 @@ export const pushRoutes =
         if (!ctx.pusher) throw badRequest('Push notifications are not configured on this server');
         if (!isPushEndpoint(req.body.endpoint)) throw badRequest('Unsupported push service');
         await inOrg(ctx.pool, req, oc, async (db) => {
-          // Re-subscribing (or a new user on the same browser) replaces the old row.
-          await db.update(pushSubscriptions).set({ deletedAt: sql`now()` }).where(and(eq(pushSubscriptions.endpoint, req.body.endpoint), isNull(pushSubscriptions.deletedAt)));
+          // Re-subscribing replaces your own row. Taking over another member's row (a new user on a
+          // shared browser) requires proof of holding that browser's keys, so knowing an endpoint
+          // isn't enough to cancel someone else's notifications.
+          const [cur] = await db.select().from(pushSubscriptions).where(and(eq(pushSubscriptions.endpoint, req.body.endpoint), isNull(pushSubscriptions.deletedAt)));
+          if (cur && cur.userId !== oc.userId && cur.p256dh !== req.body.keys.p256dh) throw conflict('This browser is subscribed by another member');
+          if (cur) await db.update(pushSubscriptions).set({ deletedAt: sql`now()` }).where(eq(pushSubscriptions.id, cur.id));
           await db.insert(pushSubscriptions).values({
             id: newId(),
             userId: oc.userId,

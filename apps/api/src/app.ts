@@ -60,6 +60,9 @@ export interface AppContext extends AppDeps {
 
 export type App = FastifyInstance;
 
+/** Replaces secret path segments (share tokens) for logging. */
+export const redactUrl = (url: string) => url.replace(/\/public\/share\/[^/?#]+/g, '/public/share/:token');
+
 export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   const { config } = deps;
   const app = Fastify({
@@ -69,9 +72,16 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
         : {
             level: config.LOG_LEVEL,
             redact: ['req.headers.authorization', 'req.headers.cookie', 'res.headers["set-cookie"]'],
+            serializers: {
+              // Share-link tokens are bearer secrets: never write them to logs.
+              req: (req: { method: string; url: string; id: string }) => ({ id: req.id, method: req.method, url: redactUrl(req.url) }),
+            },
           },
-    genReqId: (req) => (req.headers['x-request-id'] as string | undefined) ?? newId(),
-    trustProxy: true,
+    // Always server-generated: request ids are recorded in the audit log, so clients can't choose them.
+    genReqId: () => newId(),
+    // Trust only the proxies in front of us (Caddy = 1 hop), so X-Forwarded-For can't be forged
+    // to dodge per-IP rate limits.
+    trustProxy: (_addr: string, hop: number) => hop < config.TRUST_PROXY_HOPS,
     bodyLimit: 10 * 1024 * 1024,
   }).withTypeProvider<ZodTypeProvider>();
 

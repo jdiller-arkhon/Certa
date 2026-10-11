@@ -7,7 +7,7 @@
  * Scope is the registration scope (e.g. /certa/), so nothing outside Certa is ever touched.
  * API responses are never cached here: authenticated data lives in IndexedDB, not the HTTP cache.
  */
-const VERSION = 'certa-shell-v4';
+const VERSION = 'certa-shell-v5';
 const SCOPE = new URL(self.registration.scope).pathname; // '/certa/' or '/'
 const API = `${SCOPE}api/`;
 const STATIC = `${SCOPE}_next/static/`;
@@ -86,7 +86,11 @@ self.addEventListener('push', (event) => {
     data = event.data ? event.data.json() : {};
   } catch {}
   // Only app-relative paths, so a payload can never send the user off-site.
-  const path = typeof data.url === 'string' && data.url.startsWith('/') && !data.url.startsWith('//') ? data.url : '/';
+  let path = '/';
+  if (typeof data.url === 'string' && data.url.startsWith('/') && !data.url.includes('\\')) {
+    const u = new URL(`${SCOPE}${data.url.slice(1)}`, self.location.origin);
+    if (u.origin === self.location.origin && u.pathname.startsWith(SCOPE)) path = `/${u.pathname.slice(SCOPE.length)}${u.search}`;
+  }
   event.waitUntil(
     self.registration.showNotification(String(data.title || 'Certa'), {
       body: String(data.body || ''),

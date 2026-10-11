@@ -4,6 +4,7 @@ import { buildShell, displayInstant, type SyncStateViewModel, type ThemeName } f
 import { useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { clearOfflineCache } from '@/data/offline';
 import { mapContextFor, useMe, useOrgContext, useSignOut } from '@/data/session';
 import { CurrentOrgContext, readSelectedOrg, writeSelectedOrg, type CurrentOrg } from '@/lib/current-org';
 import { readTheme, writeTheme } from '@/lib/theme';
@@ -21,7 +22,17 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<ThemeName>('light');
   const outbox = useOutbox();
   const userId = me.data?.user.id ?? null;
-  useEffect(() => setOutboxUser(userId), [userId]);
+  useEffect(() => {
+    setOutboxUser(userId);
+    if (!userId) return;
+    // A different person on this device (e.g. after a session expired without sign-out):
+    // drop the previous user's offline copies of records.
+    try {
+      const last = localStorage.getItem('certa.lastUser');
+      if (last && last !== userId) void clearOfflineCache();
+      localStorage.setItem('certa.lastUser', userId);
+    } catch {}
+  }, [userId]);
   // When offline flights land, refresh that org's flights and derived totals.
   const onSynced = useCallback((orgId: string) => void qc.invalidateQueries({ queryKey: ['org', orgId] }), [qc]);
   useOutboxAutoFlush(onSynced);
