@@ -5,11 +5,12 @@ import { ContactShadows, Environment, Html, Lightformer, OrbitControls } from '@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ChevronLeft, ChevronRight, Fan, Layers, RotateCcw } from 'lucide-react';
 import { useReducedMotion } from 'motion/react';
-import { Component, useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import * as THREE from 'three';
 import { Button } from '../ui/button';
 import { LevelDot, LevelIcon, StatusBadge } from '../ui/status';
-import { DroneModel, PART_LABELS, type DroneState, type Palette } from './models';
+import { withBase } from '@/lib/base-path';
+import { CustomModel, DroneModel, PART_LABELS, type DroneState, type Palette } from './models';
 
 /**
  * Today hero: the organization's aircraft on a 3D turntable. Drag to orbit the selected
@@ -143,13 +144,32 @@ function Slot({
           document.body.style.cursor = '';
         }}
       >
-        <DroneModel airframe={row.airframe} palette={palette} state={state} />
-        {selected && exploded && (
+        {row.modelUrl ? (
+          // A broken or slow upload falls back to the drawn airframe, never an empty slot.
+          <ModelBoundary fallback={<DroneModel airframe={row.airframe} palette={palette} state={state} />}>
+            <Suspense fallback={<DroneModel airframe={row.airframe} palette={palette} state={state} />}>
+              <CustomModel url={withBase(row.modelUrl)} state={state} />
+            </Suspense>
+          </ModelBoundary>
+        ) : (
+          <DroneModel airframe={row.airframe} palette={palette} state={state} />
+        )}
+        {selected && exploded && !row.modelUrl && (
           <PartLabels airframe={row.airframe ?? 'quad'} state={state} />
         )}
       </group>
     </group>
   );
+}
+
+class ModelBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
 }
 
 function PartLabels({ airframe, state }: { airframe: NonNullable<ReadinessRowViewModel['airframe']>; state: RefObject<DroneState> }) {

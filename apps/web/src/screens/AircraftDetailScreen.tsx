@@ -1,7 +1,7 @@
 'use client';
 
 import type { AircraftDetailScreenProps } from '@certa/contract';
-import { FileDown, OctagonAlert, Pencil, Plane, Route, ShieldCheck } from 'lucide-react';
+import { Box, FileDown, OctagonAlert, Pencil, Plane, Route, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -80,6 +80,32 @@ export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
               <li className="flex flex-col items-center gap-2 px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]"><Route className="size-5" aria-hidden /> No flights logged yet.</li>
             )}
           </ListCard>
+          {props.canEdit && (
+            <Section title="3D model">
+              <p className="mb-3 text-[13px] text-[var(--certa-muted)]">
+                {props.model.custom ? 'The hangar shows your uploaded model.' : 'The hangar draws a generic airframe. Upload your own model to show the real aircraft.'} Binary glTF (.glb), up to 20 MB, self-contained.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <label className={`inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border border-[var(--certa-border)] bg-[var(--certa-surface)] px-4 text-sm font-semibold hover:bg-[var(--certa-inset)] focus-within:outline-3 focus-within:outline-[var(--certa-focus)] ${props.model.uploading ? 'pointer-events-none opacity-50' : ''}`}>
+                  <Box className="size-4" aria-hidden />
+                  {props.model.uploading ? 'Uploading…' : props.model.custom ? 'Replace model' : 'Upload .glb'}
+                  <input
+                    type="file"
+                    accept=".glb,model/gltf-binary"
+                    className="sr-only"
+                    aria-label="Upload 3D model"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) props.onUploadModel({ name: file.name, mimeType: file.type || 'model/gltf-binary', sizeBytes: file.size, handle: file });
+                      e.target.value = '';
+                    }}
+                  />
+                </label>
+                {props.model.custom && <Button size="sm" variant="ghost" onClick={props.onRemoveModel} disabled={props.model.uploading}>Use generic model</Button>}
+              </div>
+              {props.model.error && <p role="alert" className="mt-2 text-[13px] text-[var(--certa-expired)]">{props.model.error}</p>}
+            </Section>
+          )}
           {props.batteries.length > 0 && (
             <ListCard title="Batteries for this model" count={props.batteries.length}>
               {props.batteries.map((b) => (

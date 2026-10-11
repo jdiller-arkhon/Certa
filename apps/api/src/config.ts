@@ -34,6 +34,19 @@ const Env = z.object({
   VAPID_PRIVATE_KEY: z.string().optional(),
   /** Contact for push services, a mailto: or https: URL. Defaults to PUBLIC_URL. */
   VAPID_SUBJECT: z.string().optional(),
+  /** S3-compatible object storage for uploads. Unset: files are kept under BLOB_DIR (dev only). */
+  S3_ENDPOINT: z.string().optional(),
+  S3_BUCKET: z.string().default('certa'),
+  S3_REGION: z.string().default('us-east-1'),
+  S3_ACCESS_KEY_ID: z.string().optional(),
+  S3_SECRET_ACCESS_KEY: z.string().optional(),
+  BLOB_DIR: z.string().default('./data/blobs'),
+  /**
+   * Pre-flight conditions call two public US services (api.weather.gov and the FAA UAS Facility
+   * Map on services6.arcgis.com). "off" keeps the stack fully offline; the app then shows
+   * airspace and weather as "not checked".
+   */
+  CONDITIONS_LOOKUPS: z.enum(['on', 'off']).default('on'),
 });
 
 export type Config = z.infer<typeof Env> & {

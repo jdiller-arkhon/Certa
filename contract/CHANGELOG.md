@@ -3,6 +3,14 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.10.0 — 2026-10-11
+
+Conditions, push, and customer 3D models.
+
+- **Added** `GET /orgs/{orgId}/conditions?lat&lon` → `ConditionsResponse` (airspace from the FAA UAS Facility Map, nearest NWS observation, civil daylight, `advisories`). `LogFlightScreenProps.conditions` + `onCheckConditions`; checked conditions save the takeoff point, weather, and airspace class with the flight.
+- **Added** Web Push: `GET /push/config`, `POST /orgs/{orgId}/push-subscriptions`, `/remove`, `/test`. `OrgSettingsScreenProps.notifications` + `onToggleNotifications`, `onTestNotification`.
+- **Added** aircraft 3D models: `PUT|GET|DELETE /orgs/{orgId}/aircraft/{aircraftId}/model` (self-contained GLB 2.0, ≤ 20 MB). `Aircraft.modelDocumentId`; `ReadinessRowViewModel.modelUrl` (hangar renders the uploaded model, falling back to the drawn airframe); `AircraftDetailScreenProps.model` + `onUploadModel`, `onRemoveModel`.
+
 ## 0.9.0 — 2026-10-11
 
 Machine verification for Argus.

@@ -1431,6 +1431,7 @@ export interface paths {
                                 groundedReason: string | null;
                                 totalFlightSeconds: number;
                                 totalFlights: number;
+                                modelDocumentId?: string | null;
                             }[];
                             batteries: {
                                 /** Format: uuid */
@@ -2151,6 +2152,7 @@ export interface paths {
                             groundedReason: string | null;
                             totalFlightSeconds: number;
                             totalFlights: number;
+                            modelDocumentId?: string | null;
                         };
                     };
                 };
@@ -2278,6 +2280,7 @@ export interface paths {
                             groundedReason: string | null;
                             totalFlightSeconds: number;
                             totalFlights: number;
+                            modelDocumentId?: string | null;
                         };
                     };
                 };
@@ -2362,6 +2365,7 @@ export interface paths {
                             groundedReason: string | null;
                             totalFlightSeconds: number;
                             totalFlights: number;
+                            modelDocumentId?: string | null;
                         };
                     };
                 };
@@ -2434,6 +2438,7 @@ export interface paths {
                             groundedReason: string | null;
                             totalFlightSeconds: number;
                             totalFlights: number;
+                            modelDocumentId?: string | null;
                         };
                     };
                 };
@@ -4653,6 +4658,93 @@ export interface paths {
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/aircraft/{aircraftId}/model": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The aircraft’s uploaded 3D model (GLB) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    aircraftId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        /** Upload a 3D model (binary glTF, .glb, ≤ 20 MB) for the hangar */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    aircraftId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            documentId: string;
+                            sizeBytes: number;
+                            sha256: string;
+                            meshes: number;
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        /** Remove the uploaded model (the hangar draws the airframe type again) */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    aircraftId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;

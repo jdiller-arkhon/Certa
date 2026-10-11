@@ -1206,6 +1206,11 @@ export const longNames = {
       ],
       "canEdit": true,
       "canGround": true,
+      "model": {
+        "custom": false,
+        "uploading": false,
+        "error": null
+      },
       "share": {
         "canShare": true,
         "links": [],

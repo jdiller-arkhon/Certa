@@ -2,7 +2,7 @@
 
 import type { Airframe } from '@certa/contract';
 import { useFrame } from '@react-three/fiber';
-import { RoundedBox } from '@react-three/drei';
+import { RoundedBox, useGLTF } from '@react-three/drei';
 import { useMemo, useRef, type ReactNode } from 'react';
 import * as THREE from 'three';
 
@@ -245,3 +245,35 @@ export const PART_LABELS: Record<Airframe, [string, [number, number, number]][]>
   octo: [['Battery', [0, 1.2, 0]], ['Flight controller', [0, 0.62, 0]], ['Gimbal camera', [0.68, -0.55, 0]], ['Eight motors', [1.1, 0.2, 0.5]]],
   fixed_wing_vtol: [['Wing', [0, 0.65, 1.0]], ['Lift rotors', [0.5, 0.0, 0.95]], ['Pusher prop', [-1.0, 0.1, 0]], ['Camera', [0.2, -0.55, 0]]],
 };
+
+/**
+ * The customer's own GLB, fitted to the same footprint as the drawn models (about 2 units
+ * across, resting on the slot) so it sits on the turntable like the rest of the fleet.
+ * Suspends while loading; the caller supplies the fallback and an error boundary.
+ */
+export function CustomModel({ url, state }: { url: string; state: React.RefObject<DroneState> }) {
+  const { scene } = useGLTF(url);
+  const group = useRef<THREE.Group>(null);
+  const fitted = useMemo(() => {
+    const root = scene.clone(true);
+    const box = new THREE.Box3().setFromObject(root);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const scale = 2 / Math.max(size.x, size.z, size.y * 1.5, 1e-6);
+    root.position.set(-center.x * scale, -box.min.y * scale - 0.15, -center.z * scale);
+    root.scale.setScalar(scale);
+    root.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) (o as THREE.Mesh).castShadow = true;
+    });
+    return root;
+  }, [scene]);
+  // No rotors to spin on an arbitrary model: lift it a touch and turn it slowly instead.
+  useFrame((_, dt) => {
+    if (group.current) group.current.rotation.y += (state.current?.spin ?? 0) * dt * 1.2;
+  });
+  return (
+    <group ref={group}>
+      <primitive object={fitted} />
+    </group>
+  );
+}

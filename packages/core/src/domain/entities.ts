@@ -137,6 +137,8 @@ export const Aircraft = EntityBase.extend({
   groundedReason: z.string().max(1000).nullable(),
   totalFlightSeconds: z.number().int().nonnegative(),
   totalFlights: z.number().int().nonnegative(),
+  /** Customer-uploaded 3D model (GLB) shown in the hangar; absent = drawn from the airframe type. */
+  modelDocumentId: Id.nullable().optional(),
 });
 export type Aircraft = z.infer<typeof Aircraft>;
 

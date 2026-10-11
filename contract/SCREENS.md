@@ -1,6 +1,6 @@
 # Certa Screen Inventory
 
-**Contract version 0.9.0** (see `CHANGELOG.md`). Types: `contract/types.ts`. Fixtures: `contract/fixtures/`.
+**Contract version 0.10.0** (see `CHANGELOG.md`). Types: `contract/types.ts`. Fixtures: `contract/fixtures/`.
 
 Each screen is one presentational component that takes `XxxScreenProps` from `types.ts`. It
 renders inside `<AppShell>` and never fetches data, holds server state, or computes anything

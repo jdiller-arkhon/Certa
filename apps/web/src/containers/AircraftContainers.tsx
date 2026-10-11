@@ -1,10 +1,11 @@
 'use client';
 
-import { buildAircraftDetail, buildAircraftList, buildBatteryList, can, kgTo, REMOTE_ID_LABEL, toKg, type AircraftListScreenProps, type Flight } from '@certa/core';
-import { unwrap } from '@certa/sdk';
+import { buildAircraftDetail, buildAircraftList, buildBatteryList, can, kgTo, REMOTE_ID_LABEL, toKg, type AircraftListScreenProps, type Flight, type PickedFile } from '@certa/core';
+import { CertaApiError, unwrap } from '@certa/sdk';
+import { withBase } from '@/lib/base-path';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useFleetMutation, useRecentFlights } from '@/data/fleet';
+import { ensureOk, useFleetMutation, useRecentFlights } from '@/data/fleet';
 import { api } from '@/lib/api';
 import { AircraftDetailScreen, AircraftFormScreen, AircraftListScreen, BatteryListScreen } from '@/screens';
 import { exportLogbook } from './logbook';
@@ -42,6 +43,16 @@ export function AircraftDetailContainer({ aircraftId }: { aircraftId: string }) 
     async (v: { reason: string }) => unwrap(await api.POST('/api/v1/orgs/{orgId}/aircraft/{aircraftId}/return-to-service', { params: { path: { orgId: f.orgId, aircraftId } }, body: v })),
     { maintenance: true },
   );
+  const uploadModel = useFleetMutation(f.orgId, async (file: PickedFile) => {
+    const blob = file.handle as File;
+    if (file.sizeBytes > 20 * 1024 * 1024) throw new CertaApiError(413, 'too_large', 'The model is larger than 20 MB.');
+    const res = await fetch(withBase(`/api/v1/orgs/${f.orgId}/aircraft/${aircraftId}/model`), { method: 'PUT', credentials: 'include', headers: { 'content-type': 'model/gltf-binary' }, body: blob });
+    if (!res.ok) {
+      const body = (await res.json().catch(() => null)) as { error?: { message?: string } } | null;
+      throw new CertaApiError(res.status, 'upload_failed', res.status === 413 ? 'The model is larger than 20 MB.' : (body?.error?.message ?? 'Upload failed.'));
+    }
+  });
+  const removeModel = useFleetMutation(f.orgId, async () => ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/aircraft/{aircraftId}/model', { params: { path: { orgId: f.orgId, aircraftId } } })));
   if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
   const data = buildAircraftDetail(f.bi, aircraftId, recent.flights as Flight[]);
   return (
@@ -52,6 +63,9 @@ export function AircraftDetailContainer({ aircraftId }: { aircraftId: string }) 
       share={sharing.share}
       onCreateShareLink={sharing.onCreateShareLink}
       onRevokeShareLink={sharing.onRevokeShareLink}
+      model={{ ...data.model, uploading: uploadModel.isPending || removeModel.isPending, error: uploadModel.error ?? removeModel.error }}
+      onUploadModel={(file) => uploadModel.mutate(file)}
+      onRemoveModel={() => removeModel.mutate(undefined)}
       onEdit={() => router.push(`/aircraft/${aircraftId}/edit`)}
       onGround={(v) => ground.mutate(v)}
       onUnground={(v) => unground.mutate(v)}

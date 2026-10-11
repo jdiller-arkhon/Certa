@@ -218,6 +218,8 @@ export interface ReadinessRowViewModel {
   href: string;
   /** Aircraft rows only: airframe shape for drawing the aircraft. Absent on pilot rows. */
   airframe?: Airframe;
+  /** Aircraft rows only: app-relative URL of the customer's own 3D model (GLB), when uploaded. */
+  modelUrl?: string;
 }
 
 /** @status beta — route: / */
@@ -367,6 +369,10 @@ export interface AircraftDetailScreenProps extends AsyncState {
   batteries: BatteryRowViewModel[];
   canEdit: boolean;
   canGround: boolean;
+  /** The hangar 3D model: the customer's own GLB, or drawn from the airframe type. */
+  model: { custom: boolean; uploading: boolean; error: string | null };
+  onUploadModel: (file: PickedFile) => void;
+  onRemoveModel: () => void;
   onEdit: () => void;
   onGround: (input: { reason: string }) => void;
   onUnground: (input: { reason: string }) => void;

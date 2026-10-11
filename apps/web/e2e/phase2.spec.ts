@@ -205,3 +205,35 @@ test('integrations: an admin creates an API key and Argus verifies a pilot with 
   expect(await res.json()).toMatchObject({ subject: { type: 'pilot' }, legalToFly: false }); // no certificate on file yet
   await machine.dispose();
 });
+
+/** A one-triangle GLB 2.0 for upload tests. */
+function tinyGlb(): Buffer {
+  const bin = Buffer.alloc(36);
+  [0, 0, 0, 1, 0, 0, 0, 1, 0].forEach((v, i) => bin.writeFloatLE(v, i * 4));
+  let js = Buffer.from(JSON.stringify({ asset: { version: '2.0' }, buffers: [{ byteLength: 36 }], bufferViews: [{ buffer: 0, byteLength: 36 }], accessors: [{ bufferView: 0, componentType: 5126, count: 3, type: 'VEC3', min: [0, 0, 0], max: [1, 1, 0] }], meshes: [{ primitives: [{ attributes: { POSITION: 0 } }] }], nodes: [{ mesh: 0 }], scenes: [{ nodes: [0] }] }));
+  js = Buffer.concat([js, Buffer.alloc((4 - (js.length % 4)) % 4, 0x20)]);
+  const h = Buffer.alloc(12);
+  h.writeUInt32LE(0x46546c67, 0);
+  h.writeUInt32LE(2, 4);
+  h.writeUInt32LE(12 + 8 + js.length + 8 + bin.length, 8);
+  const ch = (len: number, type: number) => Buffer.from(new Uint32Array([len, type]).buffer);
+  return Buffer.concat([h, ch(js.length, 0x4e4f534a), js, ch(bin.length, 0x004e4942), bin]);
+}
+
+test('3D model: upload a GLB for an aircraft and switch back to the generic model', async ({ page }) => {
+  await signUp(page, 'Model Shop');
+  const origin = new URL(page.url()).origin;
+  const me = await (await page.request.get(`${origin}/certa/api/v1/me`)).json();
+  const org = me.memberships[0].orgId;
+  const ac = await (await page.request.post(`${origin}/certa/api/v1/orgs/${org}/aircraft`, { data: { nickname: 'Heron 9', make: 'Freefly', model: 'Alta X', serialNumber: 'FFX-9' }, headers: { origin } })).json();
+  await page.goto(`aircraft/${ac.id}`);
+  await page.getByLabel('Upload 3D model').setInputFiles({ name: 'heron.glb', mimeType: 'model/gltf-binary', buffer: tinyGlb() });
+  await expect(page.getByText('Replace model')).toBeVisible();
+  expect((await page.request.get(`${origin}/certa/api/v1/orgs/${org}/aircraft/${ac.id}/model`)).status()).toBe(200);
+
+  await page.getByLabel('Upload 3D model').setInputFiles({ name: 'bad.glb', mimeType: 'model/gltf-binary', buffer: Buffer.from('definitely not a model') });
+  await expect(page.getByRole('alert').filter({ hasText: 'Not a GLB' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Use generic model' }).click();
+  await expect(page.getByText('Upload .glb')).toBeVisible();
+});

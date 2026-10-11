@@ -212,6 +212,7 @@ export function buildAircraftDetail(i: BuildInput, aircraftId: string, recentFli
     batteries: a ? s.batteries.filter((b) => !b.deletedAt && b.aircraftModel === a.model).map((b) => toBatteryRow(b, s.batteryLastUsed[b.id] ?? null, ctx)) : [],
     canEdit: can(i.role, 'aircraft.manage'),
     canGround: can(i.role, 'aircraft.ground'),
+    model: { custom: !!a?.modelDocumentId, uploading: false, error: null },
     share: emptyShare(i.role),
   };
 }

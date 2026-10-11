@@ -18,6 +18,7 @@ import type { SessionUser } from './lib/context.js';
 import { ApiError } from './lib/errors.js';
 import type { Mailer } from './lib/mailer.js';
 import { createPusher, type Pusher } from './lib/push.js';
+import { createBlobStore, type BlobStore } from './lib/blobs.js';
 import { iso } from './lib/mappers.js';
 import { auditRoutes } from './routes/audit.js';
 import { authRoutes } from './routes/auth.js';
@@ -27,6 +28,7 @@ import { shareRoutes } from './routes/share.js';
 import { integrationRoutes } from './routes/integrations.js';
 import { conditionsRoutes } from './routes/conditions.js';
 import { pushRoutes } from './routes/push.js';
+import { modelRoutes } from './routes/models.js';
 import { healthRoutes } from './routes/health.js';
 import { memberRoutes } from './routes/members.js';
 import { orgRoutes } from './routes/orgs.js';
@@ -46,11 +48,14 @@ export interface AppDeps {
   fetch?: typeof fetch;
   /** Web Push sender; defaults to one built from the VAPID config (null when unconfigured). */
   pusher?: Pusher | null;
+  /** Upload storage; defaults to S3 (or a local dir in development). */
+  blobs?: BlobStore;
 }
 
 export interface AppContext extends AppDeps {
   auth: Auth;
   pusher: Pusher | null;
+  blobs: BlobStore;
 }
 
 export type App = FastifyInstance;
@@ -73,7 +78,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  const ctx: AppContext = { ...deps, auth: createAuth(config, deps.pool, deps.mailer), pusher: deps.pusher === undefined ? createPusher(config) : deps.pusher };
+  const ctx: AppContext = { ...deps, auth: createAuth(config, deps.pool, deps.mailer), pusher: deps.pusher === undefined ? createPusher(config) : deps.pusher, blobs: deps.blobs ?? createBlobStore(config) };
 
   await app.register(cookie);
   await app.register(rateLimit, {
@@ -160,6 +165,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(integrationRoutes(ctx), { prefix: v1 });
   await app.register(conditionsRoutes(ctx), { prefix: v1 });
   await app.register(pushRoutes(ctx), { prefix: v1 });
+  await app.register(modelRoutes(ctx), { prefix: v1 });
 
   return app;
 }

@@ -99,6 +99,7 @@ export const toAircraft = (r: Row<typeof aircraft>): Aircraft => ({
   groundedReason: r.groundedReason,
   totalFlightSeconds: r.totalFlightSeconds,
   totalFlights: r.totalFlights,
+  modelDocumentId: r.modelDocumentId,
 });
 
 export const toBattery = (r: Row<typeof batteries>): Battery => ({

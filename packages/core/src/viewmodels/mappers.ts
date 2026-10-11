@@ -219,6 +219,7 @@ export function toAircraftReadinessRow(a: Aircraft, summary: ReadinessSummary, c
     reasons: summary.reasons.map((r) => reasonFromItem(r, ctx.today, href)),
     href,
     airframe: airframeOf(a),
+    ...(a.modelDocumentId ? { modelUrl: `/api/v1/orgs/${a.orgId}/aircraft/${a.id}/model?v=${a.modelDocumentId}` } : {}),
   };
 }
 

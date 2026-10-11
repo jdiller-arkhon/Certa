@@ -26,7 +26,10 @@ export const conditionsRoutes =
       async (req) => {
         const oc = await resolveOrg(ctx.pool, req, req.params.orgId);
         authorize(oc, 'flights.read');
-        return conditionsAt(ctx.fetch ?? fetch, req.query.lat, req.query.lon);
+        const offline: typeof fetch = async () => {
+          throw new Error('conditions lookups are off');
+        };
+        return conditionsAt(ctx.config.CONDITIONS_LOOKUPS === 'off' ? offline : (ctx.fetch ?? fetch), req.query.lat, req.query.lon);
       },
     );
   };
