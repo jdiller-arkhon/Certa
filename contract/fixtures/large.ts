@@ -100,6 +100,14 @@ export const large = {
         "badge": null
       },
       {
+        "id": "integrations",
+        "label": "Integrations",
+        "href": "/admin/integrations",
+        "icon": "admin",
+        "active": false,
+        "badge": null
+      },
+      {
         "id": "audit",
         "label": "Audit log",
         "href": "/admin/audit",
@@ -253,6 +261,14 @@ export const large = {
         "id": "members",
         "label": "Members",
         "href": "/admin/members",
+        "icon": "admin",
+        "active": false,
+        "badge": null
+      },
+      {
+        "id": "integrations",
+        "label": "Integrations",
+        "href": "/admin/integrations",
         "icon": "admin",
         "active": false,
         "badge": null

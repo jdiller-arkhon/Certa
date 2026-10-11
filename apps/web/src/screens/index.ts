@@ -21,3 +21,4 @@ export { SyncConflictsScreen } from './SyncConflictsScreen';
 export { MaintenanceScreen } from './MaintenanceScreen';
 export { InsuranceScreen } from './InsuranceScreen';
 export { SharedPacketScreen } from './SharedPacketScreen';
+export { IntegrationsScreen } from './IntegrationsScreen';

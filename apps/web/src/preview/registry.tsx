@@ -12,6 +12,7 @@ import {
   BatteryListScreen,
   FlightDetailScreen,
   FlightListScreen,
+  IntegrationsScreen,
   InsuranceScreen,
   LogFlightScreen,
   MaintenanceScreen,
@@ -270,6 +271,37 @@ export const SCREENS: PreviewScreen[] = [
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.syncConflicts, state, (x) => ({ ...x, conflicts: [] }));
       return <SyncConflictsScreen {...d} onResolve={noop} />;
+    },
+  },
+  {
+    id: 'integrations',
+    title: 'Integrations (API keys)',
+    group: 'Admin',
+    route: '/admin/integrations',
+    shell: true,
+    variants: ['keys', 'just-created', 'empty'],
+    render: ({ variant, state }) => {
+      const d = (iso: string, display: string) => ({ iso, absolute: display, relative: display, display, daysFromToday: 0 });
+      const keys =
+        variant === 'empty'
+          ? []
+          : [
+              { id: 'k1', name: 'Argus production', prefix: 'ck_7f3a91c0d2e4', scopes: ['verify:read'], lastUsed: d('2026-10-08T15:40:00Z', 'Oct 8, 2026, 9:40 AM MDT — 20 min ago'), expires: d('2027-10-01', 'Oct 1, 2027 — in 12 months'), created: d('2026-10-01', 'Oct 1, 2026 — 7 days ago') },
+              { id: 'k2', name: 'Argus staging', prefix: 'ck_04be55aa1f90', scopes: ['verify:read'], lastUsed: null, expires: null, created: d('2026-10-05', 'Oct 5, 2026 — 3 days ago') },
+            ];
+      return (
+        <IntegrationsScreen
+          {...(stateProps(state) ?? { loading: false, error: null })}
+          keys={keys}
+          createdKey={variant === 'just-created' ? 'ck_7f3a91c0d2e4_Qm9yZWFzLXNhbXBsZS1rZXktbm90LXJlYWwtMTIzNDU2' : null}
+          creating={false}
+          canManage
+          apiBaseUrl="https://arkhonindustries.com/certa/api/v1"
+          onCreateKey={noop}
+          onRevokeKey={noop}
+          onDismissKey={noop}
+        />
+      );
     },
   },
   { id: 'rules', title: 'Rule pack', group: 'Admin', route: '/admin/rules', shell: true, render: ({ scenario, state }) => <RulesPreview scenario={scenario} state={state} /> },

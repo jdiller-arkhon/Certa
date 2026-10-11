@@ -23,6 +23,7 @@ import { authRoutes } from './routes/auth.js';
 import { fleetRoutes } from './routes/fleet.js';
 import { flightRoutes } from './routes/flights.js';
 import { shareRoutes } from './routes/share.js';
+import { integrationRoutes } from './routes/integrations.js';
 import { healthRoutes } from './routes/health.js';
 import { memberRoutes } from './routes/members.js';
 import { orgRoutes } from './routes/orgs.js';
@@ -148,6 +149,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(fleetRoutes(ctx), { prefix: v1 });
   await app.register(flightRoutes(ctx), { prefix: v1 });
   await app.register(shareRoutes(ctx), { prefix: v1 });
+  await app.register(integrationRoutes(ctx), { prefix: v1 });
 
   return app;
 }

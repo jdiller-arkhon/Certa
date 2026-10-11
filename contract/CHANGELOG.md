@@ -3,6 +3,14 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.9.0 — 2026-10-11
+
+Machine verification for Argus.
+
+- **Added** org API keys: `POST/GET /orgs/{orgId}/api-keys`, `DELETE /orgs/{orgId}/api-keys/{keyId}` (`integrations.manage`). Key format `ck_<12 hex>_<43 base64url>`; returned once, stored as SHA-256, compared in constant time; scope `verify:read`; optional expiry.
+- **Added** bearer-authenticated verification: `GET /verify/pilots/{pilotId}`, `GET /verify/aircraft/{aircraftId}`, `GET /verify/lookup?certificateNumber=|registration=|serialNumber=` → `VerificationResult` (`legalToFly`, `status`, `reasons`), and `POST /verify/flight` → go / no-go. Keys see only their own org; rate-limited per key.
+- **Added** `IntegrationsScreenProps` (route `/admin/integrations`, nav item `integrations`).
+
 ## 0.8.0 — 2026-10-11
 
 Inspector packets.

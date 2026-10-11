@@ -7,6 +7,7 @@ import { Aircraft, AuditEvent, Battery, BatteryRetirementThresholds, Credential,
 import { AirspaceClass, BatteryChemistry, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
 import { FleetSnapshot, GoNoGoResult } from '../fleet/fleet.js';
 import { InspectorPacket } from '../fleet/packet.js';
+import { FlightVerificationResult, VerificationResult } from '../fleet/verify.js';
 import { ACTIONS } from '../domain/permissions.js';
 import { Rule, RuleSource } from '../rules/schema.js';
 
@@ -398,3 +399,37 @@ export const PublicPacketResponse = z.object({
   packet: InspectorPacket,
 });
 export type PublicPacketResponse = z.infer<typeof PublicPacketResponse>;
+
+// ---------- API keys and machine verification (Argus) ----------
+
+export const API_KEY_SCOPES = ['verify:read'] as const;
+export const ApiKeyScope = z.enum(API_KEY_SCOPES);
+
+export const CreateApiKeyRequest = z.object({
+  name: z.string().min(1).max(100),
+  scopes: z.array(ApiKeyScope).min(1).default(['verify:read']),
+  /** Omit for a key that doesn't expire (rotate it from the admin page). */
+  expiresInDays: z.number().int().min(1).max(730).optional(),
+});
+export type CreateApiKeyRequest = z.infer<typeof CreateApiKeyRequest>;
+
+export const ApiKey = z.object({
+  id: Id,
+  name: z.string(),
+  /** Public part shown in lists, e.g. ck_7Hq2… */
+  prefix: z.string(),
+  scopes: z.array(z.string()),
+  lastUsedAt: IsoDateTime.nullable(),
+  expiresAt: IsoDateTime.nullable(),
+  createdAt: IsoDateTime,
+});
+export type ApiKey = z.infer<typeof ApiKey>;
+/** Returned once at creation: the full secret key. */
+export const CreatedApiKey = ApiKey.extend({ key: z.string() });
+export const ApiKeyListResponse = z.object({ keys: z.array(ApiKey) });
+
+export const VerifyLookupQuery = z
+  .object({ certificateNumber: z.string().max(40).optional(), registration: z.string().max(40).optional(), serialNumber: z.string().max(100).optional() })
+  .refine((q) => Object.values(q).filter(Boolean).length === 1, 'Give exactly one of certificateNumber, registration, serialNumber');
+export const VerifyFlightRequest = PreflightRequest;
+export { VerificationResult as VerificationResponse, FlightVerificationResult as FlightVerificationResponse };

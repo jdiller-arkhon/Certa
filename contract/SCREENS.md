@@ -1,6 +1,6 @@
 # Certa Screen Inventory
 
-**Contract version 0.8.0** (see `CHANGELOG.md`). Types: `contract/types.ts`. Fixtures: `contract/fixtures/`.
+**Contract version 0.9.0** (see `CHANGELOG.md`). Types: `contract/types.ts`. Fixtures: `contract/fixtures/`.
 
 Each screen is one presentational component that takes `XxxScreenProps` from `types.ts`. It
 renders inside `<AppShell>` and never fetches data, holds server state, or computes anything
@@ -97,6 +97,7 @@ Audit log notes: show `actorLabel`. **"Direct database change"** (no actor) is a
 | Flight detail | `/flights/[flightId]` | `FlightDetailScreenProps` | `onEdit`, `onDelete` | — | `screens.flightDetail` |
 | **Quick log flight** | `/flights/new`, `/flights/[flightId]/edit` | `LogFlightScreenProps` | `onSelectionChange`, `onSameAsLast`, `onSubmit`, `onCancel` | `onSubmit` | `screens.logFlight` |
 | Sync conflicts | `/sync/conflicts` | `SyncConflictsScreenProps` | `onResolve` | — | `screens.syncConflicts` |
+| Integrations (API keys) | `/admin/integrations` | `IntegrationsScreenProps` | `onCreateKey`, `onRevokeKey`, `onDismissKey` | `onCreateKey` | — |
 | Shared inspector packet (public) | `/share/[token]` | `SharedPacketScreenProps` | — | — | — |
 | Maintenance | `/maintenance` | `MaintenanceScreenProps` | `onAddSchedule`, `onLogMaintenance`, `onRemoveSchedule`, `onOpenTarget` | `onAddSchedule` | `screens.maintenance` |
 | Insurance | `/insurance` | `InsuranceScreenProps` | `onAddPolicy`, `onRemovePolicy`, `onOpenAircraft` | `onAddPolicy` | `screens.insurance` |

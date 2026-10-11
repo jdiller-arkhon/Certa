@@ -4037,6 +4037,380 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/orgs/{orgId}/api-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            keys: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                prefix: string;
+                                scopes: string[];
+                                lastUsedAt: string | null;
+                                expiresAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Create an API key (the secret is returned once) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        /**
+                         * @default [
+                         *       "verify:read"
+                         *     ]
+                         */
+                        scopes?: "verify:read"[];
+                        expiresInDays?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            name: string;
+                            prefix: string;
+                            scopes: string[];
+                            lastUsedAt: string | null;
+                            expiresAt: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            key: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/api-keys/{keyId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Revoke an API key immediately */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    keyId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verify/pilots/{pilotId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Is this pilot current? (API key, verify:read) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            subject: {
+                                /** @enum {string} */
+                                type: "pilot" | "aircraft";
+                                id: string;
+                                name: string;
+                                identifier: string | null;
+                            };
+                            legalToFly: boolean;
+                            /** @enum {string} */
+                            status: "green" | "amber" | "red";
+                            reasons: {
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                text: string;
+                                dueOn: string | null;
+                            }[];
+                            asOf: string;
+                            checkedAt: string;
+                            ruleSet: string;
+                            notice: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verify/aircraft/{aircraftId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Is this aircraft airworthy on record? (API key, verify:read) */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    aircraftId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            subject: {
+                                /** @enum {string} */
+                                type: "pilot" | "aircraft";
+                                id: string;
+                                name: string;
+                                identifier: string | null;
+                            };
+                            legalToFly: boolean;
+                            /** @enum {string} */
+                            status: "green" | "amber" | "red";
+                            reasons: {
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                text: string;
+                                dueOn: string | null;
+                            }[];
+                            asOf: string;
+                            checkedAt: string;
+                            ruleSet: string;
+                            notice: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verify/lookup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Verify by certificate number, registration, or serial number */
+        get: {
+            parameters: {
+                query?: {
+                    certificateNumber?: string;
+                    registration?: string;
+                    serialNumber?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            subject: {
+                                /** @enum {string} */
+                                type: "pilot" | "aircraft";
+                                id: string;
+                                name: string;
+                                identifier: string | null;
+                            };
+                            legalToFly: boolean;
+                            /** @enum {string} */
+                            status: "green" | "amber" | "red";
+                            reasons: {
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                text: string;
+                                dueOn: string | null;
+                            }[];
+                            asOf: string;
+                            checkedAt: string;
+                            ruleSet: string;
+                            notice: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/verify/flight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pre-flight go / no-go for a pilot, aircraft, and batteries */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        pilotId: string;
+                        /** Format: uuid */
+                        aircraftId: string;
+                        /** @default [] */
+                        batteryIds?: string[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            goNoGo: {
+                                /** @enum {string} */
+                                decision: "go" | "caution" | "no_go";
+                                checks: {
+                                    key: string;
+                                    label: string;
+                                    /** @enum {string} */
+                                    level: "green" | "amber" | "red";
+                                    detail: string;
+                                }[];
+                            };
+                            asOf: string;
+                            checkedAt: string;
+                            ruleSet: string;
+                            notice: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

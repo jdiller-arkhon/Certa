@@ -12,6 +12,7 @@ import {
   CloudOff,
   Ellipsis,
   History,
+  KeyRound,
   LogOut,
   Moon,
   Plane,
@@ -41,7 +42,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Segmented } from '@/components/ui/segmented';
 import { LEVEL_COLOR } from '@/components/ui/status';
 
-const BY_ID: Record<string, LucideIcon> = { rules: BookOpenCheck, members: UserCog, audit: History };
+const BY_ID: Record<string, LucideIcon> = { rules: BookOpenCheck, members: UserCog, audit: History, integrations: KeyRound };
 const BY_ICON: Record<NavItem['icon'], LucideIcon> = {
   today: Radar,
   flights: Route,

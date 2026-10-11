@@ -433,6 +433,7 @@ const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; req
   { id: 'insurance', label: 'Insurance', href: '/insurance', icon: 'insurance', requires: 'aircraft.read' },
   { id: 'rules', label: 'Rule pack', href: '/admin/rules', icon: 'admin', requires: 'rules.read' },
   { id: 'members', label: 'Members', href: '/admin/members', icon: 'admin', requires: 'members.read' },
+  { id: 'integrations', label: 'Integrations', href: '/admin/integrations', icon: 'admin', requires: 'integrations.manage' },
   { id: 'audit', label: 'Audit log', href: '/admin/audit', icon: 'records', requires: 'audit.read' },
   { id: 'settings', label: 'Settings', href: '/settings/organization', icon: 'settings', requires: 'org.read' },
 ];

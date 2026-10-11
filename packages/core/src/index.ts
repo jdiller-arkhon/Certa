@@ -16,3 +16,4 @@ export * from './viewmodels/mappers.js';
 export * from './viewmodels/builders.js';
 export * from './fleet/fleet.js';
 export * from './fleet/packet.js';
+export * from './fleet/verify.js';

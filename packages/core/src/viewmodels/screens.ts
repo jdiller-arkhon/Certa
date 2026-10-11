@@ -557,6 +557,30 @@ export interface SyncConflictsScreenProps extends AsyncState {
   onResolve: (input: { conflictId: string; choose: 'local' | 'server'; note: string | null }) => void;
 }
 
+export interface ApiKeyRowViewModel {
+  id: string;
+  name: string;
+  prefix: string;
+  scopes: string[];
+  lastUsed: DateDisplay | null;
+  expires: DateDisplay | null;
+  created: DateDisplay;
+}
+
+/** @status beta — route: /admin/integrations */
+export interface IntegrationsScreenProps extends AsyncState {
+  keys: ApiKeyRowViewModel[];
+  /** The full key, only right after creating it. */
+  createdKey: string | null;
+  creating: boolean;
+  canManage: boolean;
+  /** API base URL for the example request, e.g. https://arkhonindustries.com/certa/api/v1 */
+  apiBaseUrl: string;
+  onCreateKey: (input: { name: string; expiresInDays: number | null }) => void;
+  onRevokeKey: (keyId: string) => void;
+  onDismissKey: () => void;
+}
+
 /**
  * @status beta — route: /share/[token] (public, no account, no shell)
  * Read-only inspector packet behind a time-boxed link. Dates in `packet` are ISO dates (YYYY-MM-DD),

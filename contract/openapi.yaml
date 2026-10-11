@@ -9902,6 +9902,559 @@ paths:
       responses:
         "200":
           description: Default Response
+  /api/v1/orgs/{orgId}/api-keys:
+    post:
+      summary: Create an API key (the secret is returned once)
+      tags:
+        - integrations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                scopes:
+                  default:
+                    - verify:read
+                  minItems: 1
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - verify:read
+                expiresInDays:
+                  type: integer
+                  minimum: 1
+                  maximum: 730
+              required:
+                - name
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  name:
+                    type: string
+                  prefix:
+                    type: string
+                  scopes:
+                    type: array
+                    items:
+                      type: string
+                  lastUsedAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  expiresAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  key:
+                    type: string
+                required:
+                  - id
+                  - name
+                  - prefix
+                  - scopes
+                  - lastUsedAt
+                  - expiresAt
+                  - createdAt
+                  - key
+                additionalProperties: false
+    get:
+      tags:
+        - integrations
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        name:
+                          type: string
+                        prefix:
+                          type: string
+                        scopes:
+                          type: array
+                          items:
+                            type: string
+                        lastUsedAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        expiresAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        createdAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      required:
+                        - id
+                        - name
+                        - prefix
+                        - scopes
+                        - lastUsedAt
+                        - expiresAt
+                        - createdAt
+                      additionalProperties: false
+                required:
+                  - keys
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/api-keys/{keyId}:
+    delete:
+      summary: Revoke an API key immediately
+      tags:
+        - integrations
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: keyId
+          required: true
+      responses:
+        "204":
+          description: Default Response
+  /api/v1/verify/pilots/{pilotId}:
+    get:
+      summary: Is this pilot current? (API key, verify:read)
+      tags:
+        - verify
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: pilotId
+          required: true
+      security: &a1
+        - bearer: []
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subject:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - pilot
+                          - aircraft
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      identifier:
+                        type:
+                          - string
+                          - "null"
+                    required:
+                      - type
+                      - id
+                      - name
+                      - identifier
+                    additionalProperties: false
+                  legalToFly:
+                    type: boolean
+                  status:
+                    type: string
+                    enum:
+                      - green
+                      - amber
+                      - red
+                  reasons:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        level:
+                          type: string
+                          enum:
+                            - green
+                            - amber
+                            - red
+                        text:
+                          type: string
+                        dueOn:
+                          type:
+                            - string
+                            - "null"
+                      required:
+                        - level
+                        - text
+                        - dueOn
+                      additionalProperties: false
+                  asOf:
+                    type: string
+                  checkedAt:
+                    type: string
+                  ruleSet:
+                    type: string
+                  notice:
+                    type: string
+                required:
+                  - subject
+                  - legalToFly
+                  - status
+                  - reasons
+                  - asOf
+                  - checkedAt
+                  - ruleSet
+                  - notice
+                additionalProperties: false
+  /api/v1/verify/aircraft/{aircraftId}:
+    get:
+      summary: Is this aircraft airworthy on record? (API key, verify:read)
+      tags:
+        - verify
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: aircraftId
+          required: true
+      security: *a1
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subject:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - pilot
+                          - aircraft
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      identifier:
+                        type:
+                          - string
+                          - "null"
+                    required:
+                      - type
+                      - id
+                      - name
+                      - identifier
+                    additionalProperties: false
+                  legalToFly:
+                    type: boolean
+                  status:
+                    type: string
+                    enum:
+                      - green
+                      - amber
+                      - red
+                  reasons:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        level:
+                          type: string
+                          enum:
+                            - green
+                            - amber
+                            - red
+                        text:
+                          type: string
+                        dueOn:
+                          type:
+                            - string
+                            - "null"
+                      required:
+                        - level
+                        - text
+                        - dueOn
+                      additionalProperties: false
+                  asOf:
+                    type: string
+                  checkedAt:
+                    type: string
+                  ruleSet:
+                    type: string
+                  notice:
+                    type: string
+                required:
+                  - subject
+                  - legalToFly
+                  - status
+                  - reasons
+                  - asOf
+                  - checkedAt
+                  - ruleSet
+                  - notice
+                additionalProperties: false
+  /api/v1/verify/lookup:
+    get:
+      summary: Verify by certificate number, registration, or serial number
+      tags:
+        - verify
+      parameters:
+        - schema:
+            type: string
+            maxLength: 40
+          in: query
+          name: certificateNumber
+          required: false
+        - schema:
+            type: string
+            maxLength: 40
+          in: query
+          name: registration
+          required: false
+        - schema:
+            type: string
+            maxLength: 100
+          in: query
+          name: serialNumber
+          required: false
+      security: *a1
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subject:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - pilot
+                          - aircraft
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      identifier:
+                        type:
+                          - string
+                          - "null"
+                    required:
+                      - type
+                      - id
+                      - name
+                      - identifier
+                    additionalProperties: false
+                  legalToFly:
+                    type: boolean
+                  status:
+                    type: string
+                    enum:
+                      - green
+                      - amber
+                      - red
+                  reasons:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        level:
+                          type: string
+                          enum:
+                            - green
+                            - amber
+                            - red
+                        text:
+                          type: string
+                        dueOn:
+                          type:
+                            - string
+                            - "null"
+                      required:
+                        - level
+                        - text
+                        - dueOn
+                      additionalProperties: false
+                  asOf:
+                    type: string
+                  checkedAt:
+                    type: string
+                  ruleSet:
+                    type: string
+                  notice:
+                    type: string
+                required:
+                  - subject
+                  - legalToFly
+                  - status
+                  - reasons
+                  - asOf
+                  - checkedAt
+                  - ruleSet
+                  - notice
+                additionalProperties: false
+  /api/v1/verify/flight:
+    post:
+      summary: Pre-flight go / no-go for a pilot, aircraft, and batteries
+      tags:
+        - verify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pilotId:
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                aircraftId:
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                batteryIds:
+                  default: []
+                  maxItems: 12
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+              required:
+                - pilotId
+                - aircraftId
+      security: *a1
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  goNoGo:
+                    type: object
+                    properties:
+                      decision:
+                        type: string
+                        enum:
+                          - go
+                          - caution
+                          - no_go
+                      checks:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            label:
+                              type: string
+                            level:
+                              type: string
+                              enum:
+                                - green
+                                - amber
+                                - red
+                            detail:
+                              type: string
+                          required:
+                            - key
+                            - label
+                            - level
+                            - detail
+                          additionalProperties: false
+                    required:
+                      - decision
+                      - checks
+                    additionalProperties: false
+                  asOf:
+                    type: string
+                  checkedAt:
+                    type: string
+                  ruleSet:
+                    type: string
+                  notice:
+                    type: string
+                required:
+                  - goNoGo
+                  - asOf
+                  - checkedAt
+                  - ruleSet
+                  - notice
+                additionalProperties: false
 security:
   - session: []
   - bearer: []

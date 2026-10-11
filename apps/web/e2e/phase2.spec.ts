@@ -186,3 +186,22 @@ test('inspector packet: share a read-only link that works without an account', a
   await expect(g.getByRole('heading', { name: 'Link not available' })).toBeVisible();
   await guest.close();
 });
+
+test('integrations: an admin creates an API key and Argus verifies a pilot with it', async ({ page, playwright }) => {
+  await signUp(page, 'Argus Customer');
+  await page.getByRole('link', { name: 'Integrations' }).click();
+  await page.getByRole('button', { name: 'Create API key' }).first().click();
+  await page.getByRole('button', { name: 'Create key' }).click();
+  const key = await page.getByLabel('New API key').inputValue();
+  expect(key).toMatch(/^ck_[0-9a-f]{12}_/);
+  await expect(page.getByText('Never used')).toBeVisible();
+
+  const origin = new URL(page.url()).origin;
+  const me = await (await page.request.get(`${origin}/certa/api/v1/me`)).json();
+  const pilots = await (await page.request.get(`${origin}/certa/api/v1/orgs/${me.memberships[0].orgId}/fleet`)).json();
+  const machine = await playwright.request.newContext({ extraHTTPHeaders: { authorization: `Bearer ${key}` } });
+  const res = await machine.get(`${origin}/certa/api/v1/verify/pilots/${pilots.pilots[0].id}`);
+  expect(res.status()).toBe(200);
+  expect(await res.json()).toMatchObject({ subject: { type: 'pilot' }, legalToFly: false }); // no certificate on file yet
+  await machine.dispose();
+});
