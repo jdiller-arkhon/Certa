@@ -169,7 +169,17 @@ export interface OrgSettingsScreenProps extends AsyncState {
   };
   canEdit: boolean;
   saving: boolean;
+  /** Push notifications on this device (per user, per browser). */
+  notifications: {
+    /** 'unsupported' = browser can't; 'unconfigured' = server has no VAPID keys; 'blocked' = permission denied. */
+    availability: 'available' | 'unsupported' | 'unconfigured' | 'blocked';
+    enabled: boolean;
+    busy: boolean;
+    message: string | null;
+  };
   onSave: (values: OrgSettingsScreenProps['values']) => void;
+  onToggleNotifications: (enabled: boolean) => void;
+  onTestNotification: () => void;
 }
 
 export interface AuditEventViewModel {

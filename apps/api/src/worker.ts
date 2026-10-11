@@ -8,6 +8,7 @@ import { loadConfig } from './config.js';
 import { runExpiryAlerts } from './jobs/expiry-alerts.js';
 import { createQueue } from './jobs/queue.js';
 import { smtpMailer } from './lib/mailer.js';
+import { createPusher } from './lib/push.js';
 
 const config = loadConfig();
 const log = pino({ level: config.LOG_LEVEL, base: { service: 'worker' } });
@@ -23,10 +24,11 @@ await boss.work('heartbeat', async () => {
 
 const pool = createPool(config.DATABASE_URL, 4);
 const mailer = smtpMailer(config.SMTP_URL, config.MAIL_FROM);
+const pusher = createPusher(config);
 await boss.createQueue('expiry-alerts');
 await boss.schedule('expiry-alerts', '0 7 * * *', null, { tz: 'America/Denver' });
 await boss.work('expiry-alerts', async () => {
-  await runExpiryAlerts({ pool, mailer, publicUrl: config.PUBLIC_URL.replace(/\/+$/, ''), log });
+  await runExpiryAlerts({ pool, mailer, pusher, publicUrl: config.PUBLIC_URL.replace(/\/+$/, ''), log });
 });
 log.info('worker started');
 

@@ -7,7 +7,7 @@
  * Scope is the registration scope (e.g. /certa/), so nothing outside Certa is ever touched.
  * API responses are never cached here: authenticated data lives in IndexedDB, not the HTTP cache.
  */
-const VERSION = 'certa-shell-v3';
+const VERSION = 'certa-shell-v4';
 const SCOPE = new URL(self.registration.scope).pathname; // '/certa/' or '/'
 const API = `${SCOPE}api/`;
 const STATIC = `${SCOPE}_next/static/`;
@@ -76,4 +76,37 @@ self.addEventListener('fetch', (event) => {
         .catch(() => caches.match(req).then((hit) => hit || caches.match(SCOPE))),
     );
   }
+});
+
+// ---------------------------------------------------------------- push notifications
+
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {}
+  // Only app-relative paths, so a payload can never send the user off-site.
+  const path = typeof data.url === 'string' && data.url.startsWith('/') && !data.url.startsWith('//') ? data.url : '/';
+  event.waitUntil(
+    self.registration.showNotification(String(data.title || 'Certa'), {
+      body: String(data.body || ''),
+      tag: data.tag ? String(data.tag) : undefined,
+      icon: `${SCOPE}icons/icon-192.png`,
+      badge: `${SCOPE}icons/favicon-32.png`,
+      data: { url: `${SCOPE}${path.slice(1)}` },
+    }),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url || SCOPE, self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if (c.url.startsWith(self.location.origin + SCOPE) && 'focus' in c) return c.focus().then(() => c.navigate(url));
+      }
+      return self.clients.openWindow(url);
+    }),
+  );
 });

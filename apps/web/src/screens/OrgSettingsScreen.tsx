@@ -8,7 +8,7 @@ import { Rise } from '@/components/motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Banner, Banners } from '@/components/ui/feedback';
-import { Field, Input, Select } from '@/components/ui/field';
+import { Field, Input, Select, Switch } from '@/components/ui/field';
 import { Segmented } from '@/components/ui/segmented';
 import { PageHeader } from '@/components/ui/text';
 
@@ -80,6 +80,34 @@ export function OrgSettingsScreen(props: OrgSettingsScreenProps) {
               </Select>
             )}
           </Field>
+        </Section>
+        <Section title="Notifications on this device" description="Expiry and overdue alerts as push notifications, in addition to email. Just for you, just this browser." delay={0.18}>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-[14px]">
+              <span className="font-semibold">Push notifications</span>
+              <span className="block text-[13px] text-[var(--certa-muted)]">
+                {props.notifications.availability === 'unsupported'
+                  ? 'Install Certa (Add to Home Screen) or use a browser that supports notifications.'
+                  : props.notifications.availability === 'unconfigured'
+                    ? 'Not set up on this server yet.'
+                    : props.notifications.availability === 'blocked'
+                      ? 'Blocked in your browser settings. Allow notifications for this site, then try again.'
+                      : props.notifications.enabled
+                        ? 'On for this browser.'
+                        : 'Off for this browser.'}
+              </span>
+            </span>
+            <Switch
+              label="Push notifications"
+              checked={props.notifications.enabled}
+              disabled={props.notifications.busy || props.notifications.availability === 'unsupported' || props.notifications.availability === 'unconfigured'}
+              onChange={props.onToggleNotifications}
+            />
+          </div>
+          {props.notifications.enabled && (
+            <Button variant="secondary" size="sm" onClick={props.onTestNotification} disabled={props.notifications.busy}>Send a test notification</Button>
+          )}
+          {props.notifications.message && <p className="text-[13px] text-[var(--certa-muted)]" role="status">{props.notifications.message}</p>}
         </Section>
       </div>
       {props.canEdit && (

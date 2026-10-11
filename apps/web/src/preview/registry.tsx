@@ -342,7 +342,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = scenarios[scenario]!.screens.orgSettings;
-      return <OrgSettingsScreen {...d} {...(stateProps(state) ?? {})} onSave={noop} />;
+      return <OrgSettingsScreen {...d} {...(stateProps(state) ?? {})} onSave={noop} onToggleNotifications={noop} onTestNotification={noop} />;
     },
   },
   {

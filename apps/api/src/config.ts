@@ -26,6 +26,14 @@ const Env = z.object({
    * through that proxy, otherwise clients can spoof it.
    */
   CLIENT_IP_HEADER: z.string().toLowerCase().optional(),
+  /**
+   * Web Push (VAPID) keys. Generate once with `npx web-push generate-vapid-keys` and keep the
+   * private key secret. Unset: push notifications are off and the app hides the toggle.
+   */
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  /** Contact for push services, a mailto: or https: URL. Defaults to PUBLIC_URL. */
+  VAPID_SUBJECT: z.string().optional(),
 });
 
 export type Config = z.infer<typeof Env> & {

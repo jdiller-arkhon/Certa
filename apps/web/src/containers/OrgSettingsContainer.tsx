@@ -3,7 +3,8 @@
 import { can } from '@certa/core';
 import { CertaApiError, unwrap } from '@certa/sdk';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { disablePush, enablePush, pushState, testPush, type PushAvailability } from '@/lib/push-client';
 import { keys } from '@/data/session';
 import { api } from '@/lib/api';
 import { useCurrentOrg } from '@/lib/current-org';
@@ -16,6 +17,26 @@ export function OrgSettingsContainer() {
   const o = org.organization;
   const qc = useQueryClient();
   const [error, setError] = useState<string | null>(null);
+  const [push, setPush] = useState<{ availability: PushAvailability; enabled: boolean; busy: boolean; message: string | null }>({ availability: 'unsupported', enabled: false, busy: true, message: null });
+  useEffect(() => {
+    pushState()
+      .then((s) => setPush({ availability: s.availability, enabled: s.enabled, busy: false, message: null }))
+      .catch(() => setPush((p) => ({ ...p, busy: false })));
+  }, []);
+  const togglePush = async (on: boolean) => {
+    setPush((p) => ({ ...p, busy: true, message: null }));
+    try {
+      if (on) {
+        const availability = await enablePush(o.id);
+        setPush({ availability, enabled: availability === 'available', busy: false, message: availability === 'available' ? 'Notifications are on for this browser.' : null });
+      } else {
+        await disablePush(o.id);
+        setPush((p) => ({ ...p, enabled: false, busy: false, message: 'Notifications are off for this browser.' }));
+      }
+    } catch {
+      setPush((p) => ({ ...p, busy: false, message: 'Couldn’t change notifications. Try again.' }));
+    }
+  };
   const save = useMutation({
     mutationFn: async (v: { name: string; timezone: string; units: typeof o.units }) =>
       unwrap(await api.PATCH('/api/v1/orgs/{orgId}', { params: { path: { orgId: o.id } }, body: v })),
@@ -46,6 +67,12 @@ export function OrgSettingsContainer() {
       }}
       canEdit={can(role, 'org.update')}
       saving={save.isPending}
+      notifications={push}
+      onToggleNotifications={(on) => void togglePush(on)}
+      onTestNotification={async () => {
+        const sent = await testPush(o.id).catch(() => 0);
+        setPush((p) => ({ ...p, message: sent ? 'Test sent — check your notifications.' : 'No notification could be delivered to this browser.' }));
+      }}
       onSave={(v) =>
         save.mutate({
           name: v.name,

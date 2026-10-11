@@ -11738,7 +11738,13 @@ export const company = {
         ]
       },
       "canEdit": true,
-      "saving": false
+      "saving": false,
+      "notifications": {
+        "availability": "available",
+        "enabled": false,
+        "busy": false,
+        "message": null
+      }
     },
     "auditLog": {
       "loading": false,

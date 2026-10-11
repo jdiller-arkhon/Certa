@@ -568,6 +568,7 @@ function toScenario(w: World): FixtureScenario {
         },
         canEdit: canDo('org.update'),
         saving: false,
+        notifications: { availability: 'available' as const, enabled: false, busy: false, message: null },
       },
       auditLog: {
         ...ok,

@@ -5,7 +5,7 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 
 function fakeFetch(opts: { cells?: object[]; obs?: object; failAirspace?: boolean; failWeather?: boolean }) {
   const calls: string[] = [];
-  const f = (async (input: RequestInfo | URL) => {
+  const f = (async (input: string | URL | Request) => {
     const url = String(input);
     calls.push(url);
     if (url.includes('arcgis')) return opts.failAirspace ? json({}, 503) : json({ features: (opts.cells ?? []).map((attributes) => ({ attributes })) });

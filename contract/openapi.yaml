@@ -10645,6 +10645,127 @@ paths:
                   - daylight
                   - advisories
                 additionalProperties: false
+  /api/v1/push/config:
+    get:
+      summary: VAPID public key (null when push is not configured)
+      tags:
+        - notifications
+      security: []
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  publicKey:
+                    type:
+                      - string
+                      - "null"
+                required:
+                  - publicKey
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/push-subscriptions:
+    post:
+      summary: Subscribe this browser to expiry notifications
+      tags:
+        - notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  maxLength: 2000
+                  format: uri
+                keys:
+                  type: object
+                  properties:
+                    p256dh:
+                      type: string
+                      minLength: 16
+                      maxLength: 200
+                    auth:
+                      type: string
+                      minLength: 8
+                      maxLength: 100
+                  required:
+                    - p256dh
+                    - auth
+              required:
+                - endpoint
+                - keys
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "204":
+          description: Default Response
+  /api/v1/orgs/{orgId}/push-subscriptions/remove:
+    post:
+      summary: Unsubscribe this browser
+      tags:
+        - notifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  maxLength: 2000
+              required:
+                - endpoint
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "204":
+          description: Default Response
+  /api/v1/orgs/{orgId}/push-subscriptions/test:
+    post:
+      summary: Send a test notification to your browsers
+      tags:
+        - notifications
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                required:
+                  - sent
+                additionalProperties: false
 security:
   - session: []
   - bearer: []

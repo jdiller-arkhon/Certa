@@ -8,10 +8,11 @@
  * crossed since the last run, only the tightest one is sent.
  */
 import { DEFAULT_READINESS_POLICY, fleetReadiness, newId, type EvaluatedItem, type ReadinessPolicy } from '@certa/core';
-import { alertDeliveries, and, authUsers, eq, inArray, isNull, memberships, withTenant, type Db } from '@certa/db';
+import { alertDeliveries, and, authUsers, eq, inArray, isNull, memberships, pushSubscriptions, sql, withTenant, type Db } from '@certa/db';
 import type pg from 'pg';
 import { loadFleet, orgMapContext } from '../lib/fleet.js';
 import type { Mailer } from '../lib/mailer.js';
+import type { Pusher } from '../lib/push.js';
 
 
 /** Overdue items use threshold 0; usage-based items (no due date) use this due-date key. */
@@ -66,6 +67,8 @@ export function alertItems(items: { item: EvaluatedItem; subject: string; href: 
 export interface ExpiryAlertDeps {
   pool: pg.Pool;
   mailer: Mailer;
+  /** Also notify each recipient's subscribed browsers (optional). */
+  pusher?: Pusher | null;
   /** e.g. https://arkhonindustries.com/certa */
   publicUrl: string;
   now?: Date;
@@ -75,6 +78,8 @@ export interface ExpiryAlertDeps {
 interface Recipient {
   email: string;
   name: string;
+  /** Accounts behind this address, for push. */
+  userIds: Set<string>;
   /** Items this person should hear about. */
   items: AlertItem[];
 }
@@ -99,29 +104,30 @@ async function planOrg(db: Db, orgId: string, now: Date) {
   if (!items.length) return { org: ctx.org, recipients: [] as Recipient[] };
 
   const people = await db
-    .select({ membershipId: memberships.id, role: memberships.role, expiresAt: memberships.expiresAt, email: authUsers.email, name: authUsers.name })
+    .select({ membershipId: memberships.id, userId: memberships.userId, role: memberships.role, expiresAt: memberships.expiresAt, email: authUsers.email, name: authUsers.name })
     .from(memberships)
     .innerJoin(authUsers, eq(authUsers.id, memberships.userId))
     .where(and(eq(memberships.orgId, orgId), isNull(memberships.deletedAt)));
   const active = people.filter((p) => !p.expiresAt || new Date(p.expiresAt) > now);
 
   const byEmail = new Map<string, Recipient>();
-  const add = (email: string | null | undefined, name: string, item: AlertItem) => {
+  const add = (email: string | null | undefined, name: string, item: AlertItem, userId?: string) => {
     if (!email) return;
     const key = email.toLowerCase();
-    const rec = byEmail.get(key) ?? { email: key, name, items: [] };
+    const rec = byEmail.get(key) ?? { email: key, name, items: [], userIds: new Set<string>() };
+    if (userId) rec.userIds.add(userId);
     if (!rec.items.some((i) => i.itemKey === item.itemKey)) rec.items.push(item);
     byEmail.set(key, rec);
   };
   for (const item of items) {
     for (const m of active) {
-      if ((MANAGER_ROLES as readonly string[]).includes(m.role) || (item.aircraft && m.role === 'maintenance_tech')) add(m.email, m.name, item);
+      if ((MANAGER_ROLES as readonly string[]).includes(m.role) || (item.aircraft && m.role === 'maintenance_tech')) add(m.email, m.name, item, m.userId);
     }
     if (item.pilotId) {
       // The pilot hears about their own credentials, via their account or the email on file.
       const pilot = snapshot.pilots.find((p) => p.id === item.pilotId);
       const member = pilot?.membershipId ? active.find((m) => m.membershipId === pilot.membershipId) : undefined;
-      add(member?.email ?? pilot?.email, pilot?.displayName ?? 'Pilot', item);
+      add(member?.email ?? pilot?.email, pilot?.displayName ?? 'Pilot', item, member?.userId);
     }
   }
 
@@ -156,9 +162,31 @@ export function digestEmail(orgName: string, rec: Recipient, publicUrl: string) 
   return { to: rec.email, subject, text: parts.join('\n') };
 }
 
+async function pushDigest(deps: ExpiryAlertDeps, orgId: string, orgName: string, rec: Recipient): Promise<number> {
+  const pusher = deps.pusher!;
+  const subs = await withTenant(deps.pool, { orgId, userId: null }, (db) =>
+    db.select().from(pushSubscriptions).where(and(inArray(pushSubscriptions.userId, [...rec.userIds]), isNull(pushSubscriptions.deletedAt))),
+  );
+  const overdue = rec.items.filter((i) => i.threshold === OVERDUE).length;
+  const first = rec.items[0]!;
+  const message = {
+    title: overdue ? `${orgName}: ${overdue} overdue` : `${orgName}: ${rec.items.length} coming due`,
+    body: `${first.subject} — ${first.label}: ${first.when}${rec.items.length > 1 ? ` (+${rec.items.length - 1} more)` : ''}`,
+    url: rec.items.length === 1 ? first.href : '/',
+    tag: `certa-alerts-${orgId}`,
+  };
+  let sent = 0;
+  for (const s of subs) {
+    const r = await pusher.send(s, message);
+    if (r === 'sent') sent += 1;
+    if (r === 'gone') await withTenant(deps.pool, { orgId, userId: null }, (db) => db.update(pushSubscriptions).set({ deletedAt: sql`now()` }).where(eq(pushSubscriptions.id, s.id)));
+  }
+  return sent;
+}
+
 export async function runExpiryAlerts(deps: ExpiryAlertDeps) {
   const now = deps.now ?? new Date();
-  const summary = { orgs: 0, emails: 0, items: 0, failures: 0 };
+  const summary = { orgs: 0, emails: 0, items: 0, pushes: 0, failures: 0 };
   for (const orgId of await orgIds(deps.pool)) {
     summary.orgs += 1;
     try {
@@ -180,6 +208,7 @@ export async function runExpiryAlerts(deps: ExpiryAlertDeps) {
         );
         summary.emails += 1;
         summary.items += rec.items.length;
+        if (deps.pusher && rec.userIds.size) summary.pushes += await pushDigest(deps, orgId, plan.org.name, rec);
       }
     } catch (err) {
       summary.failures += 1;
