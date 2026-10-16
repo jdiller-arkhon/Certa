@@ -111,7 +111,8 @@ function Slot({
     s.spin = damp(s.spin, selected && spinning ? 1 : 0, reduce ? 1000 : 2.2, dt);
     s.explode = damp(s.explode, selected && exploded ? 1 : 0, reduce ? 1000 : 4, dt);
     const lift = selected && spinning ? 0.36 + (reduce ? 0 : Math.sin(t * 2.2) * 0.025) : 0;
-    g.position.y = damp(g.position.y, (selected ? 0.27 : 0.19) + lift * Math.min(1, s.spin * 1.4), k, dt);
+    // Exploded parts hang below the airframe, so lift it clear of the floor while inspecting.
+    g.position.y = damp(g.position.y, (selected ? 0.27 : 0.19) + lift * Math.min(1, s.spin * 1.4) + s.explode * 0.22, k, dt);
     const sc = selected ? 0.62 : hover ? 0.5 : 0.44;
     g.scale.setScalar(damp(g.scale.x, sc, k, dt));
     // Parked aircraft idle-turn slowly; the selected one faces you a little off-axis.
