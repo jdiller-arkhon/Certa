@@ -33,7 +33,8 @@ export const expired = {
         "href": "/",
         "icon": "today",
         "active": true,
-        "badge": null
+        "badge": null,
+        "group": "operations"
       },
       {
         "id": "flights",
@@ -41,7 +42,8 @@ export const expired = {
         "href": "/flights",
         "icon": "flights",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "operations"
       },
       {
         "id": "pilots",
@@ -49,7 +51,8 @@ export const expired = {
         "href": "/pilots",
         "icon": "pilots",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "aircraft",
@@ -57,7 +60,8 @@ export const expired = {
         "href": "/aircraft",
         "icon": "aircraft",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "batteries",
@@ -65,7 +69,8 @@ export const expired = {
         "href": "/batteries",
         "icon": "batteries",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "maintenance",
@@ -73,7 +78,8 @@ export const expired = {
         "href": "/maintenance",
         "icon": "maintenance",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "upkeep"
       },
       {
         "id": "insurance",
@@ -81,7 +87,8 @@ export const expired = {
         "href": "/insurance",
         "icon": "insurance",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "upkeep"
       },
       {
         "id": "rules",
@@ -89,7 +96,8 @@ export const expired = {
         "href": "/admin/rules",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "members",
@@ -97,7 +105,8 @@ export const expired = {
         "href": "/admin/members",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "integrations",
@@ -105,7 +114,8 @@ export const expired = {
         "href": "/admin/integrations",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "audit",
@@ -113,7 +123,8 @@ export const expired = {
         "href": "/admin/audit",
         "icon": "records",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "settings",
@@ -121,7 +132,8 @@ export const expired = {
         "href": "/settings/organization",
         "icon": "settings",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       }
     ],
     "permissions": [
@@ -169,7 +181,132 @@ export const expired = {
       "message": null,
       "conflictCount": 0
     },
-    "theme": "light"
+    "theme": "light",
+    "commands": [
+      {
+        "id": "log-flight",
+        "label": "Log a flight",
+        "href": "/flights/new",
+        "section": "Actions",
+        "shortcut": "L"
+      },
+      {
+        "id": "add-pilot",
+        "label": "Add a pilot",
+        "href": "/pilots/new",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "add-aircraft",
+        "label": "Add an aircraft",
+        "href": "/aircraft/new",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "add-battery",
+        "label": "Add a battery",
+        "href": "/batteries?add=1",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "log-maintenance",
+        "label": "Log maintenance",
+        "href": "/maintenance?log=1",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "go-today",
+        "label": "Today",
+        "href": "/",
+        "section": "Go to",
+        "shortcut": "G T"
+      },
+      {
+        "id": "go-flights",
+        "label": "Flights",
+        "href": "/flights",
+        "section": "Go to",
+        "shortcut": "G F"
+      },
+      {
+        "id": "go-pilots",
+        "label": "Pilots",
+        "href": "/pilots",
+        "section": "Go to",
+        "shortcut": "G P"
+      },
+      {
+        "id": "go-aircraft",
+        "label": "Aircraft",
+        "href": "/aircraft",
+        "section": "Go to",
+        "shortcut": "G A"
+      },
+      {
+        "id": "go-batteries",
+        "label": "Batteries",
+        "href": "/batteries",
+        "section": "Go to",
+        "shortcut": "G B"
+      },
+      {
+        "id": "go-maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "section": "Go to",
+        "shortcut": "G M"
+      },
+      {
+        "id": "go-insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "section": "Go to",
+        "shortcut": "G I"
+      },
+      {
+        "id": "go-rules",
+        "label": "Rule pack",
+        "href": "/admin/rules",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-members",
+        "label": "Members",
+        "href": "/admin/members",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-integrations",
+        "label": "Integrations",
+        "href": "/admin/integrations",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-audit",
+        "label": "Audit log",
+        "href": "/admin/audit",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-settings",
+        "label": "Settings",
+        "href": "/settings/organization",
+        "section": "Go to",
+        "shortcut": "G S"
+      }
+    ],
+    "search": {
+      "query": "",
+      "results": []
+    }
   },
   "fieldShell": {
     "basePath": "/certa",
@@ -199,7 +336,8 @@ export const expired = {
         "href": "/",
         "icon": "today",
         "active": true,
-        "badge": null
+        "badge": null,
+        "group": "operations"
       },
       {
         "id": "flights",
@@ -207,7 +345,8 @@ export const expired = {
         "href": "/flights",
         "icon": "flights",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "operations"
       },
       {
         "id": "pilots",
@@ -215,7 +354,8 @@ export const expired = {
         "href": "/pilots",
         "icon": "pilots",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "aircraft",
@@ -223,7 +363,8 @@ export const expired = {
         "href": "/aircraft",
         "icon": "aircraft",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "batteries",
@@ -231,7 +372,8 @@ export const expired = {
         "href": "/batteries",
         "icon": "batteries",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "maintenance",
@@ -239,7 +381,8 @@ export const expired = {
         "href": "/maintenance",
         "icon": "maintenance",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "upkeep"
       },
       {
         "id": "insurance",
@@ -247,7 +390,8 @@ export const expired = {
         "href": "/insurance",
         "icon": "insurance",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "upkeep"
       },
       {
         "id": "rules",
@@ -255,7 +399,8 @@ export const expired = {
         "href": "/admin/rules",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "members",
@@ -263,7 +408,8 @@ export const expired = {
         "href": "/admin/members",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "integrations",
@@ -271,7 +417,8 @@ export const expired = {
         "href": "/admin/integrations",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "audit",
@@ -279,7 +426,8 @@ export const expired = {
         "href": "/admin/audit",
         "icon": "records",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "settings",
@@ -287,7 +435,8 @@ export const expired = {
         "href": "/settings/organization",
         "icon": "settings",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       }
     ],
     "permissions": [
@@ -341,7 +490,132 @@ export const expired = {
       "message": null,
       "conflictCount": 0
     },
-    "theme": "light"
+    "theme": "light",
+    "commands": [
+      {
+        "id": "log-flight",
+        "label": "Log a flight",
+        "href": "/flights/new",
+        "section": "Actions",
+        "shortcut": "L"
+      },
+      {
+        "id": "add-pilot",
+        "label": "Add a pilot",
+        "href": "/pilots/new",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "add-aircraft",
+        "label": "Add an aircraft",
+        "href": "/aircraft/new",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "add-battery",
+        "label": "Add a battery",
+        "href": "/batteries?add=1",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "log-maintenance",
+        "label": "Log maintenance",
+        "href": "/maintenance?log=1",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "go-today",
+        "label": "Today",
+        "href": "/",
+        "section": "Go to",
+        "shortcut": "G T"
+      },
+      {
+        "id": "go-flights",
+        "label": "Flights",
+        "href": "/flights",
+        "section": "Go to",
+        "shortcut": "G F"
+      },
+      {
+        "id": "go-pilots",
+        "label": "Pilots",
+        "href": "/pilots",
+        "section": "Go to",
+        "shortcut": "G P"
+      },
+      {
+        "id": "go-aircraft",
+        "label": "Aircraft",
+        "href": "/aircraft",
+        "section": "Go to",
+        "shortcut": "G A"
+      },
+      {
+        "id": "go-batteries",
+        "label": "Batteries",
+        "href": "/batteries",
+        "section": "Go to",
+        "shortcut": "G B"
+      },
+      {
+        "id": "go-maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "section": "Go to",
+        "shortcut": "G M"
+      },
+      {
+        "id": "go-insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "section": "Go to",
+        "shortcut": "G I"
+      },
+      {
+        "id": "go-rules",
+        "label": "Rule pack",
+        "href": "/admin/rules",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-members",
+        "label": "Members",
+        "href": "/admin/members",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-integrations",
+        "label": "Integrations",
+        "href": "/admin/integrations",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-audit",
+        "label": "Audit log",
+        "href": "/admin/audit",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-settings",
+        "label": "Settings",
+        "href": "/settings/organization",
+        "section": "Go to",
+        "shortcut": "G S"
+      }
+    ],
+    "search": {
+      "query": "",
+      "results": []
+    }
   },
   "screens": {
     "readinessDashboard": {
@@ -725,6 +999,281 @@ export const expired = {
           "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5"
         }
       ],
+      "actions": [
+        {
+          "id": "grounded:0199c4a0-0000-7000-8000-0000002dc6d5",
+          "level": "red",
+          "subject": "Falcon 1",
+          "subjectKind": "aircraft",
+          "problem": "Grounded: Overdue 200-hour motor inspection",
+          "due": null,
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+          "actionLabel": "Return to service",
+          "fix": {
+            "kind": "return_to_service",
+            "aircraftId": "0199c4a0-0000-7000-8000-0000002dc6d5"
+          }
+        },
+        {
+          "id": "credential:0199c4a0-0000-7000-8000-0000002dc6c7",
+          "level": "red",
+          "subject": "Riley Fenwick",
+          "subjectKind": "pilot",
+          "problem": "Recurrent training (Part 107) expired",
+          "due": {
+            "iso": "2026-04-30",
+            "absolute": "Apr 30, 2026",
+            "relative": "5 months ago",
+            "display": "Apr 30, 2026 — 5 months ago",
+            "daysFromToday": -161
+          },
+          "href": "/pilots/0199c4a0-0000-7000-8000-0000002dc6c4",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_credential",
+            "pilotId": "0199c4a0-0000-7000-8000-0000002dc6c4",
+            "credentialType": "part107_recurrent",
+            "typeLabel": "Recurrent training (Part 107)",
+            "expires": true
+          }
+        },
+        {
+          "id": "credential:0199c4a0-0000-7000-8000-0000002dc6ce",
+          "level": "red",
+          "subject": "Jordan Pike",
+          "subjectKind": "pilot",
+          "problem": "Recurrent training (Part 107) expired",
+          "due": {
+            "iso": "2026-04-30",
+            "absolute": "Apr 30, 2026",
+            "relative": "5 months ago",
+            "display": "Apr 30, 2026 — 5 months ago",
+            "daysFromToday": -161
+          },
+          "href": "/pilots/0199c4a0-0000-7000-8000-0000002dc6cb",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_credential",
+            "pilotId": "0199c4a0-0000-7000-8000-0000002dc6cb",
+            "credentialType": "part107_recurrent",
+            "typeLabel": "Recurrent training (Part 107)",
+            "expires": true
+          }
+        },
+        {
+          "id": "credential:0199c4a0-0000-7000-8000-0000002dc6d4",
+          "level": "red",
+          "subject": "Casey Morrow",
+          "subjectKind": "pilot",
+          "problem": "Recurrent training (Part 107) expired",
+          "due": {
+            "iso": "2026-06-30",
+            "absolute": "Jun 30, 2026",
+            "relative": "3 months ago",
+            "display": "Jun 30, 2026 — 3 months ago",
+            "daysFromToday": -100
+          },
+          "href": "/pilots/0199c4a0-0000-7000-8000-0000002dc6d1",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_credential",
+            "pilotId": "0199c4a0-0000-7000-8000-0000002dc6d1",
+            "credentialType": "part107_recurrent",
+            "typeLabel": "Recurrent training (Part 107)",
+            "expires": true
+          }
+        },
+        {
+          "id": "maintenance:0199c4a0-0000-7000-9000-0000002dc725",
+          "level": "red",
+          "subject": "Falcon 1",
+          "subjectKind": "aircraft",
+          "problem": "Airframe and gimbal inspection expired",
+          "due": {
+            "iso": "2026-07-31",
+            "absolute": "Jul 31, 2026",
+            "relative": "2 months ago",
+            "display": "Jul 31, 2026 — 2 months ago",
+            "daysFromToday": -69
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+          "actionLabel": "Log work",
+          "fix": {
+            "kind": "log_maintenance",
+            "scheduleId": "0199c4a0-0000-7000-9000-0000002dc725",
+            "target": "aircraft:0199c4a0-0000-7000-8000-0000002dc6d5",
+            "scheduleName": "Airframe and gimbal inspection"
+          }
+        },
+        {
+          "id": "maintenance:0199c4a0-0000-7000-9000-0000002dc727",
+          "level": "red",
+          "subject": "DJI Matrice 30T",
+          "subjectKind": "aircraft",
+          "problem": "Airframe and gimbal inspection expired",
+          "due": {
+            "iso": "2026-07-31",
+            "absolute": "Jul 31, 2026",
+            "relative": "2 months ago",
+            "display": "Jul 31, 2026 — 2 months ago",
+            "daysFromToday": -69
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d8",
+          "actionLabel": "Log work",
+          "fix": {
+            "kind": "log_maintenance",
+            "scheduleId": "0199c4a0-0000-7000-9000-0000002dc727",
+            "target": "aircraft:0199c4a0-0000-7000-8000-0000002dc6d8",
+            "scheduleName": "Airframe and gimbal inspection"
+          }
+        },
+        {
+          "id": "maintenance:0199c4a0-0000-7000-9000-0000002dc729",
+          "level": "red",
+          "subject": "Osprey 3",
+          "subjectKind": "aircraft",
+          "problem": "Airframe and gimbal inspection expired",
+          "due": {
+            "iso": "2026-07-31",
+            "absolute": "Jul 31, 2026",
+            "relative": "2 months ago",
+            "display": "Jul 31, 2026 — 2 months ago",
+            "daysFromToday": -69
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6db",
+          "actionLabel": "Log work",
+          "fix": {
+            "kind": "log_maintenance",
+            "scheduleId": "0199c4a0-0000-7000-9000-0000002dc729",
+            "target": "aircraft:0199c4a0-0000-7000-8000-0000002dc6db",
+            "scheduleName": "Airframe and gimbal inspection"
+          }
+        },
+        {
+          "id": "registration:0199c4a0-0000-7000-8000-0000002dc6db",
+          "level": "red",
+          "subject": "Osprey 3",
+          "subjectKind": "aircraft",
+          "problem": "Registration expired",
+          "due": {
+            "iso": "2026-08-23",
+            "absolute": "Aug 23, 2026",
+            "relative": "46 days ago",
+            "display": "Aug 23, 2026 — 46 days ago",
+            "daysFromToday": -46
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6db",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_registration",
+            "aircraftId": "0199c4a0-0000-7000-8000-0000002dc6db",
+            "registrationNumber": "FA3XXX12PJ"
+          }
+        },
+        {
+          "id": "insurance:0199c4a0-0000-7000-9000-0000002dc6c1:0199c4a0-0000-7000-8000-0000002dc6d5",
+          "level": "red",
+          "subject": "Falcon 1",
+          "subjectKind": "aircraft",
+          "problem": "Insurance (Skyward Aviation Insurance) expired",
+          "due": {
+            "iso": "2026-09-01",
+            "absolute": "Sep 1, 2026",
+            "relative": "37 days ago",
+            "display": "Sep 1, 2026 — 37 days ago",
+            "daysFromToday": -37
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_insurance",
+            "policyId": "0199c4a0-0000-7000-9000-0000002dc6c1",
+            "carrier": "Skyward Aviation Insurance",
+            "expiresOn": "2026-09-01"
+          }
+        },
+        {
+          "id": "insurance:0199c4a0-0000-7000-9000-0000002dc6c1:0199c4a0-0000-7000-8000-0000002dc6d8",
+          "level": "red",
+          "subject": "DJI Matrice 30T",
+          "subjectKind": "aircraft",
+          "problem": "Insurance (Skyward Aviation Insurance) expired",
+          "due": {
+            "iso": "2026-09-01",
+            "absolute": "Sep 1, 2026",
+            "relative": "37 days ago",
+            "display": "Sep 1, 2026 — 37 days ago",
+            "daysFromToday": -37
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d8",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_insurance",
+            "policyId": "0199c4a0-0000-7000-9000-0000002dc6c1",
+            "carrier": "Skyward Aviation Insurance",
+            "expiresOn": "2026-09-01"
+          }
+        },
+        {
+          "id": "registration:0199c4a0-0000-7000-8000-0000002dc6d8",
+          "level": "red",
+          "subject": "DJI Matrice 30T",
+          "subjectKind": "aircraft",
+          "problem": "Registration expired",
+          "due": {
+            "iso": "2026-09-05",
+            "absolute": "Sep 5, 2026",
+            "relative": "33 days ago",
+            "display": "Sep 5, 2026 — 33 days ago",
+            "daysFromToday": -33
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d8",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_registration",
+            "aircraftId": "0199c4a0-0000-7000-8000-0000002dc6d8",
+            "registrationNumber": "FA3XXX11YE"
+          }
+        },
+        {
+          "id": "registration:0199c4a0-0000-7000-8000-0000002dc6d5",
+          "level": "red",
+          "subject": "Falcon 1",
+          "subjectKind": "aircraft",
+          "problem": "Registration expired",
+          "due": {
+            "iso": "2026-09-18",
+            "absolute": "Sep 18, 2026",
+            "relative": "20 days ago",
+            "display": "Sep 18, 2026 — 20 days ago",
+            "daysFromToday": -20
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_registration",
+            "aircraftId": "0199c4a0-0000-7000-8000-0000002dc6d5",
+            "registrationNumber": "FA3XXX1179"
+          }
+        }
+      ],
+      "fixing": [],
+      "activity": {
+        "last7": 1,
+        "last30": 2,
+        "lastFlight": {
+          "label": "DJI Matrice 30T, Castle Rock Quarry",
+          "when": {
+            "iso": "2026-10-06T15:05:00.000Z",
+            "absolute": "Oct 6, 2026, 9:05 AM MDT",
+            "relative": "2 days ago",
+            "display": "Oct 6, 2026, 9:05 AM MDT — 2 days ago",
+            "daysFromToday": -2
+          },
+          "href": "/flights/0199c4a0-0000-7000-8000-0000002dc6de"
+        }
+      },
+      "canFix": true,
       "empty": {
         "title": "Add your first pilot and aircraft",
         "body": "Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.",

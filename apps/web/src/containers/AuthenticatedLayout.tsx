@@ -1,6 +1,6 @@
 'use client';
 
-import { buildShell, displayInstant, type SyncStateViewModel, type ThemeName } from '@certa/core';
+import { buildShell, displayInstant, fleetReadiness, searchFleet, type Flight, type SearchResult, type SyncStateViewModel, type ThemeName } from '@certa/core';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -21,6 +21,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [theme, setTheme] = useState<ThemeName>('light');
   const outbox = useOutbox();
+  const [search, setSearch] = useState<{ query: string; results: SearchResult[] }>({ query: '', results: [] });
   const userId = me.data?.user.id ?? null;
   useEffect(() => {
     setOutboxUser(userId);
@@ -100,7 +101,20 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
     basePath: BASE_PATH,
     theme,
     sync,
+    search,
   });
+
+  // Palette search runs on the cached fleet snapshot (works offline) plus any loaded flights.
+  const onSearch = (query: string) => {
+    const orgKey = current.org.organization.id;
+    const snapshot = qc.getQueryData<Parameters<typeof fleetReadiness>[0]>(['org', orgKey, 'fleet']);
+    if (!snapshot || !query.trim()) return setSearch({ query, results: [] });
+    const flights = qc
+      .getQueriesData<{ pages: { items: Flight[] }[] }>({ queryKey: ['org', orgKey, 'flights'] })
+      .flatMap(([, d]) => d?.pages.flatMap((p) => p.items) ?? []);
+    const unique = [...new Map(flights.map((f) => [f.id, f])).values()];
+    setSearch({ query, results: searchFleet({ snapshot, ctx: current.mapCtx, role: current.role }, query, unique) });
+  };
 
   return (
     <CurrentOrgContext.Provider value={current}>
@@ -116,6 +130,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
           setTheme(t);
           writeTheme(t);
         }}
+        onSearch={onSearch}
         onSyncNow={() => {
           if (conflicts) return router.push('/sync/conflicts');
           void flushOutbox(onSynced);

@@ -43,6 +43,8 @@ export const FleetSnapshot = z.object({
   lastFlight: Flight.nullable(),
   /** Recently used location names, most recent first. */
   recentLocations: z.array(z.string()),
+  /** Flights with takeoff in the last 7 and 30 days (org-wide). */
+  recentFlightCounts: z.object({ last7: z.number().int().nonnegative(), last30: z.number().int().nonnegative() }).default({ last7: 0, last30: 0 }),
   /** Snapshot time; the client's offline cache is stamped with it. */
   generatedAt: IsoDateTime,
 });

@@ -272,10 +272,17 @@ export async function loadFleet(db: Db, orgId: string, now = new Date()): Promis
       .groupBy(flights.locationName)
       .orderBy(sql`max(${flights.takeoffAt}) desc`)
       .limit(8),
+    db
+      .select({
+        last7: sql<number>`(count(*) filter (where ${flights.takeoffAt} >= ${new Date(now.getTime() - 7 * 86400_000).toISOString()}))::int`,
+        last30: sql<number>`(count(*) filter (where ${flights.takeoffAt} >= ${new Date(now.getTime() - 30 * 86400_000).toISOString()}))::int`,
+      })
+      .from(flights)
+      .where(isNull(flights.deletedAt)),
   ] as const;
   const results: unknown[] = [];
   for (const query of q) results.push(await query);
-  const [pilotRows, credRows, docRows, acRows, batRows, polRows, coverRows, schedRows, totals, lastUsed, lastFlightRows, locations] = results as unknown as { [K in keyof typeof q]: Awaited<(typeof q)[K]> };
+  const [pilotRows, credRows, docRows, acRows, batRows, polRows, coverRows, schedRows, totals, lastUsed, lastFlightRows, locations, recentCounts] = results as unknown as { [K in keyof typeof q]: Awaited<(typeof q)[K]> };
 
   const docsOf = (type: string, id: string) => docRows.filter((d) => d.ownerType === type && d.ownerId === id).map((d) => d.id);
   const [lastFlight] = await toFlights(db, lastFlightRows as FlightSelectRow[]);
@@ -294,6 +301,7 @@ export async function loadFleet(db: Db, orgId: string, now = new Date()): Promis
     batteryLastUsed: Object.fromEntries(lastUsed.map((b) => [b.batteryId, iso(b.last)])),
     lastFlight: lastFlight ? (({ goNoGo: _g, ...f }) => f)(lastFlight) : null,
     recentLocations: locations.map((l) => l.name!).filter(Boolean),
+    recentFlightCounts: { last7: recentCounts[0]?.last7 ?? 0, last30: recentCounts[0]?.last30 ?? 0 },
     generatedAt: now.toISOString(),
   };
 }

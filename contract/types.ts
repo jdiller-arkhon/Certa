@@ -27,6 +27,8 @@ export type {
   ThemeName,
   NavIcon,
   NavItem,
+  CommandItem,
+  SearchResult,
   SyncStateViewModel,
   AppShellViewModel,
   AppShellCallbacks,
@@ -45,6 +47,9 @@ export type {
   // core loop
   ReadinessRowViewModel,
   ReadinessDashboardScreenProps,
+  ActionQueueItem,
+  ActionFix,
+  ActionFixInput,
   PilotRowViewModel,
   PilotListScreenProps,
   CredentialViewModel,

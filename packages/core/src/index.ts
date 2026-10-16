@@ -14,6 +14,7 @@ export * from './viewmodels/common.js';
 export * from './viewmodels/screens.js';
 export * from './viewmodels/mappers.js';
 export * from './viewmodels/builders.js';
+export * from './viewmodels/ops.js';
 export * from './fleet/fleet.js';
 export * from './fleet/packet.js';
 export * from './fleet/verify.js';

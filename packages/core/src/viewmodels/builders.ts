@@ -12,6 +12,7 @@ import { addDays, displayDate, displayInstant } from '../format/dates.js';
 import { formatDuration, formatLength, formatMass, formatSpeed, formatTemperature } from '../format/units.js';
 import { DEFAULT_READINESS_POLICY, evaluateItem, type ReadinessSummary } from '../readiness/readiness.js';
 import type { EmptyState, Paged } from './common.js';
+import { buildActionQueue, canFix } from './ops.js';
 import {
   aircraftName,
   badgeFromSummary,
@@ -103,6 +104,16 @@ export function buildReadinessDashboard(i: BuildInput): ScreenData<ReadinessDash
     pilots: pilots.map((p) => toPilotReadinessRow(p, r.pilots.get(p.id)!, ctx)),
     aircraft: aircraft.map((a) => toAircraftReadinessRow(a, r.aircraft.get(a.id)!, ctx)),
     upcoming,
+    actions: nothingTracked ? [] : buildActionQueue({ ...i, readiness: r }),
+    fixing: [],
+    activity: {
+      last7: s.recentFlightCounts.last7,
+      last30: s.recentFlightCounts.last30,
+      lastFlight: s.lastFlight
+        ? { label: [n.aircraft(s.lastFlight.aircraftId), s.lastFlight.locationName].filter(Boolean).join(', '), when: displayInstant(s.lastFlight.takeoffAt, s.lastFlight.localTimeZone, ctx.now), href: `/flights/${s.lastFlight.id}` }
+        : null,
+    },
+    canFix: canFix(i.role),
     empty: empty('Add your first pilot and aircraft', 'Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.', 'Add aircraft'),
   };
 }

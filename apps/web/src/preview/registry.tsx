@@ -103,7 +103,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.readinessDashboard, state, (x) => ({ ...x, pilots: [], aircraft: [], upcoming: [] }));
-      return <TodayScreen {...d} onAddPilot={noop} onAddAircraft={noop} onLogFlight={noop} onOpen={noop} />;
+      return <TodayScreen {...d} onAddPilot={noop} onAddAircraft={noop} onLogFlight={noop} onOpen={noop} onFix={noop} />;
     },
   },
   {
@@ -365,7 +365,7 @@ export function PreviewFrame({ screen, scenario, state, variant, theme, field, o
   const shell = field ? s.fieldShell : s.shell;
   const navigation = shell.navigation.map((n) => ({ ...n, active: n.href === screen.route }));
   return (
-    <AppShell {...shell} navigation={navigation} theme={theme} onSwitchOrg={noop} onSignOut={noop} onNavigate={noop} onThemeChange={onTheme} onSyncNow={noop}>
+    <AppShell {...shell} navigation={navigation} theme={theme} onSwitchOrg={noop} onSignOut={noop} onNavigate={noop} onThemeChange={onTheme} onSyncNow={noop} onSearch={noop}>
       {content}
     </AppShell>
   );

@@ -222,6 +222,53 @@ export interface ReadinessRowViewModel {
   modelUrl?: string;
 }
 
+/**
+ * One fix-it item on Today: something not current or coming due, with the quickest fix.
+ * `fix` drives an inline form; `open` kinds just navigate to `href`.
+ */
+export type ActionFix =
+  | { kind: 'renew_credential'; pilotId: string; credentialType: string; typeLabel: string; expires: boolean }
+  | { kind: 'add_credential'; pilotId: string; credentialType: string; typeLabel: string; expires: boolean }
+  | { kind: 'renew_registration'; aircraftId: string; registrationNumber: string | null }
+  | { kind: 'set_remote_id'; aircraftId: string }
+  | { kind: 'log_maintenance'; scheduleId: string; target: string; scheduleName: string }
+  | { kind: 'renew_insurance'; policyId: string; carrier: string; expiresOn: string }
+  | { kind: 'return_to_service'; aircraftId: string }
+  | { kind: 'open' };
+
+export interface ActionQueueItem {
+  /** Readiness item key, stable across refreshes. */
+  id: string;
+  level: ReadinessLevel;
+  subject: string;
+  subjectKind: 'pilot' | 'aircraft';
+  /** What's wrong, e.g. "Recurrent training expired". */
+  problem: string;
+  due: DateDisplay | null;
+  href: string;
+  /** Button label, e.g. "Renew", "Log work". */
+  actionLabel: string;
+  fix: ActionFix;
+}
+
+/** The input an inline fix submits; the host turns it into API calls. */
+export interface ActionFixInput {
+  itemId: string;
+  fix: ActionFix;
+  /** Dates are YYYY-MM-DD. Only the fields the fix needs are set. */
+  values: {
+    issuedOn?: string;
+    expiresOn?: string;
+    identifier?: string;
+    registrationNumber?: string;
+    remoteIdMethod?: string;
+    remoteIdSerial?: string;
+    performedOn?: string;
+    performedBy?: string;
+    reason?: string;
+  };
+}
+
 /** @status beta — route: / */
 export interface ReadinessDashboardScreenProps extends AsyncState {
   asOf: DateDisplay;
@@ -231,11 +278,19 @@ export interface ReadinessDashboardScreenProps extends AsyncState {
   aircraft: ReadinessRowViewModel[];
   /** Soonest-first list of everything expiring in the alert horizon. */
   upcoming: { label: string; subject: string; due: DateDisplay; level: ReadinessLevel; href: string }[];
+  /** Red first, then amber by due date. Empty when everything is current. */
+  actions: ActionQueueItem[];
+  /** Ids of fixes in flight (show progress on the row). */
+  fixing: string[];
+  /** Flights logged in the last 7 / 30 days and the last flight. */
+  activity: { last7: number; last30: number; lastFlight: { label: string; when: DateDisplay; href: string } | null };
+  canFix: boolean;
   empty: EmptyState;
   onAddPilot: () => void;
   onAddAircraft: () => void;
   onLogFlight: () => void;
   onOpen: (href: string) => void;
+  onFix: (input: ActionFixInput) => void;
 }
 
 export interface PilotRowViewModel {

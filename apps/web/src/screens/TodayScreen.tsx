@@ -13,6 +13,8 @@ import { TriangleHero } from '@/components/triangle-hero';
 import { Banner, Banners, Skeleton, SkeletonRows } from '@/components/ui/feedback';
 import { LEVEL_COLOR, LevelDot, LevelIcon, StatusBadge } from '@/components/ui/status';
 import { Eyebrow, Label } from '@/components/ui/text';
+import { Panel, PanelRow, StatStrip } from '@/components/ui/panel';
+import { ActionQueue } from './_actions';
 
 const LEVELS: { level: ReadinessLevel; label: string }[] = [
   { level: 'green', label: 'Current' },
@@ -144,104 +146,93 @@ export function TodayScreen(props: ReadinessDashboardScreenProps) {
     );
   }
 
+  const needs = props.actions.filter((a) => a.level === 'red').length;
+  const soon = props.actions.filter((a) => a.level === 'amber').length;
+  const headline = needs ? `${needs} ${needs === 1 ? 'thing needs' : 'things need'} you today.` : soon ? 'Legal to fly today.' : 'Everything is current.';
+  const subline = soon ? `${soon} more ${soon === 1 ? 'is' : 'are'} coming due.` : needs ? 'Nothing else is due soon.' : 'Nothing due in the next 90 days.';
+
   return (
     <div className="space-y-8">
       <Banners>{props.error && <Banner key="e" tone="error">{props.error}</Banner>}</Banners>
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-3">
+
+      <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
+        <div className="space-y-6 lg:pt-4">
           <Rise>
             <Eyebrow live={props.overall.level === 'red'}>Today · {props.asOf.absolute}</Eyebrow>
           </Rise>
-          <Rise delay={0.06}>
-            <h1 className="headline flex items-start gap-3 text-[28px] leading-[1.12] sm:text-[36px]">
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 15, delay: 0.3 }}
-                className="mt-1 flex size-8 shrink-0 items-center justify-center rounded-full sm:size-9"
-                style={{ background: LEVEL_COLOR[props.overall.level], color: 'var(--certa-canvas)' }}
-              >
-                <LevelIcon level={props.overall.level} className="size-5" />
-              </motion.span>
-              {props.overall.label}
+          <Rise delay={0.05}>
+            <h1 className="headline text-[40px] leading-[1.04] sm:text-[56px]">
+              <span className="block">{headline}</span>
+              <span className="block text-[var(--certa-muted)]">{subline}</span>
             </h1>
           </Rise>
+          <Rise delay={0.1}>
+            <p className="max-w-xl text-[17px] leading-relaxed text-[var(--certa-muted)]">
+              {props.overall.label}. Fix anything below without leaving this page; every change is recorded in the audit log.
+            </p>
+          </Rise>
+          <Rise delay={0.15} className="flex flex-wrap gap-3">
+            <Button size="lg" arrow onClick={props.onLogFlight}>Log a flight</Button>
+            <Button size="lg" variant="secondary" onClick={() => document.getElementById('action-queue')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+              Review {props.actions.length || 'all'} {props.actions.length === 1 ? 'item' : 'items'}
+            </Button>
+          </Rise>
         </div>
-        <Rise delay={0.12} className="flex shrink-0 gap-2">
-          <Button variant="secondary" onClick={props.onAddAircraft} icon={<Plus className="size-4" aria-hidden />}>
-            Aircraft
-          </Button>
-          <Button arrow onClick={props.onLogFlight} icon={<Route className="size-4" aria-hidden />}>
-            Log flight
-          </Button>
+
+        <Rise delay={0.12}>
+          <Panel label="Pilots and aircraft" meta={<span className="inline-flex items-center gap-1.5"><span className="size-1.5 rounded-full" style={{ background: LEVEL_COLOR[props.overall.level] }} />Live</span>}>
+            <StatStrip
+              items={[
+                { label: 'Not current', value: <CountUp value={props.counts.red} />, color: props.counts.red ? LEVEL_COLOR.red : undefined },
+                { label: 'Due soon', value: <CountUp value={props.counts.amber} />, color: props.counts.amber ? LEVEL_COLOR.amber : undefined },
+                { label: 'Current', value: <CountUp value={props.counts.green} /> },
+                { label: 'Flights · 7 days', value: <CountUp value={props.activity.last7} /> },
+              ]}
+            />
+            <div className="py-1.5">
+              <PanelRow label="Pilots" value={`${props.pilots.filter((p) => p.status.level !== 'red').length} of ${props.pilots.length} legal to fly`} dot={LEVEL_COLOR[worst(props.pilots)]} onClick={() => props.onOpen('/pilots')} />
+              <PanelRow label="Aircraft" value={`${props.aircraft.filter((p) => p.status.level !== 'red').length} of ${props.aircraft.length} airworthy`} dot={LEVEL_COLOR[worst(props.aircraft)]} onClick={() => props.onOpen('/aircraft')} />
+              <PanelRow label="Flights · 30 days" value={props.activity.last30} />
+              {props.activity.lastFlight && <PanelRow label={`Last flight · ${props.activity.lastFlight.label}`} value={props.activity.lastFlight.when.relative} onClick={() => props.onOpen(props.activity.lastFlight!.href)} />}
+            </div>
+          </Panel>
         </Rise>
       </div>
 
+      <Rise delay={0.16}>
+        <ActionQueue items={props.actions} fixing={props.fixing} canFix={props.canFix} onFix={props.onFix} onOpen={props.onOpen} />
+      </Rise>
+
       {props.aircraft.length > 0 && (
-        <Rise delay={0.08}>
+        <Rise delay={0.2}>
           <HangarHero aircraft={props.aircraft} onOpen={props.onOpen} />
         </Rise>
       )}
 
-      <Rise delay={0.1}>
-        <Card className="relative overflow-hidden">
-          <div className="dot-grid dot-grid-fade pointer-events-none absolute inset-0 opacity-70" aria-hidden />
-          <div className="relative grid items-center gap-8 p-6 sm:p-8 md:grid-cols-[auto_1fr]">
-            <div className="mx-auto">
-              <ReadinessRing counts={props.counts} size={210} />
-            </div>
-            <div className="min-w-0 space-y-6">
-              <Stagger gap={0.08} delay={0.3} className="grid grid-cols-3 gap-2 sm:gap-3">
-                {LEVELS.map((l) => (
-                  <StaggerItem key={l.level} className="h-full">
-                    <div className="flex h-full min-w-0 flex-col justify-between gap-1 rounded-2xl border border-[var(--certa-border)] bg-[var(--certa-surface)] p-3 sm:p-4">
-                      <div className="flex items-start gap-1.5 text-[11px] leading-tight font-semibold sm:text-[12px]" style={{ color: LEVEL_COLOR[l.level] }}>
-                        <LevelIcon level={l.level} className="size-3" /> <span>{l.label}</span>
-                      </div>
-                      <CountUp value={props.counts[l.level]} className="headline tabular mt-1 block text-[28px] leading-none sm:text-[34px]" />
-                    </div>
-                  </StaggerItem>
-                ))}
-              </Stagger>
-              {props.upcoming.length > 0 && (
-                <div>
-                  <Label>Coming up · next 90 days</Label>
-                  <Stagger gap={0.05} delay={0.5} className="mt-3 space-y-0.5" inView>
-                    {props.upcoming.slice(0, 5).map((u, i) => (
-                      <StaggerItem key={i}>
-                        <button
-                          type="button"
-                          onClick={() => props.onOpen(u.href)}
-                          className="group flex w-full items-start gap-3 rounded-xl px-2 py-2 text-left text-sm transition-colors hover:bg-[var(--certa-inset)] sm:items-center"
-                        >
-                          <span className="flex h-5 items-center">
-                            <LevelDot level={u.level} />
-                          </span>
-                          <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-3">
-                            <span className="min-w-0 flex-1 sm:truncate">
-                              <span className="font-semibold">{u.subject}</span> <span className="text-[var(--certa-muted)]">· {u.label}</span>
-                            </span>
-                            <span className="tabular shrink-0 text-[13px] text-[var(--certa-muted)]">{u.due.display}</span>
-                          </span>
-                        </button>
-                      </StaggerItem>
-                    ))}
-                  </Stagger>
-                </div>
-              )}
-            </div>
-          </div>
-        </Card>
-      </Rise>
-
-      <div className="grid gap-6 xl:grid-cols-2">
-        <Rise delay={0.18}>
-          <RowList title="Pilots" icon={<Users className="size-4" aria-hidden />} rows={props.pilots} onOpen={props.onOpen} />
-        </Rise>
-        <Rise delay={0.24}>
-          <RowList title="Aircraft" icon={<Plane className="size-4" aria-hidden />} rows={props.aircraft} onOpen={props.onOpen} />
-        </Rise>
-      </div>
+      <Panel label="Coming up" meta="Next 90 days">
+        {props.upcoming.length ? (
+          <ul className="grid py-1.5 md:grid-cols-2 md:divide-x md:divide-[var(--certa-border)]">
+            {[props.upcoming.slice(0, 6), props.upcoming.slice(6, 12)].map((col, c) => (
+              <li key={c}>
+                <ul>
+                  {col.map((u, i) => (
+                    <li key={i}>
+                      <PanelRow label={<><span className="font-semibold">{u.subject}</span> <span className="text-[var(--certa-muted)]">{u.label}</span></>} value={u.due.absolute} dot={LEVEL_COLOR[u.level]} onClick={() => props.onOpen(u.href)} />
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="px-5 py-6 text-[14px] text-[var(--certa-muted)]">Nothing expires in the next 90 days.</p>
+        )}
+      </Panel>
     </div>
   );
+}
+
+const RANK: Record<ReadinessLevel, number> = { green: 0, amber: 1, red: 2 };
+function worst(rows: ReadinessRowViewModel[]): ReadinessLevel {
+  return rows.reduce<ReadinessLevel>((w, r) => (RANK[r.status.level] > RANK[w] ? r.status.level : w), 'green');
 }

@@ -33,7 +33,8 @@ export const longNames = {
         "href": "/",
         "icon": "today",
         "active": true,
-        "badge": null
+        "badge": null,
+        "group": "operations"
       },
       {
         "id": "flights",
@@ -41,7 +42,8 @@ export const longNames = {
         "href": "/flights",
         "icon": "flights",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "operations"
       },
       {
         "id": "pilots",
@@ -49,7 +51,8 @@ export const longNames = {
         "href": "/pilots",
         "icon": "pilots",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "aircraft",
@@ -57,7 +60,8 @@ export const longNames = {
         "href": "/aircraft",
         "icon": "aircraft",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "batteries",
@@ -65,7 +69,8 @@ export const longNames = {
         "href": "/batteries",
         "icon": "batteries",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "maintenance",
@@ -73,7 +78,8 @@ export const longNames = {
         "href": "/maintenance",
         "icon": "maintenance",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "upkeep"
       },
       {
         "id": "insurance",
@@ -81,7 +87,8 @@ export const longNames = {
         "href": "/insurance",
         "icon": "insurance",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "upkeep"
       },
       {
         "id": "rules",
@@ -89,7 +96,8 @@ export const longNames = {
         "href": "/admin/rules",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "members",
@@ -97,7 +105,8 @@ export const longNames = {
         "href": "/admin/members",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "integrations",
@@ -105,7 +114,8 @@ export const longNames = {
         "href": "/admin/integrations",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "audit",
@@ -113,7 +123,8 @@ export const longNames = {
         "href": "/admin/audit",
         "icon": "records",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "settings",
@@ -121,7 +132,8 @@ export const longNames = {
         "href": "/settings/organization",
         "icon": "settings",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       }
     ],
     "permissions": [
@@ -169,7 +181,132 @@ export const longNames = {
       "message": null,
       "conflictCount": 0
     },
-    "theme": "light"
+    "theme": "light",
+    "commands": [
+      {
+        "id": "log-flight",
+        "label": "Log a flight",
+        "href": "/flights/new",
+        "section": "Actions",
+        "shortcut": "L"
+      },
+      {
+        "id": "add-pilot",
+        "label": "Add a pilot",
+        "href": "/pilots/new",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "add-aircraft",
+        "label": "Add an aircraft",
+        "href": "/aircraft/new",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "add-battery",
+        "label": "Add a battery",
+        "href": "/batteries?add=1",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "log-maintenance",
+        "label": "Log maintenance",
+        "href": "/maintenance?log=1",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "go-today",
+        "label": "Today",
+        "href": "/",
+        "section": "Go to",
+        "shortcut": "G T"
+      },
+      {
+        "id": "go-flights",
+        "label": "Flights",
+        "href": "/flights",
+        "section": "Go to",
+        "shortcut": "G F"
+      },
+      {
+        "id": "go-pilots",
+        "label": "Pilots",
+        "href": "/pilots",
+        "section": "Go to",
+        "shortcut": "G P"
+      },
+      {
+        "id": "go-aircraft",
+        "label": "Aircraft",
+        "href": "/aircraft",
+        "section": "Go to",
+        "shortcut": "G A"
+      },
+      {
+        "id": "go-batteries",
+        "label": "Batteries",
+        "href": "/batteries",
+        "section": "Go to",
+        "shortcut": "G B"
+      },
+      {
+        "id": "go-maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "section": "Go to",
+        "shortcut": "G M"
+      },
+      {
+        "id": "go-insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "section": "Go to",
+        "shortcut": "G I"
+      },
+      {
+        "id": "go-rules",
+        "label": "Rule pack",
+        "href": "/admin/rules",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-members",
+        "label": "Members",
+        "href": "/admin/members",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-integrations",
+        "label": "Integrations",
+        "href": "/admin/integrations",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-audit",
+        "label": "Audit log",
+        "href": "/admin/audit",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-settings",
+        "label": "Settings",
+        "href": "/settings/organization",
+        "section": "Go to",
+        "shortcut": "G S"
+      }
+    ],
+    "search": {
+      "query": "",
+      "results": []
+    }
   },
   "fieldShell": {
     "basePath": "/certa",
@@ -199,7 +336,8 @@ export const longNames = {
         "href": "/",
         "icon": "today",
         "active": true,
-        "badge": null
+        "badge": null,
+        "group": "operations"
       },
       {
         "id": "flights",
@@ -207,7 +345,8 @@ export const longNames = {
         "href": "/flights",
         "icon": "flights",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "operations"
       },
       {
         "id": "pilots",
@@ -215,7 +354,8 @@ export const longNames = {
         "href": "/pilots",
         "icon": "pilots",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "aircraft",
@@ -223,7 +363,8 @@ export const longNames = {
         "href": "/aircraft",
         "icon": "aircraft",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "batteries",
@@ -231,7 +372,8 @@ export const longNames = {
         "href": "/batteries",
         "icon": "batteries",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "fleet"
       },
       {
         "id": "maintenance",
@@ -239,7 +381,8 @@ export const longNames = {
         "href": "/maintenance",
         "icon": "maintenance",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "upkeep"
       },
       {
         "id": "insurance",
@@ -247,7 +390,8 @@ export const longNames = {
         "href": "/insurance",
         "icon": "insurance",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "upkeep"
       },
       {
         "id": "rules",
@@ -255,7 +399,8 @@ export const longNames = {
         "href": "/admin/rules",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "members",
@@ -263,7 +408,8 @@ export const longNames = {
         "href": "/admin/members",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "integrations",
@@ -271,7 +417,8 @@ export const longNames = {
         "href": "/admin/integrations",
         "icon": "admin",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "audit",
@@ -279,7 +426,8 @@ export const longNames = {
         "href": "/admin/audit",
         "icon": "records",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       },
       {
         "id": "settings",
@@ -287,7 +435,8 @@ export const longNames = {
         "href": "/settings/organization",
         "icon": "settings",
         "active": false,
-        "badge": null
+        "badge": null,
+        "group": "admin"
       }
     ],
     "permissions": [
@@ -341,7 +490,132 @@ export const longNames = {
       "message": null,
       "conflictCount": 0
     },
-    "theme": "light"
+    "theme": "light",
+    "commands": [
+      {
+        "id": "log-flight",
+        "label": "Log a flight",
+        "href": "/flights/new",
+        "section": "Actions",
+        "shortcut": "L"
+      },
+      {
+        "id": "add-pilot",
+        "label": "Add a pilot",
+        "href": "/pilots/new",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "add-aircraft",
+        "label": "Add an aircraft",
+        "href": "/aircraft/new",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "add-battery",
+        "label": "Add a battery",
+        "href": "/batteries?add=1",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "log-maintenance",
+        "label": "Log maintenance",
+        "href": "/maintenance?log=1",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
+        "id": "go-today",
+        "label": "Today",
+        "href": "/",
+        "section": "Go to",
+        "shortcut": "G T"
+      },
+      {
+        "id": "go-flights",
+        "label": "Flights",
+        "href": "/flights",
+        "section": "Go to",
+        "shortcut": "G F"
+      },
+      {
+        "id": "go-pilots",
+        "label": "Pilots",
+        "href": "/pilots",
+        "section": "Go to",
+        "shortcut": "G P"
+      },
+      {
+        "id": "go-aircraft",
+        "label": "Aircraft",
+        "href": "/aircraft",
+        "section": "Go to",
+        "shortcut": "G A"
+      },
+      {
+        "id": "go-batteries",
+        "label": "Batteries",
+        "href": "/batteries",
+        "section": "Go to",
+        "shortcut": "G B"
+      },
+      {
+        "id": "go-maintenance",
+        "label": "Maintenance",
+        "href": "/maintenance",
+        "section": "Go to",
+        "shortcut": "G M"
+      },
+      {
+        "id": "go-insurance",
+        "label": "Insurance",
+        "href": "/insurance",
+        "section": "Go to",
+        "shortcut": "G I"
+      },
+      {
+        "id": "go-rules",
+        "label": "Rule pack",
+        "href": "/admin/rules",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-members",
+        "label": "Members",
+        "href": "/admin/members",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-integrations",
+        "label": "Integrations",
+        "href": "/admin/integrations",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-audit",
+        "label": "Audit log",
+        "href": "/admin/audit",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-settings",
+        "label": "Settings",
+        "href": "/settings/organization",
+        "section": "Go to",
+        "shortcut": "G S"
+      }
+    ],
+    "search": {
+      "query": "",
+      "results": []
+    }
   },
   "screens": {
     "readinessDashboard": {
@@ -535,6 +809,104 @@ export const longNames = {
           "href": "/pilots/0199c4a0-0000-7000-8000-0000004c4b51"
         }
       ],
+      "actions": [
+        {
+          "id": "grounded:0199c4a0-0000-7000-8000-0000004c4b58",
+          "level": "red",
+          "subject": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+          "subjectKind": "aircraft",
+          "problem": "Grounded: Gimbal damage after hard landing — incident open",
+          "due": null,
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58",
+          "actionLabel": "Return to service",
+          "fix": {
+            "kind": "return_to_service",
+            "aircraftId": "0199c4a0-0000-7000-8000-0000004c4b58"
+          }
+        },
+        {
+          "id": "registration:0199c4a0-0000-7000-8000-0000004c4b5b",
+          "level": "amber",
+          "subject": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+          "subjectKind": "aircraft",
+          "problem": "Registration due soon",
+          "due": {
+            "iso": "2026-10-27",
+            "absolute": "Oct 27, 2026",
+            "relative": "in 19 days",
+            "display": "Oct 27, 2026 — in 19 days",
+            "daysFromToday": 19
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b5b",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_registration",
+            "aircraftId": "0199c4a0-0000-7000-8000-0000004c4b5b",
+            "registrationNumber": "FA3XXX12PJ"
+          }
+        },
+        {
+          "id": "insurance:0199c4a0-0000-7000-9000-0000004c4b41:0199c4a0-0000-7000-8000-0000004c4b55",
+          "level": "amber",
+          "subject": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+          "subjectKind": "aircraft",
+          "problem": "Insurance (Skyward Aviation Insurance) due soon",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_insurance",
+            "policyId": "0199c4a0-0000-7000-9000-0000004c4b41",
+            "carrier": "Skyward Aviation Insurance",
+            "expiresOn": "2026-10-31"
+          }
+        },
+        {
+          "id": "insurance:0199c4a0-0000-7000-9000-0000004c4b41:0199c4a0-0000-7000-8000-0000004c4b58",
+          "level": "amber",
+          "subject": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+          "subjectKind": "aircraft",
+          "problem": "Insurance (Skyward Aviation Insurance) due soon",
+          "due": {
+            "iso": "2026-10-31",
+            "absolute": "Oct 31, 2026",
+            "relative": "in 23 days",
+            "display": "Oct 31, 2026 — in 23 days",
+            "daysFromToday": 23
+          },
+          "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58",
+          "actionLabel": "Renew",
+          "fix": {
+            "kind": "renew_insurance",
+            "policyId": "0199c4a0-0000-7000-9000-0000004c4b41",
+            "carrier": "Skyward Aviation Insurance",
+            "expiresOn": "2026-10-31"
+          }
+        }
+      ],
+      "fixing": [],
+      "activity": {
+        "last7": 1,
+        "last30": 1,
+        "lastFlight": {
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration, Aurora Distribution Center — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "when": {
+            "iso": "2026-10-06T14:27:00.000Z",
+            "absolute": "Oct 6, 2026, 8:27 AM MDT",
+            "relative": "2 days ago",
+            "display": "Oct 6, 2026, 8:27 AM MDT — 2 days ago",
+            "daysFromToday": -2
+          },
+          "href": "/flights/0199c4a0-0000-7000-8000-0000004c4b5e"
+        }
+      },
+      "canFix": true,
       "empty": {
         "title": "Add your first pilot and aircraft",
         "body": "Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.",

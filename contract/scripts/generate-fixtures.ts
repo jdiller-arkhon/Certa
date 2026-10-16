@@ -487,6 +487,10 @@ function toScenario(w: World): FixtureScenario {
     batteryLastUsed: Object.fromEntries(w.batteries.map((b) => [b.id, lastFlightOf(b.id)])),
     lastFlight: w.flights[0] ?? null,
     recentLocations: [...new Set(w.flights.map((f) => f.locationName).filter((x): x is string => !!x))],
+    recentFlightCounts: {
+      last7: w.flights.filter((f) => Date.parse(f.takeoffAt) >= NOW.getTime() - 7 * 86400_000).length,
+      last30: w.flights.filter((f) => Date.parse(f.takeoffAt) >= NOW.getTime() - 30 * 86400_000).length,
+    },
     generatedAt: NOW.toISOString(),
   };
   const bi: BuildInput = { snapshot, ctx, role };

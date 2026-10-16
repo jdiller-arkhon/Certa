@@ -27,6 +27,7 @@ import {
 } from '../readiness/readiness.js';
 import type {
   AppShellViewModel,
+  CommandItem,
   NavItem,
   ReadinessReason,
   StatusBadge,
@@ -424,19 +425,19 @@ export function toAuditEventViewModel(e: AuditEvent & { actorName: string | null
 
 // ---------------------------------------------------------------- shell
 
-const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; requires: Action }[] = [
-  { id: 'today', label: 'Today', href: '/', icon: 'today', requires: 'org.read' },
-  { id: 'flights', label: 'Flights', href: '/flights', icon: 'flights', requires: 'flights.read' },
-  { id: 'pilots', label: 'Pilots', href: '/pilots', icon: 'pilots', requires: 'pilots.read' },
-  { id: 'aircraft', label: 'Aircraft', href: '/aircraft', icon: 'aircraft', requires: 'aircraft.read' },
-  { id: 'batteries', label: 'Batteries', href: '/batteries', icon: 'batteries', requires: 'batteries.read' },
-  { id: 'maintenance', label: 'Maintenance', href: '/maintenance', icon: 'maintenance', requires: 'maintenance.read' },
-  { id: 'insurance', label: 'Insurance', href: '/insurance', icon: 'insurance', requires: 'aircraft.read' },
-  { id: 'rules', label: 'Rule pack', href: '/admin/rules', icon: 'admin', requires: 'rules.read' },
-  { id: 'members', label: 'Members', href: '/admin/members', icon: 'admin', requires: 'members.read' },
-  { id: 'integrations', label: 'Integrations', href: '/admin/integrations', icon: 'admin', requires: 'integrations.manage' },
-  { id: 'audit', label: 'Audit log', href: '/admin/audit', icon: 'records', requires: 'audit.read' },
-  { id: 'settings', label: 'Settings', href: '/settings/organization', icon: 'settings', requires: 'org.read' },
+const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; requires: Action; group: NavItem['group'] }[] = [
+  { id: 'today', label: 'Today', href: '/', icon: 'today', requires: 'org.read', group: 'operations' },
+  { id: 'flights', label: 'Flights', href: '/flights', icon: 'flights', requires: 'flights.read', group: 'operations' },
+  { id: 'pilots', label: 'Pilots', href: '/pilots', icon: 'pilots', requires: 'pilots.read', group: 'fleet' },
+  { id: 'aircraft', label: 'Aircraft', href: '/aircraft', icon: 'aircraft', requires: 'aircraft.read', group: 'fleet' },
+  { id: 'batteries', label: 'Batteries', href: '/batteries', icon: 'batteries', requires: 'batteries.read', group: 'fleet' },
+  { id: 'maintenance', label: 'Maintenance', href: '/maintenance', icon: 'maintenance', requires: 'maintenance.read', group: 'upkeep' },
+  { id: 'insurance', label: 'Insurance', href: '/insurance', icon: 'insurance', requires: 'aircraft.read', group: 'upkeep' },
+  { id: 'rules', label: 'Rule pack', href: '/admin/rules', icon: 'admin', requires: 'rules.read', group: 'admin' },
+  { id: 'members', label: 'Members', href: '/admin/members', icon: 'admin', requires: 'members.read', group: 'admin' },
+  { id: 'integrations', label: 'Integrations', href: '/admin/integrations', icon: 'admin', requires: 'integrations.manage', group: 'admin' },
+  { id: 'audit', label: 'Audit log', href: '/admin/audit', icon: 'records', requires: 'audit.read', group: 'admin' },
+  { id: 'settings', label: 'Settings', href: '/settings/organization', icon: 'settings', requires: 'org.read', group: 'admin' },
 ];
 
 export function buildNavigation(role: Role, activeHref: string, badges: Record<string, NavItem['badge']> = {}): NavItem[] {
@@ -447,7 +448,25 @@ export function buildNavigation(role: Role, activeHref: string, badges: Record<s
     icon: n.icon,
     active: n.href === '/' ? activeHref === '/' : activeHref.startsWith(n.href),
     badge: badges[n.id] ?? null,
+    group: n.group,
   }));
+}
+
+/** Shortcuts: "G" then a letter jumps to a page; single letters start an action. */
+const GOTO_KEYS: Record<string, string> = { today: 'G T', flights: 'G F', pilots: 'G P', aircraft: 'G A', batteries: 'G B', maintenance: 'G M', insurance: 'G I', settings: 'G S' };
+
+export function buildCommands(role: Role): CommandItem[] {
+  const actions: (CommandItem & { requires: Action })[] = [
+    { id: 'log-flight', label: 'Log a flight', href: '/flights/new', section: 'Actions', shortcut: 'L', requires: 'flights.log' },
+    { id: 'add-pilot', label: 'Add a pilot', href: '/pilots/new', section: 'Actions', shortcut: null, requires: 'pilots.manage' },
+    { id: 'add-aircraft', label: 'Add an aircraft', href: '/aircraft/new', section: 'Actions', shortcut: null, requires: 'aircraft.manage' },
+    { id: 'add-battery', label: 'Add a battery', href: '/batteries?add=1', section: 'Actions', shortcut: null, requires: 'batteries.manage' },
+    { id: 'log-maintenance', label: 'Log maintenance', href: '/maintenance?log=1', section: 'Actions', shortcut: null, requires: 'maintenance.manage' },
+  ];
+  return [
+    ...actions.filter((a) => can(role, a.requires)).map(({ requires: _r, ...c }) => c),
+    ...NAV.filter((n) => can(role, n.requires)).map((n) => ({ id: `go-${n.id}`, label: n.label, href: n.href, section: 'Go to' as const, shortcut: GOTO_KEYS[n.id] ?? null })),
+  ];
 }
 
 export const WEB_SYNC_STATE: SyncStateViewModel = {
@@ -468,6 +487,7 @@ export function buildShell(input: {
   theme?: ThemeName;
   navBadges?: Record<string, NavItem['badge']>;
   basePath?: string;
+  search?: AppShellViewModel['search'];
 }): AppShellViewModel {
   return {
     basePath: input.basePath ?? '',
@@ -479,6 +499,8 @@ export function buildShell(input: {
     complianceNotice: COMPLIANCE_NOTICE,
     sync: input.sync ?? WEB_SYNC_STATE,
     theme: input.theme ?? 'light',
+    commands: buildCommands(input.role),
+    search: input.search ?? { query: '', results: [] },
   };
 }
 

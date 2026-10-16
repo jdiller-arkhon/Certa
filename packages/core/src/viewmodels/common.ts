@@ -89,6 +89,28 @@ export interface NavItem {
   active: boolean;
   /** e.g. count of red items; null hides the badge. */
   badge: { text: string; level: ReadinessLevel } | null;
+  /** Top-bar grouping: `operations` items sit in the bar; the others open as menus. */
+  group: 'operations' | 'fleet' | 'upkeep' | 'admin';
+}
+
+/** One entry in the command palette (⌘K): go somewhere or start something. */
+export interface CommandItem {
+  id: string;
+  label: string;
+  href: string;
+  section: 'Actions' | 'Go to';
+  /** Keyboard shortcut shown as a hint, e.g. "L" or "G P". */
+  shortcut: string | null;
+}
+
+/** A global search hit across pilots, aircraft, batteries, and recent flights. */
+export interface SearchResult {
+  id: string;
+  kind: 'pilot' | 'aircraft' | 'battery' | 'flight';
+  title: string;
+  subtitle: string | null;
+  href: string;
+  level: ReadinessLevel | null;
 }
 
 /**
@@ -126,6 +148,10 @@ export interface AppShellViewModel {
   sync: SyncStateViewModel;
   /** Current theme; persistence belongs to the host. */
   theme: ThemeName;
+  /** Command palette entries (already permission-filtered). */
+  commands: CommandItem[];
+  /** Results for the current palette query; the host fills them via `onSearch`. */
+  search: { query: string; results: SearchResult[] };
 }
 
 export interface AppShellCallbacks {
@@ -135,6 +161,8 @@ export interface AppShellCallbacks {
   onThemeChange: (theme: ThemeName) => void;
   /** Mobile: user pulled to refresh or tapped "Sync now". */
   onSyncNow: () => void;
+  /** Palette query changed (debounced by the shell). */
+  onSearch: (query: string) => void;
 }
 
 export const COMPLIANCE_NOTICE =
