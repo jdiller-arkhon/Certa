@@ -1,7 +1,8 @@
 'use client';
 
 import type { BatteryListScreenProps } from '@certa/contract';
-import { Archive, BatteryMedium, Plus } from 'lucide-react';
+import { Archive, BatteryMedium, Download, Plus } from 'lucide-react';
+import { DataTable } from '@/components/data-table';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -10,7 +11,7 @@ import { Banner, Banners, EmptyState, SkeletonRows } from '@/components/ui/feedb
 import { Field, Input, Select } from '@/components/ui/field';
 import { LEVEL_COLOR, StatusBadge } from '@/components/ui/status';
 import { PageHeader } from '@/components/ui/text';
-import { ListCard, RowButton, RowMetric, RowTitle, When, num } from './_parts';
+import { LEVEL_RANK, When, num } from './_parts';
 
 const BLANK = { serialNumber: '', label: '', aircraftModel: '', cellCount: '', ratedCapacityMah: '', maxCycles: '' };
 
@@ -28,7 +29,6 @@ export function BatteryListScreen(props: BatteryListScreenProps) {
   return (
     <div>
       <PageHeader
-        eyebrow="Fleet"
         title="Batteries"
         description="Cycle counts update automatically from your flights. Certa warns at 90% of the retirement limit."
         actions={props.canManage && <Button arrow icon={<Plus className="size-4" aria-hidden />} onClick={add}>Add battery</Button>}
@@ -39,15 +39,24 @@ export function BatteryListScreen(props: BatteryListScreenProps) {
       ) : !props.batteries.length ? (
         <EmptyState empty={props.empty} icon={<BatteryMedium className="size-7" aria-hidden />} onAction={props.canManage ? add : undefined} />
       ) : (
-        <ListCard>
-          {props.batteries.map((b) => {
-            const pct = b.cycleLimit ? Math.min(1, b.cycleCount / b.cycleLimit) : null;
-            return (
-              <RowButton key={b.id}>
-                <RowTitle title={b.label} sub={<>S/N <span className="tabular">{b.serialNumber}</span> · last used <When d={b.lastUsed} /></>} />
-                <span className="flex items-center gap-5">
-                  <span className="flex w-36 flex-col gap-1.5">
-                    <span className="tabular text-right text-[13px] font-semibold">
+        <DataTable
+          id="batteries"
+          label="Batteries"
+          rows={props.batteries}
+          rowKey={(b) => b.id}
+          defaultSort={{ key: 'cycles', dir: 'desc' }}
+          columns={[
+            { key: 'label', header: 'Battery', sort: (b) => b.label.toLowerCase(), render: (b) => <span><span className="block font-semibold">{b.label}</span><span className="tabular block text-[13px] text-[var(--certa-muted)]">S/N {b.serialNumber}</span></span> },
+            { key: 'last', header: 'Last used', hideBelow: 'md', sort: (b) => b.lastUsed?.iso ?? null, render: (b) => <span className="text-[var(--certa-muted)]"><When d={b.lastUsed} /></span> },
+            {
+              key: 'cycles',
+              header: 'Cycles',
+              sort: (b) => (b.cycleLimit ? b.cycleCount / b.cycleLimit : b.cycleCount / 1000),
+              render: (b) => {
+                const pct = b.cycleLimit ? Math.min(1, b.cycleCount / b.cycleLimit) : null;
+                return (
+                  <span className="flex w-40 flex-col gap-1.5">
+                    <span className="tabular text-[13px] font-semibold">
                       {b.cycleCount}
                       {b.cycleLimit && <span className="font-normal text-[var(--certa-muted)]"> / {b.cycleLimit} cycles</span>}
                     </span>
@@ -57,15 +66,27 @@ export function BatteryListScreen(props: BatteryListScreenProps) {
                       </span>
                     )}
                   </span>
-                  <StatusBadge status={b.status} size="sm" />
-                  {props.canManage && b.status.label !== 'Retired' && (
+                );
+              },
+            },
+            { key: 'status', header: 'Status', sort: (b) => LEVEL_RANK[b.status.level], render: (b) => <StatusBadge status={b.status} size="sm" /> },
+            {
+              key: 'actions',
+              header: '',
+              align: 'right',
+              render: (b) =>
+                props.canManage && b.status.label !== 'Retired' ? (
+                  <span onClick={(e) => e.stopPropagation()}>
                     <Button size="sm" variant="ghost" aria-label={`Retire ${b.label}`} icon={<Archive className="size-4" aria-hidden />} onClick={() => setRetiring(b.id)} />
-                  )}
-                </span>
-              </RowButton>
-            );
-          })}
-        </ListCard>
+                  </span>
+                ) : null,
+            },
+          ]}
+          bulkActions={[
+            ...(props.canManage ? [{ label: 'Retire', tone: 'danger' as const, icon: <Archive className="size-4" aria-hidden />, onRun: props.onRetireMany }] : []),
+            { label: 'Export', icon: <Download className="size-4" aria-hidden />, onRun: props.onExport },
+          ]}
+        />
       )}
 
       <Dialog

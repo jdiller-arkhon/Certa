@@ -1303,6 +1303,12 @@ export const longNames = {
       ],
       "search": "",
       "statusFilter": "all",
+      "insuranceOptions": [
+        {
+          "value": "0199c4a0-0000-7000-9000-0000004c4b41",
+          "label": "Skyward Aviation Insurance · SAI-05-448812"
+        }
+      ],
       "canManage": true,
       "empty": {
         "title": "No aircraft yet",

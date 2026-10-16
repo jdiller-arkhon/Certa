@@ -1758,6 +1758,12 @@ export const expired = {
       ],
       "search": "",
       "statusFilter": "all",
+      "insuranceOptions": [
+        {
+          "value": "0199c4a0-0000-7000-9000-0000002dc6c1",
+          "label": "Skyward Aviation Insurance · SAI-03-448812"
+        }
+      ],
       "canManage": true,
       "empty": {
         "title": "No aircraft yet",

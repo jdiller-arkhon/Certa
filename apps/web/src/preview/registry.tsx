@@ -114,7 +114,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.pilotList, state, (x) => ({ ...x, pilots: [] }));
-      return <PilotListScreen {...d} onSearch={noop} onAddPilot={noop} onOpenPilot={noop} />;
+      return <PilotListScreen {...d} onSearch={noop} onAddPilot={noop} onOpenPilot={noop} onExport={noop} />;
     },
   },
   {
@@ -156,7 +156,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.aircraftList, state, (x) => ({ ...x, aircraft: [] }));
-      return <AircraftListScreen {...d} onSearch={noop} onStatusFilter={noop} onAddAircraft={noop} onOpenAircraft={noop} />;
+      return <AircraftListScreen {...d} onSearch={noop} onStatusFilter={noop} onAddAircraft={noop} onOpenAircraft={noop} onAddToPolicy={noop} onExport={noop} />;
     },
   },
   {
@@ -204,7 +204,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.batteryList, state, (x) => ({ ...x, batteries: [] }));
-      return <BatteryListScreen {...d} onAddBattery={noop} onCreateBattery={noop} onRetireBattery={noop} onOpenBattery={noop} />;
+      return <BatteryListScreen {...d} onAddBattery={noop} onCreateBattery={noop} onRetireBattery={noop} onRetireMany={noop} onOpenBattery={noop} onExport={noop} />;
     },
   },
   {
@@ -237,7 +237,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.flightList, state, (x) => ({ ...x, flights: { items: [], total: 0, nextCursor: null } }));
-      return <FlightListScreen {...d} onFilterChange={noop} onLoadMore={noop} onLogFlight={noop} onImport={noop} onOpenFlight={noop} />;
+      return <FlightListScreen {...d} onFilterChange={noop} onLoadMore={noop} onLogFlight={noop} onImport={noop} onOpenFlight={noop} onExport={noop} />;
     },
   },
   {

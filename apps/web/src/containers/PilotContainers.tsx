@@ -1,14 +1,14 @@
 'use client';
 
-import { buildPilotDetail, buildPilotList, can, type Flight } from '@certa/core';
+import { buildPilotDetail, buildPilotList, can, toCredentialViewModel, type Flight } from '@certa/core';
 import { unwrap } from '@certa/sdk';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ensureOk, useFleetMutation, useRecentFlights } from '@/data/fleet';
 import { api } from '@/lib/api';
 import { PilotDetailScreen, PilotFormScreen, PilotListScreen } from '@/screens';
-import { exportLogbook } from './logbook';
-import { FleetPending, useFleetContext } from './_fleet';
+import { exportLogbook, toCsv } from './logbook';
+import { download, FleetPending, useFleetContext } from './_fleet';
 import { useSharePacket } from './_share';
 
 export function PilotListContainer() {
@@ -23,6 +23,20 @@ export function PilotListContainer() {
       onSearch={setSearch}
       onAddPilot={() => router.push('/pilots/new')}
       onOpenPilot={(id) => router.push(`/pilots/${id}`)}
+      onExport={(ids) => {
+        const bi = f.bi!;
+        const rules = bi.readiness!.rules;
+        const rows: unknown[][] = [['Pilot', 'Certificate number', 'Credential', 'Identifier', 'Issued', 'Expires', 'Status']];
+        for (const p of bi.snapshot.pilots.filter((x) => ids.includes(x.id))) {
+          const creds = bi.snapshot.credentials.filter((c) => c.pilotId === p.id && !c.deletedAt);
+          if (!creds.length) rows.push([p.displayName, p.certificateNumber, '', '', '', '', 'No credentials on file']);
+          for (const c of creds) {
+            const vm = toCredentialViewModel(c, rules, bi.ctx);
+            rows.push([p.displayName, p.certificateNumber, vm.typeLabel, vm.identifier, c.issuedOn, vm.expires?.iso.slice(0, 10) ?? '', vm.status.label]);
+          }
+        }
+        download(`certa-pilot-credentials-${bi.ctx.today}.csv`, toCsv(rows));
+      }}
     />
   );
 }

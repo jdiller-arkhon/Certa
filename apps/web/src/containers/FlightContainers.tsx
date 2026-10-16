@@ -27,7 +27,8 @@ import { api } from '@/lib/api';
 import { uuidv7 } from '@/lib/idb';
 import { discardOutboxItem, enqueueFlight, retryRejected, useOutbox, type OutboxItem } from '@/lib/outbox';
 import { FlightDetailScreen, FlightListScreen, LogFlightScreen, SyncConflictsScreen } from '@/screens';
-import { FleetPending, useFleetContext } from './_fleet';
+import { download, FleetPending, useFleetContext } from './_fleet';
+import { flightsCsvRows, toCsv } from './logbook';
 
 /** An unsynced outbox entry, shaped like a server flight so lists and details can show it. */
 export function outboxFlight(i: OutboxItem): Flight & { pendingSync: true } {
@@ -101,6 +102,10 @@ export function FlightListContainer() {
       onLogFlight={() => router.push('/flights/new')}
       onImport={() => router.push('/flights/import')}
       onOpenFlight={(id) => router.push(`/flights/${id}`)}
+      onExport={(ids) => {
+        const pick = [...pending, ...server].filter((x) => ids.includes(x.id));
+        download(`certa-flights-${f.bi!.ctx.today}.csv`, toCsv(flightsCsvRows(f.bi!, pick)));
+      }}
     />
   );
 }

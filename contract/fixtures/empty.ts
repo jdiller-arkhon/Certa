@@ -718,6 +718,7 @@ export const empty = {
       "aircraft": [],
       "search": "",
       "statusFilter": "all",
+      "insuranceOptions": [],
       "canManage": true,
       "empty": {
         "title": "No aircraft yet",

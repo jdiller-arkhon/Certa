@@ -11,6 +11,9 @@ import { Label } from '@/components/ui/text';
 
 /** Shared building blocks for the Phase 2 screens (lists, detail panels, stats). */
 
+/** Sort order for status columns: red first when descending. */
+export const LEVEL_RANK = { green: 0, amber: 1, red: 2 } as const;
+
 export function SearchBox({ value, onChange, label, placeholder }: { value: string; onChange: (v: string) => void; label: string; placeholder?: string }) {
   return (
     <label className="relative block w-full sm:max-w-xs">

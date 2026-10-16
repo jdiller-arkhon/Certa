@@ -8,8 +8,8 @@ import { useState } from 'react';
 import { ensureOk, useFleetMutation, useRecentFlights } from '@/data/fleet';
 import { api } from '@/lib/api';
 import { AircraftDetailScreen, AircraftFormScreen, AircraftListScreen, BatteryListScreen } from '@/screens';
-import { exportLogbook } from './logbook';
-import { FleetPending, useFleetContext } from './_fleet';
+import { exportLogbook, toCsv } from './logbook';
+import { download, FleetPending, useFleetContext } from './_fleet';
 import { useSharePacket } from './_share';
 
 export function AircraftListContainer() {
@@ -17,15 +17,30 @@ export function AircraftListContainer() {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<AircraftListScreenProps['statusFilter']>('all');
+  const addToPolicy = useFleetMutation(f.orgId, async ({ policyId, aircraftIds }: { policyId: string; aircraftIds: string[] }) => {
+    const policy = f.bi!.snapshot.insurancePolicies.find((p) => p.id === policyId);
+    if (!policy) return null;
+    const covered = [...new Set([...policy.coveredAircraftIds, ...aircraftIds])];
+    return unwrap(await api.PATCH('/api/v1/orgs/{orgId}/insurance/{policyId}', { params: { path: { orgId: f.orgId, policyId } }, body: { coveredAircraftIds: covered } }));
+  });
   if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
   return (
     <AircraftListScreen
       {...buildAircraftList(f.bi, search, status)}
-      error={f.loadError}
       onSearch={setSearch}
       onStatusFilter={setStatus}
       onAddAircraft={() => router.push('/aircraft/new')}
       onOpenAircraft={(id) => router.push(`/aircraft/${id}`)}
+      error={addToPolicy.error ?? f.loadError}
+      onAddToPolicy={(v) => addToPolicy.mutate(v)}
+      onExport={(ids) => {
+        const bi = f.bi!;
+        const r = bi.readiness!;
+        const rows: unknown[][] = [['Aircraft', 'Make', 'Model', 'Serial number', 'Registration', 'Registration expires', 'Remote ID', 'Status', 'Flights', 'Flight hours']];
+        for (const a of bi.snapshot.aircraft.filter((x) => ids.includes(x.id)))
+          rows.push([a.nickname ?? `${a.make} ${a.model}`, a.make, a.model, a.serialNumber, a.registrationNumber, a.registrationExpiresOn, REMOTE_ID_LABEL[a.remoteIdMethod] ?? a.remoteIdMethod, a.status === 'retired' ? 'Retired' : (r.aircraft.get(a.id)?.level ?? 'green'), a.totalFlights, (a.totalFlightSeconds / 3600).toFixed(1)]);
+        download(`certa-aircraft-${bi.ctx.today}.csv`, toCsv(rows));
+      }}
     />
   );
 }
@@ -156,6 +171,15 @@ export function BatteryListContainer() {
       onAddBattery={() => create.clearError()}
       onCreateBattery={(v) => create.mutate(v)}
       onRetireBattery={(id) => retire.mutate(id)}
+      onRetireMany={async (ids) => {
+        for (const id of ids) await retire.mutateAsync(id).catch(() => {});
+      }}
+      onExport={(ids) => {
+        const bi = f.bi!;
+        const rows: unknown[][] = [['Battery', 'Serial number', 'Fits', 'Cycles', 'Retire at', 'Status', 'Purchased']];
+        for (const b of bi.snapshot.batteries.filter((x) => ids.includes(x.id))) rows.push([b.label, b.serialNumber, b.aircraftModel, b.cycleCount, b.thresholds.maxCycles, b.status, b.purchasedOn]);
+        download(`certa-batteries-${bi.ctx.today}.csv`, toCsv(rows));
+      }}
       onOpenBattery={() => {}}
     />
   );

@@ -1,13 +1,14 @@
 'use client';
 
 import type { FlightListScreenProps } from '@certa/contract';
-import { Plus, Route, Upload } from 'lucide-react';
+import { Download, Plus, Route, Upload } from 'lucide-react';
+import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Banner, Banners, EmptyState, SkeletonRows } from '@/components/ui/feedback';
 import { Input, Select } from '@/components/ui/field';
 import { PageHeader } from '@/components/ui/text';
-import { FlightRows, ListCard, Stat } from './_parts';
+import { PendingSync, Stat, When } from './_parts';
 
 export function FlightListScreen(props: FlightListScreenProps) {
   const f = props.filter;
@@ -17,7 +18,6 @@ export function FlightListScreen(props: FlightListScreenProps) {
   return (
     <div>
       <PageHeader
-        eyebrow="Logbook"
         title="Flights"
         description="Every flight, with pilot, aircraft, batteries, and conditions. Records are tamper-evident."
         actions={
@@ -52,22 +52,47 @@ export function FlightListScreen(props: FlightListScreenProps) {
             <Stat label="Flights" value={props.totals.flights} />
             <Stat label="Flight time" value={props.totals.flightTime.display} />
           </div>
-          {items.length ? (
-            <>
-              <ListCard>
-                <FlightRows flights={items} onOpen={props.onOpenFlight} />
-              </ListCard>
-              <div className="mt-5 flex flex-col items-center gap-2 text-[13px] text-[var(--certa-muted)]">
-                <span className="tabular">Showing {items.length} of {props.flights.total}</span>
-                {props.flights.nextCursor && <Button variant="secondary" loading={props.loading} onClick={props.onLoadMore}>Load more</Button>}
-              </div>
-            </>
-          ) : (
-            <div className="py-10 text-center text-[15px] text-[var(--certa-muted)]">
-              No flights match these filters.{' '}
-              <button type="button" className="font-semibold text-[var(--certa-text)] underline-offset-4 hover:underline" onClick={() => props.onFilterChange({ pilotId: null, aircraftId: null, from: null, to: null })}>Clear filters</button>
-            </div>
-          )}
+          <DataTable
+            id="flights"
+            label="Flights"
+            meta={<span className="tabular">{items.length} of {props.flights.total}</span>}
+            rows={items}
+            rowKey={(r) => r.id}
+            onOpen={(r) => props.onOpenFlight(r.id)}
+            openLabel={(r) => `Flight ${r.takeoff.absolute}`}
+            columns={[
+              {
+                key: 'when',
+                header: 'Takeoff',
+                sort: (r) => r.takeoff.iso,
+                render: (r) => (
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="font-semibold"><When d={r.takeoff} /></span>
+                    {r.pendingSync ? <PendingSync /> : r.source === 'import' ? <span className="rounded-full bg-[var(--certa-inset)] px-2 py-0.5 text-[11px] font-semibold text-[var(--certa-muted)]">Imported</span> : null}
+                  </span>
+                ),
+              },
+              { key: 'pilot', header: 'Pilot', hideBelow: 'md', sort: (r) => r.pilotName, render: (r) => r.pilotName },
+              { key: 'aircraft', header: 'Aircraft', hideBelow: 'sm', sort: (r) => r.aircraftName, render: (r) => r.aircraftName },
+              { key: 'site', header: 'Location', hideBelow: 'lg', sort: (r) => r.locationName, render: (r) => r.locationName ?? <span className="text-[var(--certa-muted)]">—</span> },
+              { key: 'alt', header: 'Max alt', align: 'right', hideBelow: 'lg', sort: (r) => r.maxAltitude?.value ?? null, render: (r) => r.maxAltitude?.display ?? '—' },
+              { key: 'dur', header: 'Duration', align: 'right', sort: (r) => r.duration.value, render: (r) => r.duration.display },
+            ]}
+            bulkActions={[{ label: 'Export CSV', icon: <Download className="size-4" aria-hidden />, onRun: props.onExport }]}
+            empty={
+              <>
+                No flights match these filters.{' '}
+                <button type="button" className="font-semibold text-[var(--certa-text)] underline-offset-4 hover:underline" onClick={() => props.onFilterChange({ pilotId: null, aircraftId: null, from: null, to: null })}>Clear filters</button>
+              </>
+            }
+            footer={
+              props.flights.nextCursor ? (
+                <div className="flex justify-center border-t border-[var(--certa-border)] py-3">
+                  <Button variant="secondary" size="sm" loading={props.loading} onClick={props.onLoadMore}>Load more</Button>
+                </div>
+              ) : null
+            }
+          />
         </>
       )}
     </div>

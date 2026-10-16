@@ -183,6 +183,7 @@ export function buildAircraftList(i: BuildInput, search = '', statusFilter: Airc
       .map((a) => toAircraftRow(a, r.aircraft.get(a.id) ?? retiredSummary)),
     search,
     statusFilter,
+    insuranceOptions: s.insurancePolicies.filter((p) => !p.deletedAt).map((p) => ({ value: p.id, label: `${p.carrier} · ${p.policyNumber}` })),
     canManage: can(i.role, 'aircraft.manage'),
     empty: empty('No aircraft yet', 'Add an aircraft to track its registration, Remote ID, flight hours, and maintenance.', 'Add aircraft'),
   };

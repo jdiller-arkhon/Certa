@@ -311,6 +311,8 @@ export interface PilotListScreenProps extends AsyncState {
   onSearch: (q: string) => void;
   onAddPilot: () => void;
   onOpenPilot: (pilotId: string) => void;
+  /** Bulk: download the selected pilots' credentials as CSV. */
+  onExport: (pilotIds: string[]) => void;
 }
 
 export interface CredentialViewModel {
@@ -401,6 +403,10 @@ export interface AircraftListScreenProps extends AsyncState {
   onStatusFilter: (s: AircraftListScreenProps['statusFilter']) => void;
   onAddAircraft: () => void;
   onOpenAircraft: (aircraftId: string) => void;
+  /** Policies the selected aircraft can be added to (bulk action). */
+  insuranceOptions: { value: string; label: string }[];
+  onAddToPolicy: (input: { policyId: string; aircraftIds: string[] }) => void;
+  onExport: (aircraftIds: string[]) => void;
 }
 
 /** @status beta — route: /aircraft/[aircraftId] */
@@ -491,7 +497,9 @@ export interface BatteryListScreenProps extends AsyncState {
     maxCycles: number | null;
   }) => void;
   onRetireBattery: (batteryId: string) => void;
+  onRetireMany: (batteryIds: string[]) => void;
   onOpenBattery: (batteryId: string) => void;
+  onExport: (batteryIds: string[]) => void;
 }
 
 export interface FlightRowViewModel {
@@ -522,6 +530,8 @@ export interface FlightListScreenProps extends AsyncState {
   onLogFlight: () => void;
   onImport: () => void;
   onOpenFlight: (flightId: string) => void;
+  /** Bulk: download the selected flights as a CSV logbook. */
+  onExport: (flightIds: string[]) => void;
 }
 
 /** @status beta — route: /flights/[flightId] */
