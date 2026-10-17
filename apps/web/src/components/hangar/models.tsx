@@ -181,31 +181,10 @@ function bellGeo(r: number) {
       v.rotateY(a);
       return v;
     });
-    // Vertical ribs on the skirt read as the bell's vent slots.
-    const ribs = Array.from({ length: 14 }, (_, i) => {
-      const a = (i / 14) * Math.PI * 2;
-      const v = new THREE.BoxGeometry(r * 0.06, h * 0.5, r * 0.09);
-      v.translate(r * 0.99, h * 0.42, 0);
-      v.rotateY(a);
-      return v;
-    });
     bell.deleteAttribute('uv');
-    for (const v of [...vanes, ...ribs]) v.deleteAttribute('uv');
-    return mergeGeometries([bell.toNonIndexed(), ...[...vanes, ...ribs].map((v) => v.toNonIndexed())])!;
+    for (const v of vanes) v.deleteAttribute('uv');
+    return mergeGeometries([bell.toNonIndexed(), ...vanes.map((v) => v.toNonIndexed())])!;
   });
-}
-
-/** Grip ridges across a battery top, merged into one geometry. */
-function ridgesGeo(len: number, width: number, count: number) {
-  return geo(`ridges:${len}:${width}:${count}`, () =>
-    mergeGeometries(
-      Array.from({ length: count }, (_, i) => {
-        const b = new THREE.BoxGeometry(len * 0.035, 0.006, width * 0.82);
-        b.translate(-len / 2 + len * 0.18 + (i * len * 0.64) / Math.max(1, count - 1), 0, 0);
-        return b;
-      }),
-    )!,
-  );
 }
 
 /** A tube along a smooth path (landing legs, antenna leads). */
@@ -417,7 +396,6 @@ function Battery({ mats, len, width, height }: { mats: Mats; len: number; width:
     <group>
       <RoundedBox args={[len, height, width]} radius={Math.min(height, width) * 0.3} smoothness={4} material={mats.body} />
       <RoundedBox args={[len * 0.9, height * 0.12, width * 0.9]} radius={height * 0.05} smoothness={2} material={mats.shell} position={[0, height * 0.46, 0]} />
-      <mesh geometry={ridgesGeo(len, width, 7)} material={mats.body} position={[0, height * 0.54, 0]} />
       {[-1, 1].map((s) => (
         <RoundedBox key={s} args={[len * 0.16, height * 0.42, 0.01]} radius={0.004} smoothness={2} material={mats.dark} position={[len * 0.28, 0, (s * width) / 2]} />
       ))}
@@ -468,16 +446,6 @@ function Quad({ palette, state }: { palette: Palette; state: StateRef }) {
         <mesh material={mats.led} position={[-0.33, 0.04, 0]}>
           <boxGeometry args={[0.008, 0.01, 0.07]} />
         </mesh>
-        {/* Cooling intake on the flanks */}
-        {[-1, 1].map((s) => (
-          <group key={s} position={[-0.06, 0.0, s * 0.158]}>
-            {[0, 1, 2, 3].map((k) => (
-              <mesh key={k} material={mats.dark} position={[k * 0.026 - 0.04, 0, 0]}>
-                <boxGeometry args={[0.012, 0.04, 0.012]} />
-              </mesh>
-            ))}
-          </group>
-        ))}
       </Part>
       {/* Top canopy over the flight controller, with the GNSS dome */}
       <Part state={state} dir={[0, 1, 0]} dist={0.45} position={[0.02, 0.055, 0]}>

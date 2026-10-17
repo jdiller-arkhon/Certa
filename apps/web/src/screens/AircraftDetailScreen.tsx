@@ -3,6 +3,7 @@
 import type { AircraftDetailScreenProps } from '@certa/contract';
 import { Box, FileDown, OctagonAlert, Pencil, Plane, Route, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import { AircraftViewer } from '@/components/hangar';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog } from '@/components/ui/dialog';
@@ -61,6 +62,9 @@ export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
 
       {tab === 'overview' && (
         <TabPanel key="overview" label="Overview" className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+          <Panel label="Aircraft" meta={<span>{props.model.custom ? 'Uploaded model' : 'Generic airframe'}</span>} className="lg:col-span-2">
+            <AircraftViewer airframe={props.model.airframe} modelUrl={props.model.url} label={`${a.name}, 3D model`} />
+          </Panel>
           <Panel label="Airworthiness" meta={<StatusBadge status={a.status} size="sm" />}>
             <StatStrip
               items={[
@@ -121,7 +125,10 @@ export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
       )}
 
       {tab === 'model' && props.canEdit && (
-        <TabPanel key="model" label="3D model">
+        <TabPanel key="model" label="3D model" className="space-y-6">
+          <Panel label="Preview">
+            <AircraftViewer airframe={props.model.airframe} modelUrl={props.model.url} label={`${a.name}, 3D model`} />
+          </Panel>
           <Section title="3D model">
             <p className="mb-3 text-[13px] text-[var(--certa-muted)]">
               {props.model.custom ? 'The hangar shows your uploaded model.' : 'The hangar draws a generic airframe. Upload your own model to show the real aircraft.'} Binary glTF (.glb), up to 20 MB, self-contained.

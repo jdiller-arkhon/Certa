@@ -1591,6 +1591,16 @@ export interface paths {
                                 rawLogDocumentId: string | null;
                             } | null;
                             recentLocations: string[];
+                            /**
+                             * @default {
+                             *       "last7": 0,
+                             *       "last30": 0
+                             *     }
+                             */
+                            recentFlightCounts: {
+                                last7: number;
+                                last30: number;
+                            };
                             /** Format: date-time */
                             generatedAt: string;
                         };

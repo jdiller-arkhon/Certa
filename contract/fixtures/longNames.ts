@@ -1587,7 +1587,9 @@ export const longNames = {
       "model": {
         "custom": false,
         "uploading": false,
-        "error": null
+        "error": null,
+        "airframe": "quad",
+        "url": null
       },
       "share": {
         "canShare": true,

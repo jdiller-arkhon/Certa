@@ -431,7 +431,7 @@ export interface AircraftDetailScreenProps extends AsyncState {
   canEdit: boolean;
   canGround: boolean;
   /** The hangar 3D model: the customer's own GLB, or drawn from the airframe type. */
-  model: { custom: boolean; uploading: boolean; error: string | null };
+  model: { custom: boolean; uploading: boolean; error: string | null; airframe: Airframe; url: string | null };
   onUploadModel: (file: PickedFile) => void;
   onRemoveModel: () => void;
   onEdit: () => void;
