@@ -59,6 +59,10 @@ export const missions = pgTable('missions', {
     .notNull()
     .default('draft'),
   deliverables: text('deliverables'),
+  locationName: text('location_name'),
+  location: geography('location', 'Point'),
+  maxAltitudeAglM: numeric('max_altitude_agl_m', { precision: 10, scale: 2, mode: 'number' }),
+  operationType: text('operation_type').notNull().default('commercial'),
 });
 
 export const missionCrew = pgTable(

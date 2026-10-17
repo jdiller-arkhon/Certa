@@ -84,6 +84,10 @@ export type {
   DiscordSettingsScreenProps,
   AuthorizationsScreenProps,
   AuthorizationRowViewModel,
+  MissionsScreenProps,
+  MissionRowViewModel,
+  MissionDetailScreenProps,
+  MissionFormScreenProps,
   GoNoGoResult,
   GoNoGoCheck,
   // later phases (draft)
@@ -91,7 +95,6 @@ export type {
   ChecklistsScreenProps,
   IncidentsScreenProps,
   RecordsScreenProps,
-  MissionsScreenProps,
   AnalyticsScreenProps,
   AssistantScreenProps,
 } from '@certa/core';

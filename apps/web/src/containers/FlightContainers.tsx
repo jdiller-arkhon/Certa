@@ -14,6 +14,7 @@ import {
   type SyncConflictViewModel,
   type ConditionsResponse,
   weatherSummary,
+  withMission,
 } from '@certa/core';
 import { CertaApiError, unwrap } from '@certa/sdk';
 import { useQueryClient } from '@tanstack/react-query';
@@ -22,7 +23,7 @@ import { CloudUpload } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/feedback';
-import { defaultPreflight, ensureOk, fleetKeys, useAuthorizations, useChecklistTemplates, useFlight, useFleetMutation, useFlights, type FlightFilter } from '@/data/fleet';
+import { defaultPreflight, ensureOk, fleetKeys, useAuthorizations, useChecklistTemplates, useMission, useFlight, useFleetMutation, useFlights, type FlightFilter } from '@/data/fleet';
 import { api } from '@/lib/api';
 import { uuidv7 } from '@/lib/idb';
 import { discardOutboxItem, enqueueFlight, retryRejected, useOutbox, type OutboxItem } from '@/lib/outbox';
@@ -57,8 +58,8 @@ export function outboxFlight(i: OutboxItem): Flight & { pendingSync: true } {
     hasPath: false,
     weather: b.weather ?? null,
     airspaceClass: b.airspaceClass ?? null,
-    authorizationId: null,
-    missionId: null,
+    authorizationId: b.authorizationId ?? null,
+    missionId: b.missionId ?? null,
     siteId: null,
     operationType: b.operationType ?? 'commercial',
     notes: b.notes ?? null,
@@ -160,8 +161,9 @@ const deviceZone = () => {
   }
 };
 
-export function LogFlightContainer({ flightId }: { flightId?: string }) {
+export function LogFlightContainer({ flightId, missionId }: { flightId?: string; missionId?: string }) {
   const f = useFleetContext();
+  const mission = useMission(f.orgId, missionId ?? '');
   const router = useRouter();
   const qc = useQueryClient();
   const existing = useFlight(f.orgId, flightId ?? '');
@@ -229,7 +231,9 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
       />
     );
   // The checklist is ticked when a flight is logged, not when it's edited later.
-  const base = buildLogFlight(f.bi, { currentPilotId: f.myPilotId, now: new Date(), checklist: flightId ? null : defaultPreflight(templates.data), authorizations: authorizations.data });
+  const built = buildLogFlight(f.bi, { currentPilotId: f.myPilotId, now: new Date(), checklist: flightId ? null : defaultPreflight(templates.data), authorizations: authorizations.data });
+  // Started from a mission: its crew, aircraft, place and authorization fill the form.
+  const base = !flightId && mission.data ? withMission(built, mission.data, f.mapCtx) : built;
   const ex = flightId ? (existing.data as Flight | undefined) : undefined;
   const defaults = ex
     ? {
@@ -243,6 +247,7 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
         locationName: ex.locationName,
         maxAltitude: ex.maxAltitudeAglM == null ? null : Math.round(metresTo(ex.maxAltitudeAglM, f.mapCtx.units.length)),
         notes: ex.notes,
+        authorizationId: ex.authorizationId,
       }
     : base.defaults;
   const lengthUnit = f.mapCtx.units.length;
@@ -283,6 +288,7 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
           notes: v.notes,
           ...(v.checklist && !ex ? { checklist: v.checklist } : {}),
           ...(v.authorizationId ? { authorizationId: v.authorizationId } : {}),
+          ...(base.mission && !ex ? { missionId: base.mission.id } : {}),
           // Conditions checked at the site: keep where and in what weather the flight happened.
           ...(conditions.data && !ex
             ? {
@@ -300,6 +306,7 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
           // Outbox first: the flight is safe on the device even if the request never lands.
           await enqueueFlight(f.orgId, f.me.user.id, { ...body, id, visualObserverIds: [], goNoGo: preflight });
           // Offline, a route change needs the server; confirm in place so the pilot can keep logging.
+          if (base.mission) void qc.invalidateQueries({ queryKey: fleetKeys.missions(f.orgId) });
           if (navigator.onLine) router.replace(`/flights/${id}`);
           else setSavedOffline(id);
         } catch {

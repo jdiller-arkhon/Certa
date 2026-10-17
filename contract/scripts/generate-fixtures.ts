@@ -10,6 +10,9 @@ import {
   buildAircraftDetail,
   buildChecklistsAdmin,
   buildAuthorizations,
+  buildMissions,
+  buildMissionDetail,
+  buildMissionForm,
   buildAircraftList,
   buildBatteryList,
   buildFlightDetail,
@@ -79,6 +82,23 @@ function sampleAuthorizations(pilotId: string | null) {
     { ...base, id: '00000000-0000-7000-8000-0000000a0002', kind: 'coa' as const, reference: '2026-WSA-412-COA', title: 'Henderson substation corridor', conditions: null, validFrom: at(-340), validTo: at(18), pilotId: null },
     { ...base, id: '00000000-0000-7000-8000-0000000a0003', kind: 'laanc' as const, reference: 'LAANC-7F3K2Q', title: 'Centennial Class D, 200 ft', conditions: null, validFrom: at(-0.05), validTo: at(0.2), pilotId },
     { ...base, id: '00000000-0000-7000-8000-0000000a0004', kind: 'airspace_authorization' as const, reference: 'FAA-AA-2025-0988', title: 'Denver Class B surface area', conditions: null, validFrom: at(-400), validTo: at(-35), pilotId },
+  ];
+}
+
+/** Missions relative to NOW: one next week, one under way today, one completed, one undated draft. */
+function sampleMissions(w: World) {
+  const base = { orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, deliverables: null, flightCount: 0, flightSeconds: 0 };
+  const at = (days: number, hour: number) => new Date(Date.UTC(NOW.getUTCFullYear(), NOW.getUTCMonth(), NOW.getUTCDate() + days, hour)).toISOString();
+  const [p0, p1] = w.pilots;
+  const [a0, a1] = w.aircraft;
+  if (!p0 || !a0) return [];
+  const auths = sampleAuthorizations(p0.id);
+  const crew = (observer: boolean) => [{ pilotId: p0.id, role: 'pic' as const }, ...(observer && p1 ? [{ pilotId: p1.id, role: 'observer' as const }] : [])];
+  return [
+    { ...base, id: '00000000-0000-7000-8000-0000000b0001', name: 'Henderson substation thermal survey', purpose: 'Thermal and RGB survey of the north yard transformers ahead of the winter load.', plannedStart: at(6, 15), plannedEnd: at(6, 18), status: 'planned' as const, crew: crew(true), aircraftIds: [a0.id], authorizationIds: [auths[1]!.id], locationName: 'Henderson substation', location: { lat: 39.9208, lon: -104.8586 }, maxAltitudeAglM: 60, operationType: 'commercial' as const, deliverables: 'Radiometric JPEGs, anomaly report' },
+    { ...base, id: '00000000-0000-7000-8000-0000000b0002', name: 'Centennial roof inspection', purpose: null, plannedStart: at(0, 15), plannedEnd: at(0, 17), status: 'in_progress' as const, crew: crew(false), aircraftIds: [a1?.id ?? a0.id], authorizationIds: [auths[2]!.id], locationName: 'Centennial Airport business park', location: { lat: 39.5701, lon: -104.8493 }, maxAltitudeAglM: 45, operationType: 'commercial' as const, flightCount: 2, flightSeconds: 2460 },
+    { ...base, id: '00000000-0000-7000-8000-0000000b0003', name: 'Cherry Creek dam mapping', purpose: 'Orthomosaic for the spillway survey.', plannedStart: at(-12, 16), plannedEnd: at(-12, 19), status: 'completed' as const, crew: crew(true), aircraftIds: [a0.id], authorizationIds: [], locationName: 'Cherry Creek State Park', location: { lat: 39.6383, lon: -104.8602 }, maxAltitudeAglM: 120, operationType: 'commercial' as const, flightCount: 4, flightSeconds: 6120 },
+    { ...base, id: '00000000-0000-7000-8000-0000000b0004', name: 'New pilot training block', purpose: 'Manual flight proficiency for the new hires.', plannedStart: null, plannedEnd: null, status: 'draft' as const, crew: [], aircraftIds: [], authorizationIds: [], locationName: null, location: null, maxAltitudeAglM: null, operationType: 'training' as const },
   ];
 }
 
@@ -560,6 +580,9 @@ function toScenario(w: World): FixtureScenario {
       maintenance: buildMaintenance(bi, maintenanceHistoryFor(w, snapshot.maintenanceSchedules)),
       insurance: buildInsurance(bi),
       authorizations: buildAuthorizations(bi, sampleAuthorizations(p0?.id ?? null), { ownPilotId: null }),
+      missions: buildMissions(bi, sampleMissions(w), sampleAuthorizations(p0?.id ?? null)),
+      missionDetail: buildMissionDetail(bi, sampleMissions(w)[1] ?? null, { authorizations: sampleAuthorizations(p0?.id ?? null), flights: w.flights.slice(0, 2), ownPilotId: null }),
+      missionForm: buildMissionForm(bi, sampleMissions(w)[0] ?? null, { authorizations: sampleAuthorizations(p0?.id ?? null) }),
       checklistsAdmin: buildChecklistsAdmin(bi, [
         { id: '00000000-0000-7000-8000-00000000c001', orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, name: 'Standard pre-flight', kind: 'preflight', version: 3, isDefault: true, sections: DEFAULT_PREFLIGHT_SECTIONS },
         { id: '00000000-0000-7000-8000-00000000c002', orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, name: 'Lost link', kind: 'emergency', version: 1, isDefault: false, sections: [{ id: 'll', title: 'Lost link', items: [{ id: 'rth', text: 'Confirm return-to-home engaged', required: true, photoRequired: false }, { id: 'notify', text: 'Notify visual observer and clear the landing zone', required: true, photoRequired: false }] }] },

@@ -12,13 +12,20 @@ const DECISION = {
   no_go: { label: 'No-go', level: 'red', note: 'Records on file say this flight isn’t legal. You can still log it; the check is stored with the flight.' },
 } as const;
 
+const MISSION = {
+  go: { label: 'Ready', level: 'green', note: 'Crew, aircraft and authorizations check out for the planned window.' },
+  caution: { label: 'Check before flying', level: 'amber', note: 'Nothing blocks the mission, but some details need attention.' },
+  no_go: { label: 'Not ready', level: 'red', note: 'Records on file say this mission can’t be flown as planned. Fix the items below.' },
+} as const;
+
 /** Pre-flight go / no-go from records on file. Advisory — the pilot in command decides. */
-export function GoNoGoPanel({ result, compact, className }: { result: GoNoGoResult; compact?: boolean; className?: string }) {
-  const d = DECISION[result.decision];
+export function GoNoGoPanel({ result, compact, className, variant = 'preflight' }: { result: GoNoGoResult; compact?: boolean; className?: string; variant?: 'preflight' | 'mission' }) {
+  const d = (variant === 'mission' ? MISSION : DECISION)[result.decision];
+  const title = variant === 'mission' ? 'Mission readiness' : 'Pre-flight check';
   const color = LEVEL_COLOR[d.level];
   return (
     <section
-      aria-label="Pre-flight check"
+      aria-label={title}
       aria-live="polite"
       className={cn('overflow-hidden rounded-[20px] border', className)}
       style={{ borderColor: `color-mix(in srgb, ${color} 35%, var(--certa-border))`, background: `color-mix(in srgb, ${color} 5%, var(--certa-surface))` }}
@@ -38,7 +45,7 @@ export function GoNoGoPanel({ result, compact, className }: { result: GoNoGoResu
           </motion.span>
         </AnimatePresence>
         <div className="min-w-0">
-          <div className="text-[11px] font-semibold tracking-[0.14em] text-[var(--certa-muted)] uppercase">Pre-flight check</div>
+          <div className="text-[11px] font-semibold tracking-[0.14em] text-[var(--certa-muted)] uppercase">{title}</div>
           <div className="headline text-[22px] leading-tight" style={{ color }}>{d.label}</div>
         </div>
       </div>

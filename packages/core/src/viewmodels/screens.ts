@@ -589,6 +589,8 @@ export interface LogFlightScreenProps extends AsyncState {
     locationName: string | null;
     maxAltitude: number | null;
     notes: string | null;
+    /** Preselected authorization, e.g. from the mission the flight is logged for. */
+    authorizationId: string | null;
   };
   hasLastFlight: boolean;
   pilotOptions: { value: string; label: string; status: StatusBadge }[];
@@ -607,6 +609,8 @@ export interface LogFlightScreenProps extends AsyncState {
   preflight: GoNoGoResult | null;
   /** Authorizations valid now, for the pilot to attach (LAANC approval, waiver, COA). */
   authorizationOptions: { value: string; label: string }[];
+  /** The mission this flight is being logged for, when started from one. */
+  mission: { id: string; name: string } | null;
   /** The org's default pre-flight checklist to tick before logging; null when editing or none is set. */
   checklist: ChecklistViewModel | null;
   /**
@@ -858,11 +862,119 @@ export interface RecordsScreenProps extends AsyncState {
   onExport: (input: { kind: 'pilot_logbook' | 'aircraft_logbook' | 'compliance_packet' | 'csv' | 'json'; subjectId: string | null; from: string | null; to: string | null }) => void;
 }
 
-/** @status draft — Phase 6 — route: /missions */
+export interface MissionRowViewModel {
+  id: string;
+  name: string;
+  /** Planned start; null for undated drafts. */
+  starts: DateDisplay | null;
+  /** e.g. "Thu, Oct 22 · 9:00–11:30 AM". */
+  window: string | null;
+  locationName: string | null;
+  pilotInCommand: string | null;
+  aircraft: string[];
+  status: StatusBadge & { value: 'draft' | 'planned' | 'in_progress' | 'completed' | 'cancelled' };
+  /** Null once completed or cancelled. */
+  readiness: StatusBadge | null;
+  flightCount: number;
+  /** Draft, planned or in progress. */
+  open: boolean;
+}
+
+/** @status beta — route: /missions */
 export interface MissionsScreenProps extends AsyncState {
-  missions: { id: string; name: string; client: string | null; planned: DateDisplay | null; status: string; readiness: StatusBadge }[];
+  /** Open missions soonest first (undated drafts last), then closed ones newest first. */
+  missions: MissionRowViewModel[];
+  canPlan: boolean;
+  empty: EmptyState;
   onPlanMission: () => void;
   onOpenMission: (id: string) => void;
+}
+
+/** @status beta — route: /missions/[id] */
+export interface MissionDetailScreenProps extends AsyncState {
+  mission: {
+    id: string;
+    name: string;
+    purpose: string | null;
+    deliverables: string | null;
+    status: MissionRowViewModel['status'];
+    window: string | null;
+    starts: DateDisplay | null;
+    ends: DateDisplay | null;
+    locationName: string | null;
+    location: { lat: number; lon: number } | null;
+    /** e.g. "200 ft AGL". */
+    maxAltitude: string | null;
+    operationType: string;
+    crew: { pilotId: string; name: string; role: string; href: string }[];
+    aircraft: { id: string; name: string; href: string }[];
+    authorizations: { id: string; label: string; detail: string | null }[];
+    flights: { count: number; total: string };
+  } | null;
+  readiness: { level: ReadinessLevel; label: string; checks: { key: string; label: string; level: ReadinessLevel; detail: string }[] } | null;
+  flights: FlightRowViewModel[];
+  /** Airspace, TFRs and weather at the mission's location, checked on request. */
+  conditions: LogFlightScreenProps['conditions'];
+  canEdit: boolean;
+  canLogFlight: boolean;
+  /** Status changes the member may make from here. */
+  statusActions: { status: MissionRowViewModel['status']['value']; label: string }[];
+  busy: boolean;
+  onEdit: () => void;
+  onLogFlight: () => void;
+  onSetStatus: (status: MissionRowViewModel['status']['value']) => void;
+  onDelete: () => void;
+  onCheckConditions: () => void;
+  onOpenFlight: (id: string) => void;
+  /** Opens a crew member's or aircraft's page (hrefs are app-relative). */
+  onOpenHref: (href: string) => void;
+}
+
+/** @status beta — routes: /missions/new, /missions/[id]/edit */
+export interface MissionFormScreenProps extends AsyncState {
+  mode: 'create' | 'edit';
+  defaults: {
+    name: string;
+    purpose: string | null;
+    /** ISO instants. */
+    plannedStart: string | null;
+    plannedEnd: string | null;
+    locationName: string | null;
+    location: { lat: number; lon: number } | null;
+    /** In the org's altitude unit. */
+    maxAltitude: number | null;
+    operationType: string;
+    deliverables: string | null;
+    picId: string | null;
+    observerIds: string[];
+    aircraftIds: string[];
+    authorizationIds: string[];
+  };
+  pilotOptions: { value: string; label: string; status: StatusBadge }[];
+  aircraftOptions: { value: string; label: string; status: StatusBadge }[];
+  authorizationOptions: { value: string; label: string; status: StatusBadge }[];
+  operationTypeOptions: { value: string; label: string }[];
+  siteOptions: { value: string; label: string }[];
+  altitudeUnitLabel: string;
+  fieldErrors: Record<string, string>;
+  saving: boolean;
+  onSubmit: (values: {
+    name: string;
+    purpose: string | null;
+    plannedStart: string | null;
+    plannedEnd: string | null;
+    locationName: string | null;
+    location: { lat: number; lon: number } | null;
+    maxAltitude: number | null;
+    operationType: string;
+    deliverables: string | null;
+    picId: string | null;
+    observerIds: string[];
+    aircraftIds: string[];
+    authorizationIds: string[];
+    status: 'draft' | 'planned';
+  }) => void;
+  onCancel: () => void;
 }
 
 /** @status draft — Phase 6 — route: /analytics */

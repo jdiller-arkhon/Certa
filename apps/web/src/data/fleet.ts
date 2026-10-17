@@ -14,6 +14,8 @@ export const fleetKeys = {
   maintenanceEvents: (orgId: string) => ['org', orgId, 'maintenance-events'] as const,
   checklists: (orgId: string) => ['org', orgId, 'checklists'] as const,
   authorizations: (orgId: string) => ['org', orgId, 'authorizations'] as const,
+  missions: (orgId: string) => ['org', orgId, 'missions'] as const,
+  mission: (orgId: string, missionId: string) => ['org', orgId, 'missions', missionId] as const,
 };
 
 /** The fleet snapshot every Phase 2 screen is built from; cached for offline use. */
@@ -33,6 +35,8 @@ export interface FlightFilter {
   aircraftId: string | null;
   from: string | null;
   to: string | null;
+  /** Only flights logged for this mission. */
+  missionId?: string | null;
 }
 
 export function useFlights(orgId: string, filter: FlightFilter, opts: { limit?: number } = {}) {
@@ -52,6 +56,7 @@ export function useFlights(orgId: string, filter: FlightFilter, opts: { limit?: 
                 aircraftId: filter.aircraftId ?? undefined,
                 from: filter.from ?? undefined,
                 to: filter.to ?? undefined,
+                missionId: filter.missionId ?? undefined,
               },
             },
           }),
@@ -103,6 +108,22 @@ export function useAuthorizations(orgId: string) {
     queryKey: fleetKeys.authorizations(orgId),
     queryFn: () =>
       networkFirst(`authorizations:${orgId}`, async () => unwrap(await api.GET('/api/v1/orgs/{orgId}/authorizations', { params: { path: { orgId } } }))).then((r) => r.authorizations as apiTypes.AuthorizationRecord[]),
+  });
+}
+
+/** Planned missions, cached on the device so crews can open them in the field. */
+export function useMissions(orgId: string) {
+  return useQuery({
+    queryKey: fleetKeys.missions(orgId),
+    queryFn: () => networkFirst(`missions:${orgId}`, async () => unwrap(await api.GET('/api/v1/orgs/{orgId}/missions', { params: { path: { orgId } } }))).then((r) => r.missions as apiTypes.MissionRecord[]),
+  });
+}
+
+export function useMission(orgId: string, missionId: string) {
+  return useQuery({
+    queryKey: fleetKeys.mission(orgId, missionId),
+    enabled: !!missionId,
+    queryFn: () => networkFirst(`mission:${orgId}:${missionId}`, async () => unwrap(await api.GET('/api/v1/orgs/{orgId}/missions/{missionId}', { params: { path: { orgId, missionId } } }))) as Promise<apiTypes.MissionRecord>,
   });
 }
 

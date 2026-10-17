@@ -255,10 +255,15 @@ export const Mission = EntityBase.extend({
   plannedStart: IsoDateTime.nullable(),
   plannedEnd: IsoDateTime.nullable(),
   status: MissionStatus,
-  crewPilotIds: z.array(Id),
+  /** One pilot in command; anyone else on the crew is a visual observer. */
+  crew: z.array(z.object({ pilotId: Id, role: z.enum(['pic', 'observer']) })),
   aircraftIds: z.array(Id),
   authorizationIds: z.array(Id),
   deliverables: z.string().max(4000).nullable(),
+  locationName: z.string().max(200).nullable(),
+  location: GeoPoint.nullable(),
+  maxAltitudeAglM: z.number().min(0).max(5000).nullable(),
+  operationType: OperationType,
 });
 export type Mission = z.infer<typeof Mission>;
 

@@ -3,8 +3,8 @@
  * OpenAPI document in contract/openapi.yaml is generated from exactly this code.
  */
 import { z } from 'zod';
-import { Aircraft, AuditEvent, Authorization, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
-import { AirspaceClass, AuthorizationKind, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
+import { Aircraft, AuditEvent, Authorization, Mission, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
+import { AirspaceClass, AuthorizationKind, MissionStatus, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
 import { FleetSnapshot, GoNoGoResult } from '../fleet/fleet.js';
 import { InspectorPacket } from '../fleet/packet.js';
 import { FlightVerificationResult, VerificationResult } from '../fleet/verify.js';
@@ -296,6 +296,8 @@ export const CreateFlightRequest = z.object({
   goNoGo: GoNoGoResult.nullable().optional(),
   /** LAANC approval, airspace authorization, or waiver the flight operated under. */
   authorizationId: Id.nullable().optional(),
+  /** The planned mission this flight was flown for. */
+  missionId: Id.nullable().optional(),
   /** The pre-flight checklist as the pilot ticked it. Stored as a signed run linked to the flight. */
   checklist: z
     .object({
@@ -317,6 +319,7 @@ export const FlightListQuery = z.object({
   aircraftId: Id.optional(),
   from: IsoDate.optional(),
   to: IsoDate.optional(),
+  missionId: Id.optional(),
 });
 export type FlightListQuery = z.infer<typeof FlightListQuery>;
 
@@ -580,3 +583,44 @@ export const BotLeaderboardQuery = z.object({
 export const BotLeaderboardResponse = z.object({
   entries: z.array(z.object({ rank: z.number().int().positive(), certaUserId: Id, displayName: z.string(), totalMinutes: z.number().int().nonnegative(), flightCount: z.number().int().nonnegative() })),
 });
+
+// ---------- Missions ----------
+
+export const MissionRecord = Mission.omit({ clientId: true, siteId: true }).extend({
+  /** Flights logged against the mission so far. */
+  flightCount: z.number().int(),
+  flightSeconds: z.number().int(),
+});
+export type MissionRecord = z.infer<typeof MissionRecord>;
+
+const MissionCrew = z
+  .array(z.object({ pilotId: Id, role: z.enum(['pic', 'observer']) }))
+  .max(20)
+  .refine((c) => c.filter((x) => x.role === 'pic').length <= 1, { message: 'Only one pilot in command' })
+  .refine((c) => new Set(c.map((x) => x.pilotId)).size === c.length, { message: 'A pilot is listed twice' });
+
+const missionFields = {
+  name: z.string().trim().min(1).max(200),
+  purpose: opt(z.string().max(2000)),
+  plannedStart: IsoDateTime.nullable().optional(),
+  plannedEnd: IsoDateTime.nullable().optional(),
+  locationName: opt(z.string().trim().max(200)),
+  location: GeoPoint.nullable().optional(),
+  maxAltitudeAglM: z.number().min(0).max(5000).nullable().optional(),
+  operationType: OperationType.optional(),
+  deliverables: opt(z.string().max(4000)),
+  crew: MissionCrew.optional(),
+  aircraftIds: z.array(Id).max(20).optional(),
+  authorizationIds: z.array(Id).max(20).optional(),
+};
+const windowOk = (m: { plannedStart?: string | null; plannedEnd?: string | null }) => !m.plannedStart || !m.plannedEnd || Date.parse(m.plannedEnd) > Date.parse(m.plannedStart);
+
+export const CreateMissionRequest = z
+  .object({ ...missionFields, status: z.enum(['draft', 'planned']).optional() })
+  .refine(windowOk, { message: 'The end must be after the start', path: ['plannedEnd'] });
+export type CreateMissionRequest = z.infer<typeof CreateMissionRequest>;
+export const UpdateMissionRequest = z
+  .object({ ...missionFields, name: missionFields.name.optional(), status: MissionStatus.optional() })
+  .refine(windowOk, { message: 'The end must be after the start', path: ['plannedEnd'] });
+export type UpdateMissionRequest = z.infer<typeof UpdateMissionRequest>;
+export const MissionListResponse = z.object({ missions: z.array(MissionRecord) });

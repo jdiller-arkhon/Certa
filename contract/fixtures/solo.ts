@@ -46,6 +46,15 @@ export const solo = {
         "group": "operations"
       },
       {
+        "id": "missions",
+        "label": "Missions",
+        "href": "/missions",
+        "icon": "missions",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
         "id": "pilots",
         "label": "Pilots",
         "href": "/pilots",
@@ -253,6 +262,13 @@ export const solo = {
         "shortcut": "G F"
       },
       {
+        "id": "go-missions",
+        "label": "Missions",
+        "href": "/missions",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
         "id": "go-pilots",
         "label": "Pilots",
         "href": "/pilots",
@@ -378,6 +394,15 @@ export const solo = {
         "label": "Flights",
         "href": "/flights",
         "icon": "flights",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
+        "id": "missions",
+        "label": "Missions",
+        "href": "/missions",
+        "icon": "missions",
         "active": false,
         "badge": null,
         "group": "operations"
@@ -594,6 +619,13 @@ export const solo = {
         "href": "/flights",
         "section": "Go to",
         "shortcut": "G F"
+      },
+      {
+        "id": "go-missions",
+        "label": "Missions",
+        "href": "/missions",
+        "section": "Go to",
+        "shortcut": null
       },
       {
         "id": "go-pilots",
@@ -3190,7 +3222,8 @@ export const solo = {
         "durationMinutes": 8,
         "locationName": null,
         "maxAltitude": null,
-        "notes": null
+        "notes": null,
+        "authorizationId": null
       },
       "hasLastFlight": true,
       "pilotOptions": [
@@ -3474,6 +3507,7 @@ export const solo = {
           "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft"
         }
       ],
+      "mission": null,
       "conditions": {
         "status": "idle",
         "advisories": [],
@@ -3870,6 +3904,418 @@ export const solo = {
       "ownPilotId": null,
       "saving": false,
       "fieldErrors": {}
+    },
+    "missions": {
+      "loading": false,
+      "error": null,
+      "missions": [
+        {
+          "id": "00000000-0000-7000-8000-0000000b0002",
+          "name": "Centennial roof inspection",
+          "starts": {
+            "iso": "2026-10-08T15:00:00.000Z",
+            "absolute": "Oct 8, 2026, 9:00 AM MDT",
+            "relative": "today",
+            "display": "Oct 8, 2026, 9:00 AM MDT — today",
+            "daysFromToday": 0
+          },
+          "window": "Thu, Oct 8 · 9:00 AM–11:00 AM MDT",
+          "locationName": "Centennial Airport business park",
+          "pilotInCommand": "Dana Reyes",
+          "aircraft": [
+            "DJI Matrice 30T"
+          ],
+          "status": {
+            "level": "green",
+            "label": "In progress",
+            "value": "in_progress"
+          },
+          "readiness": {
+            "level": "green",
+            "label": "Ready"
+          },
+          "flightCount": 2,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0001",
+          "name": "Henderson substation thermal survey",
+          "starts": {
+            "iso": "2026-10-14T15:00:00.000Z",
+            "absolute": "Oct 14, 2026, 9:00 AM MDT",
+            "relative": "in 6 days",
+            "display": "Oct 14, 2026, 9:00 AM MDT — in 6 days",
+            "daysFromToday": 6
+          },
+          "window": "Wed, Oct 14 · 9:00 AM–12:00 PM MDT",
+          "locationName": "Henderson substation",
+          "pilotInCommand": "Dana Reyes",
+          "aircraft": [
+            "Falcon 1"
+          ],
+          "status": {
+            "level": "green",
+            "label": "Planned",
+            "value": "planned"
+          },
+          "readiness": {
+            "level": "amber",
+            "label": "Check before flying"
+          },
+          "flightCount": 0,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0004",
+          "name": "New pilot training block",
+          "starts": null,
+          "window": null,
+          "locationName": null,
+          "pilotInCommand": null,
+          "aircraft": [],
+          "status": {
+            "level": "amber",
+            "label": "Draft",
+            "value": "draft"
+          },
+          "readiness": {
+            "level": "red",
+            "label": "Not ready"
+          },
+          "flightCount": 0,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0003",
+          "name": "Cherry Creek dam mapping",
+          "starts": {
+            "iso": "2026-09-26T16:00:00.000Z",
+            "absolute": "Sep 26, 2026, 10:00 AM MDT",
+            "relative": "12 days ago",
+            "display": "Sep 26, 2026, 10:00 AM MDT — 12 days ago",
+            "daysFromToday": -12
+          },
+          "window": "Sat, Sep 26 · 10:00 AM–1:00 PM MDT",
+          "locationName": "Cherry Creek State Park",
+          "pilotInCommand": "Dana Reyes",
+          "aircraft": [
+            "Falcon 1"
+          ],
+          "status": {
+            "level": "green",
+            "label": "Completed",
+            "value": "completed"
+          },
+          "readiness": null,
+          "flightCount": 4,
+          "open": false
+        }
+      ],
+      "canPlan": true,
+      "empty": {
+        "title": "No missions yet",
+        "body": "Plan a job ahead: who flies, which aircraft, where, and under which authorization. Certa checks the crew and aircraft will be legal on the day.",
+        "actionLabel": "Plan a mission"
+      }
+    },
+    "missionDetail": {
+      "loading": false,
+      "error": null,
+      "mission": {
+        "id": "00000000-0000-7000-8000-0000000b0002",
+        "name": "Centennial roof inspection",
+        "purpose": null,
+        "deliverables": null,
+        "status": {
+          "level": "green",
+          "label": "In progress",
+          "value": "in_progress"
+        },
+        "window": "Thu, Oct 8 · 9:00 AM–11:00 AM MDT",
+        "starts": {
+          "iso": "2026-10-08T15:00:00.000Z",
+          "absolute": "Oct 8, 2026, 9:00 AM MDT",
+          "relative": "today",
+          "display": "Oct 8, 2026, 9:00 AM MDT — today",
+          "daysFromToday": 0
+        },
+        "ends": {
+          "iso": "2026-10-08T17:00:00.000Z",
+          "absolute": "Oct 8, 2026, 11:00 AM MDT",
+          "relative": "today",
+          "display": "Oct 8, 2026, 11:00 AM MDT — today",
+          "daysFromToday": 0
+        },
+        "locationName": "Centennial Airport business park",
+        "location": {
+          "lat": 39.5701,
+          "lon": -104.8493
+        },
+        "maxAltitude": "148 ft AGL",
+        "operationType": "Commercial (Part 107)",
+        "crew": [
+          {
+            "pilotId": "0199c4a0-0000-7000-8000-0000000f4244",
+            "name": "Dana Reyes",
+            "role": "Pilot in command",
+            "href": "/pilots/0199c4a0-0000-7000-8000-0000000f4244"
+          }
+        ],
+        "aircraft": [
+          {
+            "id": "0199c4a0-0000-7000-8000-0000000f424d",
+            "name": "DJI Matrice 30T",
+            "href": "/aircraft/0199c4a0-0000-7000-8000-0000000f424d"
+          }
+        ],
+        "authorizations": [
+          {
+            "id": "00000000-0000-7000-8000-0000000a0003",
+            "label": "LAANC-7F3K2Q",
+            "detail": "LAANC · Centennial Class D, 200 ft"
+          }
+        ],
+        "flights": {
+          "count": 2,
+          "total": "41m 00s"
+        }
+      },
+      "readiness": {
+        "level": "green",
+        "label": "Ready",
+        "checks": [
+          {
+            "key": "crew:0199c4a0-0000-7000-8000-0000000f4244",
+            "label": "Pilot in command · Dana Reyes",
+            "level": "green",
+            "detail": "Certificate and recurrent training current"
+          },
+          {
+            "key": "aircraft:0199c4a0-0000-7000-8000-0000000f424d",
+            "label": "Aircraft · DJI Matrice 30T",
+            "level": "green",
+            "detail": "Registered, airworthy, and maintenance current"
+          },
+          {
+            "key": "auth:00000000-0000-7000-8000-0000000a0003",
+            "label": "Authorization · LAANC-7F3K2Q",
+            "level": "green",
+            "detail": "Covers the planned window"
+          }
+        ]
+      },
+      "flights": [
+        {
+          "id": "0199c4a0-0000-7000-8000-0000000f4251",
+          "takeoff": {
+            "iso": "2026-10-05T18:29:00.000Z",
+            "absolute": "Oct 5, 2026, 12:29 PM MDT",
+            "relative": "3 days ago",
+            "display": "Oct 5, 2026, 12:29 PM MDT — 3 days ago",
+            "daysFromToday": -3
+          },
+          "duration": {
+            "value": 508,
+            "unit": "s",
+            "display": "8m 28s"
+          },
+          "pilotName": "Dana Reyes",
+          "aircraftName": "Falcon 1",
+          "locationName": "Cherry Creek Bridge",
+          "maxAltitude": {
+            "value": 108,
+            "unit": "ft",
+            "display": "108 ft"
+          },
+          "source": "manual",
+          "pendingSync": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-8000-0000000f4252",
+          "takeoff": {
+            "iso": "2026-09-23T19:32:00.000Z",
+            "absolute": "Sep 23, 2026, 1:32 PM MDT",
+            "relative": "15 days ago",
+            "display": "Sep 23, 2026, 1:32 PM MDT — 15 days ago",
+            "daysFromToday": -15
+          },
+          "duration": {
+            "value": 1437,
+            "unit": "s",
+            "display": "23m 57s"
+          },
+          "pilotName": "Dana Reyes",
+          "aircraftName": "Falcon 1",
+          "locationName": "Lakewood Water Tower",
+          "maxAltitude": {
+            "value": 220,
+            "unit": "ft",
+            "display": "220 ft"
+          },
+          "source": "import",
+          "pendingSync": false
+        }
+      ],
+      "conditions": {
+        "status": "idle",
+        "advisories": [],
+        "weatherSummary": null,
+        "checkedAt": null,
+        "error": null
+      },
+      "canEdit": true,
+      "canLogFlight": true,
+      "statusActions": [
+        {
+          "status": "completed",
+          "label": "Mark completed"
+        },
+        {
+          "status": "cancelled",
+          "label": "Cancel mission"
+        }
+      ],
+      "busy": false
+    },
+    "missionForm": {
+      "loading": false,
+      "error": null,
+      "mode": "edit",
+      "defaults": {
+        "name": "Henderson substation thermal survey",
+        "purpose": "Thermal and RGB survey of the north yard transformers ahead of the winter load.",
+        "plannedStart": "2026-10-14T15:00:00.000Z",
+        "plannedEnd": "2026-10-14T18:00:00.000Z",
+        "locationName": "Henderson substation",
+        "location": {
+          "lat": 39.9208,
+          "lon": -104.8586
+        },
+        "maxAltitude": 197,
+        "operationType": "commercial",
+        "deliverables": "Radiometric JPEGs, anomaly report",
+        "picId": "0199c4a0-0000-7000-8000-0000000f4244",
+        "observerIds": [],
+        "aircraftIds": [
+          "0199c4a0-0000-7000-8000-0000000f4249"
+        ],
+        "authorizationIds": [
+          "00000000-0000-7000-8000-0000000a0002"
+        ]
+      },
+      "pilotOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000000f4244",
+          "label": "Dana Reyes",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        }
+      ],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000000f4249",
+          "label": "Falcon 1",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000000f424d",
+          "label": "DJI Matrice 30T",
+          "status": {
+            "level": "green",
+            "label": "Airworthy"
+          }
+        }
+      ],
+      "authorizationOptions": [
+        {
+          "value": "00000000-0000-7000-8000-0000000a0001",
+          "label": "Part 107 waiver 107W-2026-01234 — Operations over people (107.39)",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0002",
+          "label": "COA 2026-WSA-412-COA — Henderson substation corridor",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 18 days"
+          }
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0003",
+          "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        }
+      ],
+      "operationTypeOptions": [
+        {
+          "value": "commercial",
+          "label": "Commercial (Part 107)"
+        },
+        {
+          "value": "training",
+          "label": "Training"
+        },
+        {
+          "value": "public_safety",
+          "label": "Public safety"
+        },
+        {
+          "value": "maintenance_test",
+          "label": "Maintenance test flight"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ],
+      "siteOptions": [
+        {
+          "value": "Cherry Creek Bridge",
+          "label": "Cherry Creek Bridge"
+        },
+        {
+          "value": "Lakewood Water Tower",
+          "label": "Lakewood Water Tower"
+        },
+        {
+          "value": "Castle Rock Quarry",
+          "label": "Castle Rock Quarry"
+        },
+        {
+          "value": "Boulder Creek Levee",
+          "label": "Boulder Creek Levee"
+        },
+        {
+          "value": "Aurora Distribution Center",
+          "label": "Aurora Distribution Center"
+        },
+        {
+          "value": "Henderson Solar Farm",
+          "label": "Henderson Solar Farm"
+        },
+        {
+          "value": "Riverside Substation",
+          "label": "Riverside Substation"
+        },
+        {
+          "value": "Golden Rooftop Survey",
+          "label": "Golden Rooftop Survey"
+        }
+      ],
+      "altitudeUnitLabel": "ft",
+      "fieldErrors": {},
+      "saving": false
     },
     "checklistsAdmin": {
       "loading": false,

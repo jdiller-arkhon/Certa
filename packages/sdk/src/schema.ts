@@ -3117,6 +3117,7 @@ export interface paths {
                     aircraftId?: string;
                     from?: string;
                     to?: string;
+                    missionId?: string;
                 };
                 header?: never;
                 path: {
@@ -3286,6 +3287,7 @@ export interface paths {
                             }[];
                         } | null;
                         authorizationId?: string | null;
+                        missionId?: string | null;
                         checklist?: {
                             /** Format: uuid */
                             templateId: string;
@@ -3759,6 +3761,7 @@ export interface paths {
                         } | null;
                         notes?: string | null;
                         authorizationId?: string | null;
+                        missionId?: string | null;
                     };
                 };
             };
@@ -4319,6 +4322,353 @@ export interface paths {
                             validFrom: string | null;
                             validTo: string | null;
                             pilotId: string | null;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/missions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            missions: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                name: string;
+                                purpose: string | null;
+                                plannedStart: string | null;
+                                plannedEnd: string | null;
+                                /** @enum {string} */
+                                status: "draft" | "planned" | "in_progress" | "completed" | "cancelled";
+                                crew: {
+                                    /** Format: uuid */
+                                    pilotId: string;
+                                    /** @enum {string} */
+                                    role: "pic" | "observer";
+                                }[];
+                                aircraftIds: string[];
+                                authorizationIds: string[];
+                                deliverables: string | null;
+                                locationName: string | null;
+                                location: {
+                                    lat: number;
+                                    lon: number;
+                                    altMslM?: number | null;
+                                } | null;
+                                maxAltitudeAglM: number | null;
+                                /** @enum {string} */
+                                operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                                flightCount: number;
+                                flightSeconds: number;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        purpose?: string | null;
+                        plannedStart?: string | null;
+                        plannedEnd?: string | null;
+                        locationName?: string | null;
+                        location?: {
+                            lat: number;
+                            lon: number;
+                            altMslM?: number | null;
+                        } | null;
+                        maxAltitudeAglM?: number | null;
+                        /** @enum {string} */
+                        operationType?: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                        deliverables?: string | null;
+                        crew?: {
+                            /** Format: uuid */
+                            pilotId: string;
+                            /** @enum {string} */
+                            role: "pic" | "observer";
+                        }[];
+                        aircraftIds?: string[];
+                        authorizationIds?: string[];
+                        /** @enum {string} */
+                        status?: "draft" | "planned";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            name: string;
+                            purpose: string | null;
+                            plannedStart: string | null;
+                            plannedEnd: string | null;
+                            /** @enum {string} */
+                            status: "draft" | "planned" | "in_progress" | "completed" | "cancelled";
+                            crew: {
+                                /** Format: uuid */
+                                pilotId: string;
+                                /** @enum {string} */
+                                role: "pic" | "observer";
+                            }[];
+                            aircraftIds: string[];
+                            authorizationIds: string[];
+                            deliverables: string | null;
+                            locationName: string | null;
+                            location: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            maxAltitudeAglM: number | null;
+                            /** @enum {string} */
+                            operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                            flightCount: number;
+                            flightSeconds: number;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/missions/{missionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    missionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            name: string;
+                            purpose: string | null;
+                            plannedStart: string | null;
+                            plannedEnd: string | null;
+                            /** @enum {string} */
+                            status: "draft" | "planned" | "in_progress" | "completed" | "cancelled";
+                            crew: {
+                                /** Format: uuid */
+                                pilotId: string;
+                                /** @enum {string} */
+                                role: "pic" | "observer";
+                            }[];
+                            aircraftIds: string[];
+                            authorizationIds: string[];
+                            deliverables: string | null;
+                            locationName: string | null;
+                            location: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            maxAltitudeAglM: number | null;
+                            /** @enum {string} */
+                            operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                            flightCount: number;
+                            flightSeconds: number;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Delete a mission. Its flights stay in the logbook. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    missionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    missionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name?: string;
+                        purpose?: string | null;
+                        plannedStart?: string | null;
+                        plannedEnd?: string | null;
+                        locationName?: string | null;
+                        location?: {
+                            lat: number;
+                            lon: number;
+                            altMslM?: number | null;
+                        } | null;
+                        maxAltitudeAglM?: number | null;
+                        /** @enum {string} */
+                        operationType?: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                        deliverables?: string | null;
+                        crew?: {
+                            /** Format: uuid */
+                            pilotId: string;
+                            /** @enum {string} */
+                            role: "pic" | "observer";
+                        }[];
+                        aircraftIds?: string[];
+                        authorizationIds?: string[];
+                        /** @enum {string} */
+                        status?: "draft" | "planned" | "in_progress" | "completed" | "cancelled";
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            name: string;
+                            purpose: string | null;
+                            plannedStart: string | null;
+                            plannedEnd: string | null;
+                            /** @enum {string} */
+                            status: "draft" | "planned" | "in_progress" | "completed" | "cancelled";
+                            crew: {
+                                /** Format: uuid */
+                                pilotId: string;
+                                /** @enum {string} */
+                                role: "pic" | "observer";
+                            }[];
+                            aircraftIds: string[];
+                            authorizationIds: string[];
+                            deliverables: string | null;
+                            locationName: string | null;
+                            location: {
+                                lat: number;
+                                lon: number;
+                                altMslM?: number | null;
+                            } | null;
+                            maxAltitudeAglM: number | null;
+                            /** @enum {string} */
+                            operationType: "commercial" | "training" | "public_safety" | "research" | "maintenance_test" | "recreational" | "other";
+                            flightCount: number;
+                            flightSeconds: number;
                         };
                     };
                 };

@@ -46,6 +46,15 @@ export const longNames = {
         "group": "operations"
       },
       {
+        "id": "missions",
+        "label": "Missions",
+        "href": "/missions",
+        "icon": "missions",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
         "id": "pilots",
         "label": "Pilots",
         "href": "/pilots",
@@ -253,6 +262,13 @@ export const longNames = {
         "shortcut": "G F"
       },
       {
+        "id": "go-missions",
+        "label": "Missions",
+        "href": "/missions",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
         "id": "go-pilots",
         "label": "Pilots",
         "href": "/pilots",
@@ -378,6 +394,15 @@ export const longNames = {
         "label": "Flights",
         "href": "/flights",
         "icon": "flights",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
+        "id": "missions",
+        "label": "Missions",
+        "href": "/missions",
+        "icon": "missions",
         "active": false,
         "badge": null,
         "group": "operations"
@@ -594,6 +619,13 @@ export const longNames = {
         "href": "/flights",
         "section": "Go to",
         "shortcut": "G F"
+      },
+      {
+        "id": "go-missions",
+        "label": "Missions",
+        "href": "/missions",
+        "section": "Go to",
+        "shortcut": null
       },
       {
         "id": "go-pilots",
@@ -2553,7 +2585,8 @@ export const longNames = {
         "durationMinutes": 13,
         "locationName": null,
         "maxAltitude": null,
-        "notes": null
+        "notes": null,
+        "authorizationId": null
       },
       "hasLastFlight": true,
       "pilotOptions": [
@@ -2858,6 +2891,7 @@ export const longNames = {
           "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft"
         }
       ],
+      "mission": null,
       "conditions": {
         "status": "idle",
         "advisories": [],
@@ -3344,6 +3378,440 @@ export const longNames = {
       "ownPilotId": null,
       "saving": false,
       "fieldErrors": {}
+    },
+    "missions": {
+      "loading": false,
+      "error": null,
+      "missions": [
+        {
+          "id": "00000000-0000-7000-8000-0000000b0002",
+          "name": "Centennial roof inspection",
+          "starts": {
+            "iso": "2026-10-08T15:00:00.000Z",
+            "absolute": "Oct 8, 2026, 9:00 AM MDT",
+            "relative": "today",
+            "display": "Oct 8, 2026, 9:00 AM MDT — today",
+            "daysFromToday": 0
+          },
+          "window": "Thu, Oct 8 · 9:00 AM–11:00 AM MDT",
+          "locationName": "Centennial Airport business park",
+          "pilotInCommand": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "aircraft": [
+            "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration"
+          ],
+          "status": {
+            "level": "green",
+            "label": "In progress",
+            "value": "in_progress"
+          },
+          "readiness": {
+            "level": "red",
+            "label": "Not ready"
+          },
+          "flightCount": 2,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0001",
+          "name": "Henderson substation thermal survey",
+          "starts": {
+            "iso": "2026-10-14T15:00:00.000Z",
+            "absolute": "Oct 14, 2026, 9:00 AM MDT",
+            "relative": "in 6 days",
+            "display": "Oct 14, 2026, 9:00 AM MDT — in 6 days",
+            "daysFromToday": 6
+          },
+          "window": "Wed, Oct 14 · 9:00 AM–12:00 PM MDT",
+          "locationName": "Henderson substation",
+          "pilotInCommand": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "aircraft": [
+            "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration"
+          ],
+          "status": {
+            "level": "green",
+            "label": "Planned",
+            "value": "planned"
+          },
+          "readiness": {
+            "level": "amber",
+            "label": "Check before flying"
+          },
+          "flightCount": 0,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0004",
+          "name": "New pilot training block",
+          "starts": null,
+          "window": null,
+          "locationName": null,
+          "pilotInCommand": null,
+          "aircraft": [],
+          "status": {
+            "level": "amber",
+            "label": "Draft",
+            "value": "draft"
+          },
+          "readiness": {
+            "level": "red",
+            "label": "Not ready"
+          },
+          "flightCount": 0,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0003",
+          "name": "Cherry Creek dam mapping",
+          "starts": {
+            "iso": "2026-09-26T16:00:00.000Z",
+            "absolute": "Sep 26, 2026, 10:00 AM MDT",
+            "relative": "12 days ago",
+            "display": "Sep 26, 2026, 10:00 AM MDT — 12 days ago",
+            "daysFromToday": -12
+          },
+          "window": "Sat, Sep 26 · 10:00 AM–1:00 PM MDT",
+          "locationName": "Cherry Creek State Park",
+          "pilotInCommand": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "aircraft": [
+            "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration"
+          ],
+          "status": {
+            "level": "green",
+            "label": "Completed",
+            "value": "completed"
+          },
+          "readiness": null,
+          "flightCount": 4,
+          "open": false
+        }
+      ],
+      "canPlan": true,
+      "empty": {
+        "title": "No missions yet",
+        "body": "Plan a job ahead: who flies, which aircraft, where, and under which authorization. Certa checks the crew and aircraft will be legal on the day.",
+        "actionLabel": "Plan a mission"
+      }
+    },
+    "missionDetail": {
+      "loading": false,
+      "error": null,
+      "mission": {
+        "id": "00000000-0000-7000-8000-0000000b0002",
+        "name": "Centennial roof inspection",
+        "purpose": null,
+        "deliverables": null,
+        "status": {
+          "level": "green",
+          "label": "In progress",
+          "value": "in_progress"
+        },
+        "window": "Thu, Oct 8 · 9:00 AM–11:00 AM MDT",
+        "starts": {
+          "iso": "2026-10-08T15:00:00.000Z",
+          "absolute": "Oct 8, 2026, 9:00 AM MDT",
+          "relative": "today",
+          "display": "Oct 8, 2026, 9:00 AM MDT — today",
+          "daysFromToday": 0
+        },
+        "ends": {
+          "iso": "2026-10-08T17:00:00.000Z",
+          "absolute": "Oct 8, 2026, 11:00 AM MDT",
+          "relative": "today",
+          "display": "Oct 8, 2026, 11:00 AM MDT — today",
+          "daysFromToday": 0
+        },
+        "locationName": "Centennial Airport business park",
+        "location": {
+          "lat": 39.5701,
+          "lon": -104.8493
+        },
+        "maxAltitude": "148 ft AGL",
+        "operationType": "Commercial (Part 107)",
+        "crew": [
+          {
+            "pilotId": "0199c4a0-0000-7000-8000-0000004c4b44",
+            "name": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+            "role": "Pilot in command",
+            "href": "/pilots/0199c4a0-0000-7000-8000-0000004c4b44"
+          }
+        ],
+        "aircraft": [
+          {
+            "id": "0199c4a0-0000-7000-8000-0000004c4b58",
+            "name": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+            "href": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b58"
+          }
+        ],
+        "authorizations": [
+          {
+            "id": "00000000-0000-7000-8000-0000000a0003",
+            "label": "LAANC-7F3K2Q",
+            "detail": "LAANC · Centennial Class D, 200 ft"
+          }
+        ],
+        "flights": {
+          "count": 2,
+          "total": "41m 00s"
+        }
+      },
+      "readiness": {
+        "level": "red",
+        "label": "Not ready",
+        "checks": [
+          {
+            "key": "crew:0199c4a0-0000-7000-8000-0000004c4b44",
+            "label": "Pilot in command · Maximilian Alexander Featherstonehaugh-Montgomery III",
+            "level": "green",
+            "detail": "Certificate and recurrent training current"
+          },
+          {
+            "key": "aircraft:0199c4a0-0000-7000-8000-0000004c4b58",
+            "label": "Aircraft · Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+            "level": "red",
+            "detail": "Grounded: Gimbal damage after hard landing — incident open"
+          },
+          {
+            "key": "auth:00000000-0000-7000-8000-0000000a0003",
+            "label": "Authorization · LAANC-7F3K2Q",
+            "level": "green",
+            "detail": "Covers the planned window"
+          }
+        ]
+      },
+      "flights": [
+        {
+          "id": "0199c4a0-0000-7000-8000-0000004c4b5e",
+          "takeoff": {
+            "iso": "2026-10-06T14:27:00.000Z",
+            "absolute": "Oct 6, 2026, 8:27 AM MDT",
+            "relative": "2 days ago",
+            "display": "Oct 6, 2026, 8:27 AM MDT — 2 days ago",
+            "daysFromToday": -2
+          },
+          "duration": {
+            "value": 750,
+            "unit": "s",
+            "display": "12m 30s"
+          },
+          "pilotName": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "aircraftName": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+          "locationName": "Aurora Distribution Center — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "maxAltitude": {
+            "value": 135,
+            "unit": "ft",
+            "display": "135 ft"
+          },
+          "source": "manual",
+          "pendingSync": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-8000-0000004c4b5f",
+          "takeoff": {
+            "iso": "2026-08-21T16:24:00.000Z",
+            "absolute": "Aug 21, 2026, 10:24 AM MDT",
+            "relative": "48 days ago",
+            "display": "Aug 21, 2026, 10:24 AM MDT — 48 days ago",
+            "daysFromToday": -48
+          },
+          "duration": {
+            "value": 1778,
+            "unit": "s",
+            "display": "29m 38s"
+          },
+          "pilotName": "Anastasia Konstantinovna Vasilyeva-Rimsky-Korsakova",
+          "aircraftName": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+          "locationName": "Cherry Creek Bridge — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "maxAltitude": {
+            "value": 138,
+            "unit": "ft",
+            "display": "138 ft"
+          },
+          "source": "import",
+          "pendingSync": false
+        }
+      ],
+      "conditions": {
+        "status": "idle",
+        "advisories": [],
+        "weatherSummary": null,
+        "checkedAt": null,
+        "error": null
+      },
+      "canEdit": true,
+      "canLogFlight": true,
+      "statusActions": [
+        {
+          "status": "completed",
+          "label": "Mark completed"
+        },
+        {
+          "status": "cancelled",
+          "label": "Cancel mission"
+        }
+      ],
+      "busy": false
+    },
+    "missionForm": {
+      "loading": false,
+      "error": null,
+      "mode": "edit",
+      "defaults": {
+        "name": "Henderson substation thermal survey",
+        "purpose": "Thermal and RGB survey of the north yard transformers ahead of the winter load.",
+        "plannedStart": "2026-10-14T15:00:00.000Z",
+        "plannedEnd": "2026-10-14T18:00:00.000Z",
+        "locationName": "Henderson substation",
+        "location": {
+          "lat": 39.9208,
+          "lon": -104.8586
+        },
+        "maxAltitude": 197,
+        "operationType": "commercial",
+        "deliverables": "Radiometric JPEGs, anomaly report",
+        "picId": "0199c4a0-0000-7000-8000-0000004c4b44",
+        "observerIds": [
+          "0199c4a0-0000-7000-8000-0000004c4b4b"
+        ],
+        "aircraftIds": [
+          "0199c4a0-0000-7000-8000-0000004c4b55"
+        ],
+        "authorizationIds": [
+          "00000000-0000-7000-8000-0000000a0002"
+        ]
+      },
+      "pilotOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b44",
+          "label": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b4b",
+          "label": "Anastasia Konstantinovna Vasilyeva-Rimsky-Korsakova",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b51",
+          "label": "Jean-Baptiste Emmanuel Zorg de la Croix-Fontaine",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        }
+      ],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b55",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b58",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration",
+          "status": {
+            "level": "red",
+            "label": "Grounded"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b5b",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 19 days"
+          }
+        }
+      ],
+      "authorizationOptions": [
+        {
+          "value": "00000000-0000-7000-8000-0000000a0001",
+          "label": "Part 107 waiver 107W-2026-01234 — Operations over people (107.39)",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0002",
+          "label": "COA 2026-WSA-412-COA — Henderson substation corridor",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 18 days"
+          }
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0003",
+          "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        }
+      ],
+      "operationTypeOptions": [
+        {
+          "value": "commercial",
+          "label": "Commercial (Part 107)"
+        },
+        {
+          "value": "training",
+          "label": "Training"
+        },
+        {
+          "value": "public_safety",
+          "label": "Public safety"
+        },
+        {
+          "value": "maintenance_test",
+          "label": "Maintenance test flight"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ],
+      "siteOptions": [
+        {
+          "value": "Aurora Distribution Center — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Aurora Distribution Center — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)"
+        },
+        {
+          "value": "Cherry Creek Bridge — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Cherry Creek Bridge — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)"
+        },
+        {
+          "value": "Castle Rock Quarry — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Castle Rock Quarry — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)"
+        },
+        {
+          "value": "Boulder Creek Levee — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Boulder Creek Levee — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)"
+        },
+        {
+          "value": "Henderson Solar Farm — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Henderson Solar Farm — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)"
+        },
+        {
+          "value": "Lakewood Water Tower — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Lakewood Water Tower — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)"
+        },
+        {
+          "value": "Golden Rooftop Survey — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)",
+          "label": "Golden Rooftop Survey — North Access Road Staging Area, Gate 14 (Contractor Entrance Only)"
+        }
+      ],
+      "altitudeUnitLabel": "ft",
+      "fieldErrors": {},
+      "saving": false
     },
     "checklistsAdmin": {
       "loading": false,

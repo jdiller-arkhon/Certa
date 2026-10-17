@@ -1,11 +1,12 @@
 'use client';
 
 import type { LogFlightScreenProps } from '@certa/contract';
-import { CloudSun, History, LocateFixed, MapPin } from 'lucide-react';
+import { History, MapPin } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/components/cn';
 import { ChecklistRunner } from '@/components/checklist';
+import { ConditionsPanel } from '@/components/conditions';
 import { GoNoGoPanel } from '@/components/go-no-go';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -16,7 +17,6 @@ import { Label, PageHeader } from '@/components/ui/text';
 import { TextArea, num } from './_parts';
 
 const DURATIONS = [10, 15, 20, 25, 30, 45];
-const RANK = { green: 0, amber: 1, red: 2 } as const;
 
 /** Phones get the step-by-step form; tablets and desktops keep the single page. */
 function useFieldMode() {
@@ -55,53 +55,6 @@ function Chip({ active, onClick, children, label }: { active: boolean; onClick: 
   );
 }
 
-function ConditionsPanel({ conditions: c, onCheck }: { conditions: LogFlightScreenProps['conditions']; onCheck: () => void }) {
-  const busy = c.status === 'locating' || c.status === 'loading';
-  return (
-    <Card className="overflow-hidden">
-      <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3">
-        <div>
-          <Label>Conditions here</Label>
-          {c.checkedAt && <div className="mt-0.5 text-[12px] text-[var(--certa-muted)]">Checked {c.checkedAt.relative}</div>}
-        </div>
-        <Button size="sm" variant="secondary" loading={busy} icon={c.status === 'ready' ? <CloudSun className="size-4" aria-hidden /> : <LocateFixed className="size-4" aria-hidden />} onClick={onCheck}>
-          {c.status === 'locating' ? 'Locating…' : c.status === 'loading' ? 'Checking…' : c.status === 'ready' ? 'Refresh' : 'Check'}
-        </Button>
-      </div>
-      {c.status === 'idle' && <p className="px-5 pb-4 text-[13px] text-[var(--certa-muted)]">Airspace, TFRs, restricted areas, weather, and daylight at your location, from FAA, NWS and NOAA data. Advisory only; saved with the flight.</p>}
-      {c.error && (
-        <p role="alert" className="px-5 pb-4 text-[13px] text-[var(--certa-expired)]">
-          {c.error}
-        </p>
-      )}
-      {c.status === 'ready' && (
-        <ul aria-label="Conditions advisories" className="border-t border-[var(--certa-border)]">
-          {c.weatherSummary && <li className="border-b border-[var(--certa-border)] px-5 py-2.5 text-[13px]">{c.weatherSummary}</li>}
-          {[...c.advisories].sort((x, y) => RANK[y.level] - RANK[x.level]).map((a, i) => (
-            <li key={i} className="flex items-start gap-2.5 border-b border-[var(--certa-border)] px-5 py-2.5 last:border-b-0">
-              <span className="mt-[3px]" style={{ color: LEVEL_COLOR[a.level] }}>
-                <LevelIcon level={a.level} />
-              </span>
-              <span className="min-w-0 text-[13px]">
-                <span className="font-semibold">{a.title}</span>
-                <span className="block break-words whitespace-pre-line text-[var(--certa-muted)]">{a.detail}</span>
-                <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--certa-muted)]">
-                  {a.source}
-                  {a.href && (
-                    <a href={a.href} target="_blank" rel="noopener noreferrer" className="font-semibold text-[var(--certa-text)] underline-offset-4 hover:underline">
-                      Open ↗
-                    </a>
-                  )}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Card>
-  );
-}
-
 export function LogFlightScreen(props: LogFlightScreenProps) {
   const d = props.defaults;
   const [pilotId, setPilotId] = useState(d.pilotId);
@@ -113,7 +66,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
   const [minutes, setMinutes] = useState(d.durationMinutes ? String(d.durationMinutes) : '');
   const [altitude, setAltitude] = useState(d.maxAltitude != null ? String(d.maxAltitude) : '');
   const [notes, setNotes] = useState(d.notes ?? '');
-  const [authorizationId, setAuthorizationId] = useState('');
+  const [authorizationId, setAuthorizationId] = useState(d.authorizationId ?? '');
 
   // Report selection changes so the host can recompute the go / no-go.
   const onSel = useRef(props.onSelectionChange);
@@ -387,9 +340,9 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader
-        eyebrow="Logbook"
+        eyebrow={props.mission ? `Mission · ${props.mission.name}` : 'Logbook'}
         title="Log a flight"
-        description="Works offline. Flights sync when you’re back in coverage."
+        description={props.mission ? 'Filled in from the mission plan. Change anything that differs; the flight is added to the mission.' : 'Works offline. Flights sync when you’re back in coverage.'}
         actions={
           props.hasLastFlight && (
             <Button variant="secondary" icon={<History className="size-4" aria-hidden />} onClick={sameAsLast}>

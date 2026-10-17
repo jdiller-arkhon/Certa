@@ -428,6 +428,7 @@ export function toAuditEventViewModel(e: AuditEvent & { actorName: string | null
 const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; requires: Action; group: NavItem['group'] }[] = [
   { id: 'today', label: 'Today', href: '/', icon: 'today', requires: 'org.read', group: 'operations' },
   { id: 'flights', label: 'Flights', href: '/flights', icon: 'flights', requires: 'flights.read', group: 'operations' },
+  { id: 'missions', label: 'Missions', href: '/missions', icon: 'missions', requires: 'missions.read', group: 'operations' },
   { id: 'pilots', label: 'Pilots', href: '/pilots', icon: 'pilots', requires: 'pilots.read', group: 'fleet' },
   { id: 'aircraft', label: 'Aircraft', href: '/aircraft', icon: 'aircraft', requires: 'aircraft.read', group: 'fleet' },
   { id: 'batteries', label: 'Batteries', href: '/batteries', icon: 'batteries', requires: 'batteries.read', group: 'fleet' },

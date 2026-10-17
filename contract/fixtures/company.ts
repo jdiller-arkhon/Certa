@@ -46,6 +46,15 @@ export const company = {
         "group": "operations"
       },
       {
+        "id": "missions",
+        "label": "Missions",
+        "href": "/missions",
+        "icon": "missions",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
         "id": "pilots",
         "label": "Pilots",
         "href": "/pilots",
@@ -253,6 +262,13 @@ export const company = {
         "shortcut": "G F"
       },
       {
+        "id": "go-missions",
+        "label": "Missions",
+        "href": "/missions",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
         "id": "go-pilots",
         "label": "Pilots",
         "href": "/pilots",
@@ -378,6 +394,15 @@ export const company = {
         "label": "Flights",
         "href": "/flights",
         "icon": "flights",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
+        "id": "missions",
+        "label": "Missions",
+        "href": "/missions",
+        "icon": "missions",
         "active": false,
         "badge": null,
         "group": "operations"
@@ -594,6 +619,13 @@ export const company = {
         "href": "/flights",
         "section": "Go to",
         "shortcut": "G F"
+      },
+      {
+        "id": "go-missions",
+        "label": "Missions",
+        "href": "/missions",
+        "section": "Go to",
+        "shortcut": null
       },
       {
         "id": "go-pilots",
@@ -10114,7 +10146,8 @@ export const company = {
         "durationMinutes": 28,
         "locationName": null,
         "maxAltitude": null,
-        "notes": null
+        "notes": null,
+        "authorizationId": null
       },
       "hasLastFlight": true,
       "pilotOptions": [
@@ -10826,6 +10859,7 @@ export const company = {
           "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft"
         }
       ],
+      "mission": null,
       "conditions": {
         "status": "idle",
         "advisories": [],
@@ -11992,6 +12026,564 @@ export const company = {
       "ownPilotId": null,
       "saving": false,
       "fieldErrors": {}
+    },
+    "missions": {
+      "loading": false,
+      "error": null,
+      "missions": [
+        {
+          "id": "00000000-0000-7000-8000-0000000b0002",
+          "name": "Centennial roof inspection",
+          "starts": {
+            "iso": "2026-10-08T15:00:00.000Z",
+            "absolute": "Oct 8, 2026, 9:00 AM MDT",
+            "relative": "today",
+            "display": "Oct 8, 2026, 9:00 AM MDT — today",
+            "daysFromToday": 0
+          },
+          "window": "Thu, Oct 8 · 9:00 AM–11:00 AM MDT",
+          "locationName": "Centennial Airport business park",
+          "pilotInCommand": "Maya Thornton",
+          "aircraft": [
+            "DJI Matrice 30T"
+          ],
+          "status": {
+            "level": "green",
+            "label": "In progress",
+            "value": "in_progress"
+          },
+          "readiness": {
+            "level": "red",
+            "label": "Not ready"
+          },
+          "flightCount": 2,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0001",
+          "name": "Henderson substation thermal survey",
+          "starts": {
+            "iso": "2026-10-14T15:00:00.000Z",
+            "absolute": "Oct 14, 2026, 9:00 AM MDT",
+            "relative": "in 6 days",
+            "display": "Oct 14, 2026, 9:00 AM MDT — in 6 days",
+            "daysFromToday": 6
+          },
+          "window": "Wed, Oct 14 · 9:00 AM–12:00 PM MDT",
+          "locationName": "Henderson substation",
+          "pilotInCommand": "Maya Thornton",
+          "aircraft": [
+            "Falcon 1"
+          ],
+          "status": {
+            "level": "green",
+            "label": "Planned",
+            "value": "planned"
+          },
+          "readiness": {
+            "level": "amber",
+            "label": "Check before flying"
+          },
+          "flightCount": 0,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0004",
+          "name": "New pilot training block",
+          "starts": null,
+          "window": null,
+          "locationName": null,
+          "pilotInCommand": null,
+          "aircraft": [],
+          "status": {
+            "level": "amber",
+            "label": "Draft",
+            "value": "draft"
+          },
+          "readiness": {
+            "level": "red",
+            "label": "Not ready"
+          },
+          "flightCount": 0,
+          "open": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000b0003",
+          "name": "Cherry Creek dam mapping",
+          "starts": {
+            "iso": "2026-09-26T16:00:00.000Z",
+            "absolute": "Sep 26, 2026, 10:00 AM MDT",
+            "relative": "12 days ago",
+            "display": "Sep 26, 2026, 10:00 AM MDT — 12 days ago",
+            "daysFromToday": -12
+          },
+          "window": "Sat, Sep 26 · 10:00 AM–1:00 PM MDT",
+          "locationName": "Cherry Creek State Park",
+          "pilotInCommand": "Maya Thornton",
+          "aircraft": [
+            "Falcon 1"
+          ],
+          "status": {
+            "level": "green",
+            "label": "Completed",
+            "value": "completed"
+          },
+          "readiness": null,
+          "flightCount": 4,
+          "open": false
+        }
+      ],
+      "canPlan": true,
+      "empty": {
+        "title": "No missions yet",
+        "body": "Plan a job ahead: who flies, which aircraft, where, and under which authorization. Certa checks the crew and aircraft will be legal on the day.",
+        "actionLabel": "Plan a mission"
+      }
+    },
+    "missionDetail": {
+      "loading": false,
+      "error": null,
+      "mission": {
+        "id": "00000000-0000-7000-8000-0000000b0002",
+        "name": "Centennial roof inspection",
+        "purpose": null,
+        "deliverables": null,
+        "status": {
+          "level": "green",
+          "label": "In progress",
+          "value": "in_progress"
+        },
+        "window": "Thu, Oct 8 · 9:00 AM–11:00 AM MDT",
+        "starts": {
+          "iso": "2026-10-08T15:00:00.000Z",
+          "absolute": "Oct 8, 2026, 9:00 AM MDT",
+          "relative": "today",
+          "display": "Oct 8, 2026, 9:00 AM MDT — today",
+          "daysFromToday": 0
+        },
+        "ends": {
+          "iso": "2026-10-08T17:00:00.000Z",
+          "absolute": "Oct 8, 2026, 11:00 AM MDT",
+          "relative": "today",
+          "display": "Oct 8, 2026, 11:00 AM MDT — today",
+          "daysFromToday": 0
+        },
+        "locationName": "Centennial Airport business park",
+        "location": {
+          "lat": 39.5701,
+          "lon": -104.8493
+        },
+        "maxAltitude": "148 ft AGL",
+        "operationType": "Commercial (Part 107)",
+        "crew": [
+          {
+            "pilotId": "0199c4a0-0000-7000-8000-0000001e8484",
+            "name": "Maya Thornton",
+            "role": "Pilot in command",
+            "href": "/pilots/0199c4a0-0000-7000-8000-0000001e8484"
+          }
+        ],
+        "aircraft": [
+          {
+            "id": "0199c4a0-0000-7000-8000-0000001e84d2",
+            "name": "DJI Matrice 30T",
+            "href": "/aircraft/0199c4a0-0000-7000-8000-0000001e84d2"
+          }
+        ],
+        "authorizations": [
+          {
+            "id": "00000000-0000-7000-8000-0000000a0003",
+            "label": "LAANC-7F3K2Q",
+            "detail": "LAANC · Centennial Class D, 200 ft"
+          }
+        ],
+        "flights": {
+          "count": 2,
+          "total": "41m 00s"
+        }
+      },
+      "readiness": {
+        "level": "red",
+        "label": "Not ready",
+        "checks": [
+          {
+            "key": "crew:0199c4a0-0000-7000-8000-0000001e8484",
+            "label": "Pilot in command · Maya Thornton",
+            "level": "green",
+            "detail": "Certificate and recurrent training current"
+          },
+          {
+            "key": "aircraft:0199c4a0-0000-7000-8000-0000001e84d2",
+            "label": "Aircraft · DJI Matrice 30T",
+            "level": "red",
+            "detail": "Grounded: Gimbal damage after hard landing — incident open"
+          },
+          {
+            "key": "auth:00000000-0000-7000-8000-0000000a0003",
+            "label": "Authorization · LAANC-7F3K2Q",
+            "level": "green",
+            "detail": "Covers the planned window"
+          }
+        ]
+      },
+      "flights": [
+        {
+          "id": "0199c4a0-0000-7000-8000-0000001e84fa",
+          "takeoff": {
+            "iso": "2026-10-06T16:54:00.000Z",
+            "absolute": "Oct 6, 2026, 10:54 AM MDT",
+            "relative": "2 days ago",
+            "display": "Oct 6, 2026, 10:54 AM MDT — 2 days ago",
+            "daysFromToday": -2
+          },
+          "duration": {
+            "value": 1692,
+            "unit": "s",
+            "display": "28m 12s"
+          },
+          "pilotName": "Hannah Kowalski",
+          "aircraftName": "Merlin 5",
+          "locationName": "Henderson Solar Farm",
+          "maxAltitude": {
+            "value": 223,
+            "unit": "ft",
+            "display": "223 ft"
+          },
+          "source": "manual",
+          "pendingSync": false
+        },
+        {
+          "id": "0199c4a0-0000-7000-8000-0000001e84fb",
+          "takeoff": {
+            "iso": "2026-10-03T15:16:00.000Z",
+            "absolute": "Oct 3, 2026, 9:16 AM MDT",
+            "relative": "5 days ago",
+            "display": "Oct 3, 2026, 9:16 AM MDT — 5 days ago",
+            "daysFromToday": -5
+          },
+          "duration": {
+            "value": 817,
+            "unit": "s",
+            "display": "13m 37s"
+          },
+          "pilotName": "Maya Thornton",
+          "aircraftName": "Merlin 5",
+          "locationName": "Riverside Substation",
+          "maxAltitude": {
+            "value": 344,
+            "unit": "ft",
+            "display": "344 ft"
+          },
+          "source": "import",
+          "pendingSync": false
+        }
+      ],
+      "conditions": {
+        "status": "idle",
+        "advisories": [],
+        "weatherSummary": null,
+        "checkedAt": null,
+        "error": null
+      },
+      "canEdit": true,
+      "canLogFlight": true,
+      "statusActions": [
+        {
+          "status": "completed",
+          "label": "Mark completed"
+        },
+        {
+          "status": "cancelled",
+          "label": "Cancel mission"
+        }
+      ],
+      "busy": false
+    },
+    "missionForm": {
+      "loading": false,
+      "error": null,
+      "mode": "edit",
+      "defaults": {
+        "name": "Henderson substation thermal survey",
+        "purpose": "Thermal and RGB survey of the north yard transformers ahead of the winter load.",
+        "plannedStart": "2026-10-14T15:00:00.000Z",
+        "plannedEnd": "2026-10-14T18:00:00.000Z",
+        "locationName": "Henderson substation",
+        "location": {
+          "lat": 39.9208,
+          "lon": -104.8586
+        },
+        "maxAltitude": 197,
+        "operationType": "commercial",
+        "deliverables": "Radiometric JPEGs, anomaly report",
+        "picId": "0199c4a0-0000-7000-8000-0000001e8484",
+        "observerIds": [
+          "0199c4a0-0000-7000-8000-0000001e848b"
+        ],
+        "aircraftIds": [
+          "0199c4a0-0000-7000-8000-0000001e84cd"
+        ],
+        "authorizationIds": [
+          "00000000-0000-7000-8000-0000000a0002"
+        ]
+      },
+      "pilotOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e8484",
+          "label": "Maya Thornton",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e848b",
+          "label": "Luis Ortega",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e8491",
+          "label": "Priya Natarajan",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e8497",
+          "label": "Ben Okafor",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e849e",
+          "label": "Hannah Kowalski",
+          "status": {
+            "level": "red",
+            "label": "Not current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84a4",
+          "label": "Darnell Brooks",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84aa",
+          "label": "Sofia Lindqvist",
+          "status": {
+            "level": "red",
+            "label": "Not current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84b0",
+          "label": "Kenji Watanabe",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84b6",
+          "label": "Grace Mbeki",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84bc",
+          "label": "Tomás Herrera",
+          "status": {
+            "level": "red",
+            "label": "Not current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84c3",
+          "label": "Avery Chen",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84c9",
+          "label": "Mike Delgado",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        }
+      ],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84cd",
+          "label": "Falcon 1",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84d2",
+          "label": "DJI Matrice 30T",
+          "status": {
+            "level": "red",
+            "label": "Grounded"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84d7",
+          "label": "Osprey 3",
+          "status": {
+            "level": "amber",
+            "label": "Attention"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84dc",
+          "label": "Skydio X10",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84e1",
+          "label": "Merlin 5",
+          "status": {
+            "level": "red",
+            "label": "Not current"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84e6",
+          "label": "Freefly Astro",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84eb",
+          "label": "Raven 7",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84f0",
+          "label": "DJI Matrice 600 Pro",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 23 days"
+          }
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84f5",
+          "label": "Heron 9",
+          "status": {
+            "level": "green",
+            "label": "Airworthy"
+          }
+        }
+      ],
+      "authorizationOptions": [
+        {
+          "value": "00000000-0000-7000-8000-0000000a0001",
+          "label": "Part 107 waiver 107W-2026-01234 — Operations over people (107.39)",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0002",
+          "label": "COA 2026-WSA-412-COA — Henderson substation corridor",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 18 days"
+          }
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0003",
+          "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        }
+      ],
+      "operationTypeOptions": [
+        {
+          "value": "commercial",
+          "label": "Commercial (Part 107)"
+        },
+        {
+          "value": "training",
+          "label": "Training"
+        },
+        {
+          "value": "public_safety",
+          "label": "Public safety"
+        },
+        {
+          "value": "maintenance_test",
+          "label": "Maintenance test flight"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ],
+      "siteOptions": [
+        {
+          "value": "Henderson Solar Farm",
+          "label": "Henderson Solar Farm"
+        },
+        {
+          "value": "Riverside Substation",
+          "label": "Riverside Substation"
+        },
+        {
+          "value": "Aurora Distribution Center",
+          "label": "Aurora Distribution Center"
+        },
+        {
+          "value": "Cherry Creek Bridge",
+          "label": "Cherry Creek Bridge"
+        },
+        {
+          "value": "Boulder Creek Levee",
+          "label": "Boulder Creek Levee"
+        },
+        {
+          "value": "Lakewood Water Tower",
+          "label": "Lakewood Water Tower"
+        },
+        {
+          "value": "Castle Rock Quarry",
+          "label": "Castle Rock Quarry"
+        },
+        {
+          "value": "Golden Rooftop Survey",
+          "label": "Golden Rooftop Survey"
+        }
+      ],
+      "altitudeUnitLabel": "ft",
+      "fieldErrors": {},
+      "saving": false
     },
     "checklistsAdmin": {
       "loading": false,

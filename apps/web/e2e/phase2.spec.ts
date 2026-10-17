@@ -268,3 +268,59 @@ test('discord: a pilot gets a link code, the bot redeems it, and the page shows 
   await page.getByRole('dialog').getByRole('button', { name: 'Unlink' }).click();
   await expect(page.getByRole('button', { name: 'Get code' })).toBeVisible();
 });
+
+test('missions: plan one, check readiness, log a flight from it, and see it under way', async ({ page }) => {
+  await signUp(page, 'Mission Ops');
+  await go(page, 'Aircraft');
+  await page.getByRole('button', { name: 'Add aircraft' }).first().click();
+  await page.waitForLoadState('networkidle');
+  await page.getByLabel('Make').fill('DJI');
+  await page.getByLabel('Model').fill('Matrice 30T');
+  await page.getByLabel('Serial number').fill('1581F5BKD225401');
+  await page.getByLabel('Nickname').fill('Falcon 2');
+  await page.getByRole('button', { name: 'Add aircraft' }).click();
+  await expect(page.getByRole('heading', { name: 'Falcon 2' })).toBeVisible();
+
+  await go(page, 'Missions');
+  await page.getByRole('button', { name: 'Plan mission' }).first().click();
+  await page.waitForLoadState('networkidle');
+  await page.getByLabel('Name', { exact: true }).fill('Substation thermal survey');
+  const at = (h: number) => {
+    const d = new Date(Date.now() + 2 * 864e5);
+    d.setHours(h, 0, 0, 0);
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(h)}:00`;
+  };
+  await page.getByLabel('Starts').fill(at(9));
+  await page.getByLabel('Ends').fill(at(11));
+  await page.getByLabel('Max altitude').fill('200');
+  await page.getByLabel('Location name').fill('Henderson substation');
+  await page.getByLabel('Latitude').fill('39.9208');
+  await page.getByLabel('Longitude').fill('-104.8586');
+  const pic = page.getByLabel('Pilot in command');
+  await pic.selectOption((await pic.locator('option', { hasText: 'Maya Thornton' }).getAttribute('value'))!);
+  await page.getByRole('button', { name: /^Falcon 2/ }).click();
+  await page.getByRole('button', { name: 'Plan mission' }).click();
+
+  await expect(page).toHaveURL(/\/certa\/missions\/[0-9a-f-]{36}$/);
+  await expect(page.getByRole('heading', { name: 'Substation thermal survey' })).toBeVisible();
+  const readiness = page.getByRole('region', { name: 'Mission readiness' });
+  await expect(readiness).toContainText('Pilot in command · Maya Thornton');
+  await expect(readiness).toContainText('Aircraft · Falcon 2');
+  await expect(page.getByText('200 ft AGL').first()).toBeVisible();
+
+  // Logging from the mission fills the form from the plan and links the flight back.
+  await page.getByRole('main').getByRole('button', { name: 'Log flight' }).click();
+  await expect(page.getByText('Mission · Substation thermal survey')).toBeVisible();
+  await expect(page.getByLabel('Aircraft')).toHaveValue(/[0-9a-f-]{36}/);
+  await expect(page.getByLabel('Location')).toHaveValue('Henderson substation');
+  await page.getByRole('button', { name: '20 min' }).click();
+  await page.getByRole('main').getByRole('button', { name: 'Log flight' }).click();
+  await expect(page).toHaveURL(/\/certa\/flights\/[0-9a-f-]{36}$/);
+
+  await go(page, 'Missions');
+  await page.getByRole('button', { name: 'Open Substation thermal survey' }).click();
+  await expect(page.getByText('Mission · In progress')).toBeVisible();
+  await expect(page.getByText('Henderson substation').first()).toBeVisible();
+  await expect(page.getByRole('main').getByText('20m 00s').first()).toBeVisible();
+});

@@ -6,13 +6,14 @@
  */
 import { can } from '../domain/permissions.js';
 import type { ChecklistTemplate, Flight, MaintenanceEvent, WeatherSnapshot } from '../domain/entities.js';
-import type { AuthorizationRecord, FlightChecklist } from '../api/schemas.js';
+import type { AuthorizationRecord, FlightChecklist, MissionRecord } from '../api/schemas.js';
+import { missionReadiness } from '../fleet/mission.js';
 import type { Role, UnitsPreference } from '../domain/enums.js';
 import { fleetReadiness, maintenanceItems, type FleetReadiness, type FleetSnapshot, type GoNoGoResult } from '../fleet/fleet.js';
-import { addDays, displayDate, displayInstant } from '../format/dates.js';
-import { formatDuration, formatLength, formatMass, formatSpeed, formatTemperature } from '../format/units.js';
+import { addDays, dateInZone, displayDate, displayInstant } from '../format/dates.js';
+import { formatDuration, formatLength, formatMass, formatSpeed, formatTemperature, metresTo } from '../format/units.js';
 import { DEFAULT_READINESS_POLICY, evaluateItem, type ReadinessSummary } from '../readiness/readiness.js';
-import type { EmptyState, Paged } from './common.js';
+import type { EmptyState, Paged, StatusBadge } from './common.js';
 import { buildActionQueue, canFix } from './ops.js';
 import {
   aircraftName,
@@ -39,6 +40,10 @@ import type {
   ChecklistsAdminScreenProps,
   AuthorizationsScreenProps,
   AuthorizationRowViewModel,
+  MissionDetailScreenProps,
+  MissionFormScreenProps,
+  MissionRowViewModel,
+  MissionsScreenProps,
   FlightListScreenProps,
   FlightRowViewModel,
   InsuranceScreenProps,
@@ -390,6 +395,7 @@ export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | n
       locationName: null,
       maxAltitude: null,
       notes: null,
+      authorizationId: null,
     },
     hasLastFlight: !!last,
     pilotOptions: activePilots.map((p) => ({ value: p.id, label: p.displayName, status: badgeFromSummary(r.pilots.get(p.id)!) })),
@@ -402,6 +408,7 @@ export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | n
     preflight: null,
     checklist: opts.checklist ? toChecklistViewModel(opts.checklist) : null,
     authorizationOptions: authorizationOptions(opts.authorizations ?? [], opts.now),
+    mission: null,
     conditions: { status: 'idle', advisories: [], weatherSummary: null, checkedAt: null, error: null },
     fieldErrors: {},
     saving: false,
@@ -618,4 +625,175 @@ export function authorizationOptions(list: AuthorizationRecord[], now: Date): { 
   return list
     .filter((a) => !a.deletedAt && authLevel(a, now).status.label !== 'Expired')
     .map((a) => ({ value: a.id, label: `${AUTHORIZATION_KIND_LABEL[a.kind]} ${a.reference}${a.title ? ` — ${a.title}` : ''}` }));
+}
+
+// ---------- Missions ----------
+
+type MissionStatusValue = MissionRowViewModel['status']['value'];
+
+export const MISSION_STATUS: Record<MissionStatusValue, StatusBadge> = {
+  draft: { level: 'amber', label: 'Draft' },
+  planned: { level: 'green', label: 'Planned' },
+  in_progress: { level: 'green', label: 'In progress' },
+  completed: { level: 'green', label: 'Completed' },
+  cancelled: { level: 'amber', label: 'Cancelled' },
+};
+
+const STATUS_ACTIONS: Record<MissionStatusValue, { status: MissionStatusValue; label: string }[]> = {
+  draft: [{ status: 'planned', label: 'Mark as planned' }, { status: 'cancelled', label: 'Cancel mission' }],
+  planned: [{ status: 'in_progress', label: 'Start mission' }, { status: 'completed', label: 'Mark completed' }, { status: 'cancelled', label: 'Cancel mission' }],
+  in_progress: [{ status: 'completed', label: 'Mark completed' }, { status: 'cancelled', label: 'Cancel mission' }],
+  completed: [{ status: 'in_progress', label: 'Reopen' }],
+  cancelled: [{ status: 'planned', label: 'Reinstate' }],
+};
+
+const isOpen = (s: MissionStatusValue) => s === 'draft' || s === 'planned' || s === 'in_progress';
+
+/** "Thu, Oct 22 · 9:00–11:30 AM MDT", or both dates when the window spans midnight. */
+export function missionWindow(start: string | null, end: string | null, timeZone: string, locale = 'en-US'): string | null {
+  if (!start) return null;
+  const day = new Intl.DateTimeFormat(locale, { timeZone, weekday: 'short', month: 'short', day: 'numeric' });
+  const time = (zone: boolean) => new Intl.DateTimeFormat(locale, { timeZone, hour: 'numeric', minute: '2-digit', ...(zone ? { timeZoneName: 'short' } : {}) });
+  const s = new Date(start);
+  if (!end) return `${day.format(s)} · ${time(true).format(s)}`;
+  const e = new Date(end);
+  if (dateInZone(s, timeZone) !== dateInZone(e, timeZone)) return `${day.format(s)}, ${time(false).format(s)} – ${day.format(e)}, ${time(true).format(e)}`;
+  return `${day.format(s)} · ${time(false).format(s)}–${time(true).format(e)}`;
+}
+
+function missionRow(i: BuildInput, m: MissionRecord, auths: AuthorizationRecord[]): MissionRowViewModel {
+  const { snapshot: s, ctx } = i;
+  const n = fleetNames(s);
+  const pic = m.crew.find((c) => c.role === 'pic');
+  return {
+    id: m.id,
+    name: m.name,
+    starts: m.plannedStart ? displayInstant(m.plannedStart, ctx.orgTimeZone, ctx.now) : null,
+    window: missionWindow(m.plannedStart, m.plannedEnd, ctx.orgTimeZone),
+    locationName: m.locationName,
+    pilotInCommand: pic ? n.pilot(pic.pilotId) : null,
+    aircraft: m.aircraftIds.map(n.aircraft),
+    status: { ...MISSION_STATUS[m.status], value: m.status },
+    readiness: isOpen(m.status) ? (({ level, label }) => ({ level, label }))(missionReadiness(s, m, auths, ctx)) : null,
+    flightCount: m.flightCount,
+    open: isOpen(m.status),
+  };
+}
+
+export function buildMissions(i: BuildInput, missions: MissionRecord[], auths: AuthorizationRecord[]): ScreenData<MissionsScreenProps> {
+  const live = missions.filter((m) => !m.deletedAt);
+  const open = live.filter((m) => isOpen(m.status)).sort((a, b) => (a.plannedStart ?? '9').localeCompare(b.plannedStart ?? '9'));
+  const closed = live.filter((m) => !isOpen(m.status)).sort((a, b) => (b.plannedStart ?? '').localeCompare(a.plannedStart ?? ''));
+  const canPlan = can(i.role, 'missions.manage');
+  return {
+    ...OK,
+    missions: [...open, ...closed].map((m) => missionRow(i, m, auths)),
+    canPlan,
+    empty: empty('No missions yet', 'Plan a job ahead: who flies, which aircraft, where, and under which authorization. Certa checks the crew and aircraft will be legal on the day.', canPlan ? 'Plan a mission' : null),
+  };
+}
+
+export function buildMissionDetail(
+  i: BuildInput,
+  m: MissionRecord | null,
+  opts: { authorizations: AuthorizationRecord[]; flights: Flight[]; ownPilotId: string | null },
+): ScreenData<MissionDetailScreenProps> {
+  const { snapshot: s, ctx } = i;
+  const n = fleetNames(s);
+  const conditions: MissionDetailScreenProps['conditions'] = { status: 'idle', advisories: [], weatherSummary: null, checkedAt: null, error: null };
+  if (!m) return { ...OK, mission: null, readiness: null, flights: [], conditions, canEdit: false, canLogFlight: false, statusActions: [], busy: false };
+  const canEdit = can(i.role, 'missions.manage');
+  const onCrew = !!opts.ownPilotId && m.crew.some((c) => c.pilotId === opts.ownPilotId);
+  const r = missionReadiness(s, m, opts.authorizations, ctx);
+  return {
+    ...OK,
+    mission: {
+      id: m.id,
+      name: m.name,
+      purpose: m.purpose,
+      deliverables: m.deliverables,
+      status: { ...MISSION_STATUS[m.status], value: m.status },
+      window: missionWindow(m.plannedStart, m.plannedEnd, ctx.orgTimeZone),
+      starts: m.plannedStart ? displayInstant(m.plannedStart, ctx.orgTimeZone, ctx.now) : null,
+      ends: m.plannedEnd ? displayInstant(m.plannedEnd, ctx.orgTimeZone, ctx.now) : null,
+      locationName: m.locationName,
+      location: m.location ? { lat: m.location.lat, lon: m.location.lon } : null,
+      maxAltitude: m.maxAltitudeAglM == null ? null : `${formatLength(m.maxAltitudeAglM, ctx.units).display} AGL`,
+      operationType: OPERATION_TYPE_LABEL[m.operationType] ?? m.operationType,
+      crew: [...m.crew].sort((a, b) => (a.role === 'pic' ? -1 : b.role === 'pic' ? 1 : 0)).map((c) => ({ pilotId: c.pilotId, name: n.pilot(c.pilotId), role: c.role === 'pic' ? 'Pilot in command' : 'Visual observer', href: `/pilots/${c.pilotId}` })),
+      aircraft: m.aircraftIds.map((id) => ({ id, name: n.aircraft(id), href: `/aircraft/${id}` })),
+      authorizations: m.authorizationIds.map((id) => {
+        const a = opts.authorizations.find((x) => x.id === id);
+        return { id, label: a ? a.reference : 'Deleted authorization', detail: a ? [AUTHORIZATION_KIND_LABEL[a.kind], a.title, a.conditions].filter(Boolean).join(' · ') : null };
+      }),
+      flights: { count: m.flightCount, total: formatDuration(m.flightSeconds).display },
+    },
+    readiness: isOpen(m.status) ? r : null,
+    flights: flightRows(i, opts.flights),
+    conditions,
+    canEdit,
+    // Anyone who may log flights for a crew member; a pilot logs their own.
+    canLogFlight: isOpen(m.status) && (can(i.role, 'flights.log', { actorPilotId: opts.ownPilotId, resourcePilotId: null }) || onCrew),
+    statusActions: canEdit ? STATUS_ACTIONS[m.status] : [],
+    busy: false,
+  };
+}
+
+export function buildMissionForm(i: BuildInput, m: MissionRecord | null, opts: { authorizations: AuthorizationRecord[] }): ScreenData<MissionFormScreenProps> {
+  const r = readinessOf(i);
+  const { snapshot: s, ctx } = i;
+  const keep = new Set([...(m?.crew.map((c) => c.pilotId) ?? []), ...(m?.aircraftIds ?? []), ...(m?.authorizationIds ?? [])]);
+  const now = ctx.now.getTime();
+  return {
+    ...OK,
+    mode: m ? 'edit' : 'create',
+    defaults: {
+      name: m?.name ?? '',
+      purpose: m?.purpose ?? null,
+      plannedStart: m?.plannedStart ?? null,
+      plannedEnd: m?.plannedEnd ?? null,
+      locationName: m?.locationName ?? null,
+      location: m?.location ? { lat: m.location.lat, lon: m.location.lon } : null,
+      maxAltitude: m?.maxAltitudeAglM == null ? null : Math.round(metresTo(m.maxAltitudeAglM, ctx.units.length)),
+      operationType: m?.operationType ?? 'commercial',
+      deliverables: m?.deliverables ?? null,
+      picId: m?.crew.find((c) => c.role === 'pic')?.pilotId ?? null,
+      observerIds: m?.crew.filter((c) => c.role === 'observer').map((c) => c.pilotId) ?? [],
+      aircraftIds: m?.aircraftIds ?? [],
+      authorizationIds: m?.authorizationIds ?? [],
+    },
+    pilotOptions: s.pilots.filter((p) => !p.deletedAt && (p.active || keep.has(p.id))).map((p) => ({ value: p.id, label: p.displayName, status: r.pilots.get(p.id) ? badgeFromSummary(r.pilots.get(p.id)!) : { level: 'red', label: 'Inactive' } })),
+    aircraftOptions: s.aircraft
+      .filter((a) => !a.deletedAt && (a.status !== 'retired' || keep.has(a.id)))
+      .map((a) => ({ value: a.id, label: aircraftName(a), status: toAircraftRow(a, r.aircraft.get(a.id) ?? { level: 'green', items: [], reasons: [] }).status })),
+    // Expired ones only if the mission already lists them, so editing never silently drops one.
+    authorizationOptions: opts.authorizations
+      .filter((a) => !a.deletedAt && (!a.validTo || Date.parse(a.validTo) > now || keep.has(a.id)))
+      .map((a) => ({ value: a.id, label: `${AUTHORIZATION_KIND_LABEL[a.kind]} ${a.reference}${a.title ? ` — ${a.title}` : ''}`, status: authLevel(a, ctx.now).status })),
+    operationTypeOptions: ['commercial', 'training', 'public_safety', 'maintenance_test', 'other'].map((v) => ({ value: v, label: OPERATION_TYPE_LABEL[v]! })),
+    siteOptions: s.recentLocations.slice(0, 8).map((name) => ({ value: name, label: name })),
+    altitudeUnitLabel: ctx.units.length,
+    fieldErrors: {},
+    saving: false,
+  };
+}
+
+/** Log flight started from a mission: its pilot in command, first aircraft, place, height and authorization. */
+export function withMission(d: ScreenData<LogFlightScreenProps>, m: MissionRecord, ctx: MapContext): ScreenData<LogFlightScreenProps> {
+  const pic = m.crew.find((c) => c.role === 'pic')?.pilotId;
+  const aircraftId = m.aircraftIds.find((id) => d.aircraftOptions.some((o) => o.value === id));
+  const authorizationId = m.authorizationIds.find((id) => d.authorizationOptions.some((o) => o.value === id)) ?? null;
+  return {
+    ...d,
+    mission: { id: m.id, name: m.name },
+    defaults: {
+      ...d.defaults,
+      pilotId: pic && d.pilotOptions.some((o) => o.value === pic) ? pic : d.defaults.pilotId,
+      aircraftId: aircraftId ?? d.defaults.aircraftId,
+      operationType: m.operationType,
+      locationName: m.locationName ?? d.defaults.locationName,
+      maxAltitude: m.maxAltitudeAglM == null ? d.defaults.maxAltitude : Math.round(metresTo(m.maxAltitudeAglM, ctx.units.length)),
+      authorizationId,
+    },
+  };
 }

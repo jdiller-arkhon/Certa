@@ -46,6 +46,15 @@ export const empty = {
         "group": "operations"
       },
       {
+        "id": "missions",
+        "label": "Missions",
+        "href": "/missions",
+        "icon": "missions",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
         "id": "pilots",
         "label": "Pilots",
         "href": "/pilots",
@@ -253,6 +262,13 @@ export const empty = {
         "shortcut": "G F"
       },
       {
+        "id": "go-missions",
+        "label": "Missions",
+        "href": "/missions",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
         "id": "go-pilots",
         "label": "Pilots",
         "href": "/pilots",
@@ -378,6 +394,15 @@ export const empty = {
         "label": "Flights",
         "href": "/flights",
         "icon": "flights",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
+        "id": "missions",
+        "label": "Missions",
+        "href": "/missions",
+        "icon": "missions",
         "active": false,
         "badge": null,
         "group": "operations"
@@ -594,6 +619,13 @@ export const empty = {
         "href": "/flights",
         "section": "Go to",
         "shortcut": "G F"
+      },
+      {
+        "id": "go-missions",
+        "label": "Missions",
+        "href": "/missions",
+        "section": "Go to",
+        "shortcut": null
       },
       {
         "id": "go-pilots",
@@ -890,7 +922,8 @@ export const empty = {
         "durationMinutes": null,
         "locationName": null,
         "maxAltitude": null,
-        "notes": null
+        "notes": null,
+        "authorizationId": null
       },
       "hasLastFlight": false,
       "pilotOptions": [],
@@ -1026,6 +1059,7 @@ export const empty = {
           "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft"
         }
       ],
+      "mission": null,
       "conditions": {
         "status": "idle",
         "advisories": [],
@@ -1190,6 +1224,109 @@ export const empty = {
       "ownPilotId": null,
       "saving": false,
       "fieldErrors": {}
+    },
+    "missions": {
+      "loading": false,
+      "error": null,
+      "missions": [],
+      "canPlan": true,
+      "empty": {
+        "title": "No missions yet",
+        "body": "Plan a job ahead: who flies, which aircraft, where, and under which authorization. Certa checks the crew and aircraft will be legal on the day.",
+        "actionLabel": "Plan a mission"
+      }
+    },
+    "missionDetail": {
+      "loading": false,
+      "error": null,
+      "mission": null,
+      "readiness": null,
+      "flights": [],
+      "conditions": {
+        "status": "idle",
+        "advisories": [],
+        "weatherSummary": null,
+        "checkedAt": null,
+        "error": null
+      },
+      "canEdit": false,
+      "canLogFlight": false,
+      "statusActions": [],
+      "busy": false
+    },
+    "missionForm": {
+      "loading": false,
+      "error": null,
+      "mode": "create",
+      "defaults": {
+        "name": "",
+        "purpose": null,
+        "plannedStart": null,
+        "plannedEnd": null,
+        "locationName": null,
+        "location": null,
+        "maxAltitude": null,
+        "operationType": "commercial",
+        "deliverables": null,
+        "picId": null,
+        "observerIds": [],
+        "aircraftIds": [],
+        "authorizationIds": []
+      },
+      "pilotOptions": [],
+      "aircraftOptions": [],
+      "authorizationOptions": [
+        {
+          "value": "00000000-0000-7000-8000-0000000a0001",
+          "label": "Part 107 waiver 107W-2026-01234 — Operations over people (107.39)",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0002",
+          "label": "COA 2026-WSA-412-COA — Henderson substation corridor",
+          "status": {
+            "level": "amber",
+            "label": "Expires in 18 days"
+          }
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0003",
+          "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft",
+          "status": {
+            "level": "green",
+            "label": "Current"
+          }
+        }
+      ],
+      "operationTypeOptions": [
+        {
+          "value": "commercial",
+          "label": "Commercial (Part 107)"
+        },
+        {
+          "value": "training",
+          "label": "Training"
+        },
+        {
+          "value": "public_safety",
+          "label": "Public safety"
+        },
+        {
+          "value": "maintenance_test",
+          "label": "Maintenance test flight"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ],
+      "siteOptions": [],
+      "altitudeUnitLabel": "ft",
+      "fieldErrors": {},
+      "saving": false
     },
     "checklistsAdmin": {
       "loading": false,

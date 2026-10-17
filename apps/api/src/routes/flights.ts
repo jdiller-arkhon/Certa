@@ -13,6 +13,7 @@ import {
   flights,
   inArray,
   isNull,
+  missions,
   lt,
   or,
   pilots,
@@ -40,7 +41,7 @@ function decodeCursor(c: string): { takeoffAt: string; id: string } {
 }
 
 /** Validates the people and equipment a flight references, inside the org's RLS context. */
-async function checkReferences(db: Db, b: { pilotInCommandId?: string; visualObserverIds?: string[]; aircraftId?: string; batteries?: { batteryId: string }[]; authorizationId?: string | null }) {
+async function checkReferences(db: Db, b: { pilotInCommandId?: string; visualObserverIds?: string[]; aircraftId?: string; batteries?: { batteryId: string }[]; authorizationId?: string | null; missionId?: string | null }) {
   const people = [...new Set([b.pilotInCommandId, ...(b.visualObserverIds ?? [])].filter(Boolean) as string[])];
   if (people.length) {
     const found = await db.select({ id: pilots.id }).from(pilots).where(and(inArray(pilots.id, people), isNull(pilots.deletedAt)));
@@ -59,6 +60,10 @@ async function checkReferences(db: Db, b: { pilotInCommandId?: string; visualObs
   if (b.authorizationId) {
     const [x] = await db.select({ id: authorizations.id }).from(authorizations).where(and(eq(authorizations.id, b.authorizationId), isNull(authorizations.deletedAt)));
     if (!x) throw badRequest('Unknown authorization');
+  }
+  if (b.missionId) {
+    const [x] = await db.select({ id: missions.id }).from(missions).where(and(eq(missions.id, b.missionId), isNull(missions.deletedAt)));
+    if (!x) throw badRequest('Unknown mission');
   }
 }
 
@@ -106,6 +111,7 @@ export const flightRoutes =
             isNull(flights.deletedAt),
             q.pilotId ? eq(flights.pilotInCommandId, q.pilotId) : undefined,
             q.aircraftId ? eq(flights.aircraftId, q.aircraftId) : undefined,
+            q.missionId ? eq(flights.missionId, q.missionId) : undefined,
             q.from ? sql`${flights.takeoffAt} >= ${`${q.from}T00:00:00Z`}` : undefined,
             // `to` is inclusive of the whole day.
             q.to ? sql`${flights.takeoffAt} < (${q.to}::date + 1)` : undefined,
@@ -198,6 +204,7 @@ export const flightRoutes =
               weather: b.weather ?? null,
               notes: b.notes ?? null,
               authorizationId: b.authorizationId ?? null,
+              missionId: b.missionId ?? null,
               source: 'manual',
               goNoGo: check,
             });
@@ -228,6 +235,8 @@ export const flightRoutes =
               signedAt: now,
             });
           }
+          // The first flight flown for a planned mission puts it under way.
+          if (b.missionId) await db.update(missions).set({ status: 'in_progress' }).where(and(eq(missions.id, b.missionId), inArray(missions.status, ['draft', 'planned'])));
           await recomputeDerived(db, { aircraftIds: [b.aircraftId], batteryIds: b.batteries.map((x) => x.batteryId) });
           return { status: 201 as const, flight: await loadOne(db, id) };
         });
@@ -270,6 +279,7 @@ export const flightRoutes =
               weather: b.weather === undefined ? undefined : b.weather,
               notes: b.notes === undefined ? undefined : b.notes,
               authorizationId: b.authorizationId === undefined ? undefined : b.authorizationId,
+              missionId: b.missionId === undefined ? undefined : b.missionId,
             })
             .where(eq(flights.id, cur.id));
           if (b.visualObserverIds) {

@@ -16,6 +16,9 @@ import {
   InsuranceScreen,
   ChecklistsAdminScreen,
   AuthorizationsScreen,
+  MissionsScreen,
+  MissionDetailScreen,
+  MissionFormScreen,
   LogFlightScreen,
   MaintenanceScreen,
   MembersAdminScreen,
@@ -229,6 +232,39 @@ export const SCREENS: PreviewScreen[] = [
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.authorizations, state, (x) => ({ ...x, authorizations: [] }));
       return <AuthorizationsScreen {...d} onSave={noop} onDelete={noop} />;
+    },
+  },
+  {
+    id: 'missions',
+    title: 'Missions',
+    group: 'App',
+    route: '/missions',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.missions, state, (x) => ({ ...x, missions: [] }));
+      return <MissionsScreen {...d} onPlanMission={noop} onOpenMission={noop} />;
+    },
+  },
+  {
+    id: 'mission-detail',
+    title: 'Mission',
+    group: 'App',
+    route: '/missions',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.missionDetail, state, (x) => ({ ...x, mission: null, readiness: null }));
+      return <MissionDetailScreen {...d} onEdit={noop} onLogFlight={noop} onSetStatus={noop} onDelete={noop} onCheckConditions={noop} onOpenFlight={noop} onOpenHref={noop} />;
+    },
+  },
+  {
+    id: 'mission-form',
+    title: 'Plan a mission',
+    group: 'App',
+    route: '/missions',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.missionForm, state, (x) => x);
+      return <MissionFormScreen {...d} onSubmit={noop} onCancel={noop} />;
     },
   },
   {
