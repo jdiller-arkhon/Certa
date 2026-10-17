@@ -3279,6 +3279,16 @@ export interface paths {
                                 detail: string;
                             }[];
                         } | null;
+                        checklist?: {
+                            /** Format: uuid */
+                            templateId: string;
+                            templateVersion: number;
+                            responses: {
+                                itemId: string;
+                                checked: boolean;
+                                note?: string | null;
+                            }[];
+                        } | null;
                     };
                 };
             };
@@ -3367,6 +3377,22 @@ export interface paths {
                                     detail: string;
                                 }[];
                             } | null;
+                            checklist?: {
+                                templateName: string;
+                                templateVersion: number;
+                                completed: boolean;
+                                signedAt: string | null;
+                                sections: {
+                                    title: string;
+                                    items: {
+                                        id: string;
+                                        text: string;
+                                        required: boolean;
+                                        checked: boolean;
+                                        note: string | null;
+                                    }[];
+                                }[];
+                            } | null;
                         };
                     };
                 };
@@ -3452,6 +3478,22 @@ export interface paths {
                                     /** @enum {string} */
                                     level: "green" | "amber" | "red";
                                     detail: string;
+                                }[];
+                            } | null;
+                            checklist?: {
+                                templateName: string;
+                                templateVersion: number;
+                                completed: boolean;
+                                signedAt: string | null;
+                                sections: {
+                                    title: string;
+                                    items: {
+                                        id: string;
+                                        text: string;
+                                        required: boolean;
+                                        checked: boolean;
+                                        note: string | null;
+                                    }[];
                                 }[];
                             } | null;
                         };
@@ -3582,6 +3624,22 @@ export interface paths {
                                     /** @enum {string} */
                                     level: "green" | "amber" | "red";
                                     detail: string;
+                                }[];
+                            } | null;
+                            checklist?: {
+                                templateName: string;
+                                templateVersion: number;
+                                completed: boolean;
+                                signedAt: string | null;
+                                sections: {
+                                    title: string;
+                                    items: {
+                                        id: string;
+                                        text: string;
+                                        required: boolean;
+                                        checked: boolean;
+                                        note: string | null;
+                                    }[];
                                 }[];
                             } | null;
                         };
@@ -3762,11 +3820,271 @@ export interface paths {
                                     detail: string;
                                 }[];
                             } | null;
+                            checklist?: {
+                                templateName: string;
+                                templateVersion: number;
+                                completed: boolean;
+                                signedAt: string | null;
+                                sections: {
+                                    title: string;
+                                    items: {
+                                        id: string;
+                                        text: string;
+                                        required: boolean;
+                                        checked: boolean;
+                                        note: string | null;
+                                    }[];
+                                }[];
+                            } | null;
                         };
                     };
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/checklists/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Checklist templates (the built-in pre-flight checklist is created on first use). */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            templates: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                name: string;
+                                /** @enum {string} */
+                                kind: "preflight" | "postflight" | "emergency" | "other";
+                                version: number;
+                                isDefault: boolean;
+                                sections: {
+                                    id: string;
+                                    title: string;
+                                    items: {
+                                        id: string;
+                                        text: string;
+                                        required: boolean;
+                                        photoRequired: boolean;
+                                    }[];
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        /**
+                         * @default preflight
+                         * @enum {string}
+                         */
+                        kind?: "preflight" | "postflight" | "emergency" | "other";
+                        /** @default false */
+                        isDefault?: boolean;
+                        sections: {
+                            id: string;
+                            title: string;
+                            items: {
+                                id: string;
+                                text: string;
+                                required: boolean;
+                                photoRequired: boolean;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            name: string;
+                            /** @enum {string} */
+                            kind: "preflight" | "postflight" | "emergency" | "other";
+                            version: number;
+                            isDefault: boolean;
+                            sections: {
+                                id: string;
+                                title: string;
+                                items: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                    photoRequired: boolean;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/checklists/templates/{templateId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Publish the next version of a template. Returns the new version (a new id); earlier runs keep pointing at the version they used. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    templateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        name: string;
+                        /**
+                         * @default preflight
+                         * @enum {string}
+                         */
+                        kind?: "preflight" | "postflight" | "emergency" | "other";
+                        /** @default false */
+                        isDefault?: boolean;
+                        sections: {
+                            id: string;
+                            title: string;
+                            items: {
+                                id: string;
+                                text: string;
+                                required: boolean;
+                                photoRequired: boolean;
+                            }[];
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            name: string;
+                            /** @enum {string} */
+                            kind: "preflight" | "postflight" | "emergency" | "other";
+                            version: number;
+                            isDefault: boolean;
+                            sections: {
+                                id: string;
+                                title: string;
+                                items: {
+                                    id: string;
+                                    text: string;
+                                    required: boolean;
+                                    photoRequired: boolean;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    templateId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/orgs/{orgId}/share-links": {
@@ -4000,6 +4318,8 @@ export interface paths {
                                     duration: string;
                                     with: string;
                                     location: string | null;
+                                    /** @enum {string} */
+                                    checklist?: "complete" | "incomplete" | "none";
                                 }[];
                                 disclaimer: string;
                             };

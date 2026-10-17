@@ -37,7 +37,16 @@ export const InspectorPacket = z.object({
     last90Flights: z.number().int(),
     last90FlightTime: z.string(),
   }),
-  recentFlights: z.array(z.object({ date: z.string(), duration: z.string(), with: z.string(), location: z.string().nullable() })),
+  recentFlights: z.array(
+    z.object({
+      date: z.string(),
+      duration: z.string(),
+      with: z.string(),
+      location: z.string().nullable(),
+      /** Pre-flight checklist signed with the flight. Absent in packets sealed before checklists existed. */
+      checklist: z.enum(['complete', 'incomplete', 'none']).optional(),
+    }),
+  ),
   disclaimer: z.string(),
 });
 export type InspectorPacket = z.infer<typeof InspectorPacket>;
@@ -64,6 +73,8 @@ export function buildInspectorPacket(
   subject: { type: 'pilot' | 'aircraft'; id: string },
   flights: Flight[],
   ctx: MapContext,
+  /** Flight id → whether its pre-flight checklist was completed; flights without a run are absent. */
+  checklists: Map<string, boolean> = new Map(),
 ): InspectorPacket | null {
   const r = fleetReadiness(s, ctx);
   const policy = ctx.policy ?? DEFAULT_READINESS_POLICY;
@@ -143,6 +154,7 @@ export function buildInspectorPacket(
       duration: formatDuration(f.durationSeconds).display,
       with: subject.type === 'pilot' ? (acNames.get(f.aircraftId) ?? 'Aircraft') : (pilotNames.get(f.pilotInCommandId) ?? 'Pilot'),
       location: f.locationName,
+      checklist: checklists.has(f.id) ? (checklists.get(f.id) ? 'complete' : 'incomplete') : 'none',
     })),
     disclaimer: PACKET_DISCLAIMER,
   };

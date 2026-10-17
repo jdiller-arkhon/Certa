@@ -565,6 +565,8 @@ export interface FlightDetailScreenProps extends AsyncState {
   altitudeProfile: { t: number; altitude: number }[];
   /** Pre-flight go / no-go recorded when the flight was logged; null for imports and older records. */
   preflight: GoNoGoResult | null;
+  /** The pre-flight checklist signed with the flight; null when none was recorded. */
+  checklist: FlightChecklistViewModel | null;
   canEdit: boolean;
   onEdit: () => void;
   onDelete: () => void;
@@ -603,6 +605,8 @@ export interface LogFlightScreenProps extends AsyncState {
    * (it recomputes when `onSelectionChange` fires). Advisory: never blocks logging. Stored with the flight.
    */
   preflight: GoNoGoResult | null;
+  /** The org's default pre-flight checklist to tick before logging; null when editing or none is set. */
+  checklist: ChecklistViewModel | null;
   /**
    * Airspace / weather / daylight advisories at the pilot's location, on request. Advisory only.
    * When ready, the host stores the point, weather, and airspace class with the flight.
@@ -631,8 +635,28 @@ export interface LogFlightScreenProps extends AsyncState {
     maxAltitude: number | null;
     locationName: string | null;
     notes: string | null;
+    /** Ticked items; an incomplete checklist is stored as incomplete, never blocks logging. */
+    checklist: { templateId: string; templateVersion: number; responses: { itemId: string; checked: boolean }[] } | null;
   }) => void;
   onCancel: () => void;
+}
+
+export interface ChecklistViewModel {
+  templateId: string;
+  templateVersion: number;
+  name: string;
+  sections: { id: string; title: string; items: { id: string; text: string; required: boolean }[] }[];
+}
+
+/** A checklist as recorded with a flight. */
+export interface FlightChecklistViewModel {
+  name: string;
+  version: number;
+  completed: boolean;
+  signed: DateDisplay | null;
+  /** e.g. "12 of 13 items · 1 required item not ticked". */
+  summary: string;
+  sections: { title: string; items: { id: string; text: string; required: boolean; checked: boolean; note: string | null }[] }[];
 }
 
 export interface SyncConflictViewModel {
@@ -853,3 +877,24 @@ export interface AssistantScreenProps extends AsyncState {
 }
 
 export type { AppShellCallbacks };
+
+/** @status beta — route: /admin/checklists */
+export interface ChecklistsAdminScreenProps extends AsyncState {
+  templates: {
+    id: string;
+    name: string;
+    kind: 'preflight' | 'postflight' | 'emergency' | 'other';
+    kindLabel: string;
+    version: number;
+    isDefault: boolean;
+    /** e.g. "13 items · 11 required". */
+    summary: string;
+    updated: DateDisplay;
+    sections: { id: string; title: string; items: { id: string; text: string; required: boolean }[] }[];
+  }[];
+  canManage: boolean;
+  saving: boolean;
+  /** `id` null creates a template; otherwise publishes the next version of it. */
+  onSave: (input: { id: string | null; name: string; kind: 'preflight' | 'postflight' | 'emergency' | 'other'; isDefault: boolean; sections: { id: string; title: string; items: { id: string; text: string; required: boolean }[] }[] }) => void;
+  onDelete: (id: string) => void;
+}

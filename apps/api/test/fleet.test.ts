@@ -44,8 +44,8 @@ const ok = async (p: ReturnType<typeof call>, status = 200) => {
 
 let owner: Session;
 let other: Session;
-const today = new Date().toISOString().slice(0, 10);
-const daysFromNow = (n: number) => new Date(Date.now() + n * 86400_000).toISOString().slice(0, 10);
+const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Denver' });
+const daysFromNow = (n: number) => new Date(Date.now() + n * 86400_000).toLocaleDateString('en-CA', { timeZone: 'America/Denver' });
 
 beforeAll(async () => {
   tdb = await createTestDatabase('fleet');

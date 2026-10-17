@@ -1,6 +1,6 @@
 'use client';
 
-import { FleetSnapshot, type api as apiTypes, type Flight, type MaintenanceEvent } from '@certa/core';
+import { FleetSnapshot, type api as apiTypes, type ChecklistTemplate, type Flight, type MaintenanceEvent } from '@certa/core';
 import { CertaApiError, unwrap } from '@certa/sdk';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -12,6 +12,7 @@ export const fleetKeys = {
   flights: (orgId: string, filter?: object) => (filter ? (['org', orgId, 'flights', filter] as const) : (['org', orgId, 'flights'] as const)),
   flight: (orgId: string, flightId: string) => ['org', orgId, 'flight', flightId] as const,
   maintenanceEvents: (orgId: string) => ['org', orgId, 'maintenance-events'] as const,
+  checklists: (orgId: string) => ['org', orgId, 'checklists'] as const,
 };
 
 /** The fleet snapshot every Phase 2 screen is built from; cached for offline use. */
@@ -85,6 +86,18 @@ export function useMaintenanceEvents(orgId: string) {
       ).then((r) => r.events as MaintenanceEvent[]),
   });
 }
+
+/** Checklist templates, cached on the device so a pilot can tick the list without signal. */
+export function useChecklistTemplates(orgId: string) {
+  return useQuery({
+    queryKey: fleetKeys.checklists(orgId),
+    queryFn: () =>
+      networkFirst(`checklists:${orgId}`, async () => unwrap(await api.GET('/api/v1/orgs/{orgId}/checklists/templates', { params: { path: { orgId } } }))).then((r) => r.templates as ChecklistTemplate[]),
+  });
+}
+
+/** The template pilots tick while logging: the default pre-flight list, else the first pre-flight list. */
+export const defaultPreflight = (ts: ChecklistTemplate[] | undefined) => ts?.find((t) => t.kind === 'preflight' && t.isDefault) ?? ts?.find((t) => t.kind === 'preflight') ?? null;
 
 /** Field errors from a 400 (Zod issues → { field: message }). */
 export function fieldErrorsOf(err: unknown): Record<string, string> {

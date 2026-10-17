@@ -435,6 +435,7 @@ const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; req
   { id: 'insurance', label: 'Insurance', href: '/insurance', icon: 'insurance', requires: 'aircraft.read', group: 'upkeep' },
   { id: 'rules', label: 'Rule pack', href: '/admin/rules', icon: 'admin', requires: 'rules.read', group: 'admin' },
   { id: 'members', label: 'Members', href: '/admin/members', icon: 'admin', requires: 'members.read', group: 'admin' },
+  { id: 'checklists', label: 'Checklists', href: '/admin/checklists', icon: 'records', requires: 'checklists.manage_templates', group: 'admin' },
   { id: 'integrations', label: 'Integrations', href: '/admin/integrations', icon: 'admin', requires: 'integrations.manage', group: 'admin' },
   { id: 'audit', label: 'Audit log', href: '/admin/audit', icon: 'records', requires: 'audit.read', group: 'admin' },
   { id: 'settings', label: 'Settings', href: '/settings/organization', icon: 'settings', requires: 'org.read', group: 'admin' },

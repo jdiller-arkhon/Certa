@@ -22,7 +22,8 @@ const pusher: Pusher = {
     return 'sent';
   },
 };
-const days = (n: number) => new Date(Date.now() + n * 86400_000).toISOString().slice(0, 10);
+// Calendar dates in the test org's zone (America/Denver), so the suite passes at any hour UTC.
+const days = (n: number) => new Date(Date.now() + n * 86400_000).toLocaleDateString('en-CA', { timeZone: 'America/Denver' });
 const FCM = 'https://fcm.googleapis.com/fcm/send/abc123';
 
 beforeAll(async () => {

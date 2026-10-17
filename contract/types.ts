@@ -48,6 +48,8 @@ export type {
   ReadinessRowViewModel,
   ReadinessDashboardScreenProps,
   ActionQueueItem,
+  ChecklistViewModel,
+  FlightChecklistViewModel,
   ActionFix,
   ActionFixInput,
   PilotRowViewModel,
@@ -78,6 +80,7 @@ export type {
   MaintenanceScreenProps,
   InsurancePolicyViewModel,
   InsuranceScreenProps,
+  ChecklistsAdminScreenProps,
   GoNoGoResult,
   GoNoGoCheck,
   // later phases (draft)

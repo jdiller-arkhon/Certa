@@ -109,6 +109,15 @@ export const solo = {
         "group": "admin"
       },
       {
+        "id": "checklists",
+        "label": "Checklists",
+        "href": "/admin/checklists",
+        "icon": "records",
+        "active": false,
+        "badge": null,
+        "group": "admin"
+      },
+      {
         "id": "integrations",
         "label": "Integrations",
         "href": "/admin/integrations",
@@ -282,6 +291,13 @@ export const solo = {
         "shortcut": null
       },
       {
+        "id": "go-checklists",
+        "label": "Checklists",
+        "href": "/admin/checklists",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
         "id": "go-integrations",
         "label": "Integrations",
         "href": "/admin/integrations",
@@ -407,6 +423,15 @@ export const solo = {
         "label": "Members",
         "href": "/admin/members",
         "icon": "admin",
+        "active": false,
+        "badge": null,
+        "group": "admin"
+      },
+      {
+        "id": "checklists",
+        "label": "Checklists",
+        "href": "/admin/checklists",
+        "icon": "records",
         "active": false,
         "badge": null,
         "group": "admin"
@@ -587,6 +612,13 @@ export const solo = {
         "id": "go-members",
         "label": "Members",
         "href": "/admin/members",
+        "section": "Go to",
+        "shortcut": null
+      },
+      {
+        "id": "go-checklists",
+        "label": "Checklists",
+        "href": "/admin/checklists",
         "section": "Go to",
         "shortcut": null
       },
@@ -2984,6 +3016,127 @@ export const solo = {
           }
         ]
       },
+      "checklist": {
+        "name": "Standard pre-flight",
+        "version": 1,
+        "completed": true,
+        "signed": {
+          "iso": "2026-10-05T18:29:00.000Z",
+          "absolute": "Oct 5, 2026, 12:29 PM MDT",
+          "relative": "3 days ago",
+          "display": "Oct 5, 2026, 12:29 PM MDT — 3 days ago",
+          "daysFromToday": -3
+        },
+        "summary": "12 of 13 items",
+        "sections": [
+          {
+            "title": "Site and airspace",
+            "items": [
+              {
+                "id": "airspace",
+                "text": "Airspace checked; authorization on hand if required",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "tfr",
+                "text": "No TFRs or NOTAMs affecting the operation",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "weather",
+                "text": "Weather within limits (wind, visibility, ceiling)",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "hazards",
+                "text": "Launch area clear; people and obstacles briefed",
+                "required": true,
+                "checked": true,
+                "note": null
+              }
+            ]
+          },
+          {
+            "title": "Aircraft",
+            "items": [
+              {
+                "id": "props",
+                "text": "Propellers secure, no nicks or cracks",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "airframe",
+                "text": "Arms locked, airframe and gimbal undamaged",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "battery",
+                "text": "Battery charged, seated, and latched",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "remote_id",
+                "text": "Remote ID broadcasting",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "media",
+                "text": "Storage card inserted with space",
+                "required": false,
+                "checked": false,
+                "note": null
+              }
+            ]
+          },
+          {
+            "title": "Controls and link",
+            "items": [
+              {
+                "id": "controller",
+                "text": "Controller charged; link and video strong",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "gnss",
+                "text": "GNSS lock; home point recorded",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "rth",
+                "text": "Return-to-home altitude and failsafe set",
+                "required": true,
+                "checked": true,
+                "note": null
+              },
+              {
+                "id": "compass",
+                "text": "Compass and IMU healthy, no warnings",
+                "required": true,
+                "checked": true,
+                "note": null
+              }
+            ]
+          }
+        ]
+      },
       "canEdit": true
     },
     "logFlight": {
@@ -3178,6 +3331,96 @@ export const solo = {
             "label": "Battery · Falcon #1",
             "level": "amber",
             "detail": "191 of 200 cycles"
+          }
+        ]
+      },
+      "checklist": {
+        "templateId": "00000000-0000-7000-8000-00000000c001",
+        "templateVersion": 1,
+        "name": "Standard pre-flight",
+        "sections": [
+          {
+            "id": "site",
+            "title": "Site and airspace",
+            "items": [
+              {
+                "id": "airspace",
+                "text": "Airspace checked; authorization on hand if required",
+                "required": true
+              },
+              {
+                "id": "tfr",
+                "text": "No TFRs or NOTAMs affecting the operation",
+                "required": true
+              },
+              {
+                "id": "weather",
+                "text": "Weather within limits (wind, visibility, ceiling)",
+                "required": true
+              },
+              {
+                "id": "hazards",
+                "text": "Launch area clear; people and obstacles briefed",
+                "required": true
+              }
+            ]
+          },
+          {
+            "id": "aircraft",
+            "title": "Aircraft",
+            "items": [
+              {
+                "id": "props",
+                "text": "Propellers secure, no nicks or cracks",
+                "required": true
+              },
+              {
+                "id": "airframe",
+                "text": "Arms locked, airframe and gimbal undamaged",
+                "required": true
+              },
+              {
+                "id": "battery",
+                "text": "Battery charged, seated, and latched",
+                "required": true
+              },
+              {
+                "id": "remote_id",
+                "text": "Remote ID broadcasting",
+                "required": true
+              },
+              {
+                "id": "media",
+                "text": "Storage card inserted with space",
+                "required": false
+              }
+            ]
+          },
+          {
+            "id": "controls",
+            "title": "Controls and link",
+            "items": [
+              {
+                "id": "controller",
+                "text": "Controller charged; link and video strong",
+                "required": true
+              },
+              {
+                "id": "gnss",
+                "text": "GNSS lock; home point recorded",
+                "required": true
+              },
+              {
+                "id": "rth",
+                "text": "Return-to-home altitude and failsafe set",
+                "required": true
+              },
+              {
+                "id": "compass",
+                "text": "Compass and IMU healthy, no warnings",
+                "required": true
+              }
+            ]
           }
         ]
       },
@@ -3439,6 +3682,149 @@ export const solo = {
         "body": "Add your liability and hull policies. Certa links them to aircraft and warns 30 days before they lapse.",
         "actionLabel": "Add policy"
       }
+    },
+    "checklistsAdmin": {
+      "loading": false,
+      "error": null,
+      "templates": [
+        {
+          "id": "00000000-0000-7000-8000-00000000c001",
+          "name": "Standard pre-flight",
+          "kind": "preflight",
+          "kindLabel": "Pre-flight",
+          "version": 3,
+          "isDefault": true,
+          "summary": "13 items · 12 required",
+          "updated": {
+            "iso": "2026-10-08T16:00:00.000Z",
+            "absolute": "Oct 8, 2026, 10:00 AM MDT",
+            "relative": "today",
+            "display": "Oct 8, 2026, 10:00 AM MDT — today",
+            "daysFromToday": 0
+          },
+          "sections": [
+            {
+              "id": "site",
+              "title": "Site and airspace",
+              "items": [
+                {
+                  "id": "airspace",
+                  "text": "Airspace checked; authorization on hand if required",
+                  "required": true
+                },
+                {
+                  "id": "tfr",
+                  "text": "No TFRs or NOTAMs affecting the operation",
+                  "required": true
+                },
+                {
+                  "id": "weather",
+                  "text": "Weather within limits (wind, visibility, ceiling)",
+                  "required": true
+                },
+                {
+                  "id": "hazards",
+                  "text": "Launch area clear; people and obstacles briefed",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "id": "aircraft",
+              "title": "Aircraft",
+              "items": [
+                {
+                  "id": "props",
+                  "text": "Propellers secure, no nicks or cracks",
+                  "required": true
+                },
+                {
+                  "id": "airframe",
+                  "text": "Arms locked, airframe and gimbal undamaged",
+                  "required": true
+                },
+                {
+                  "id": "battery",
+                  "text": "Battery charged, seated, and latched",
+                  "required": true
+                },
+                {
+                  "id": "remote_id",
+                  "text": "Remote ID broadcasting",
+                  "required": true
+                },
+                {
+                  "id": "media",
+                  "text": "Storage card inserted with space",
+                  "required": false
+                }
+              ]
+            },
+            {
+              "id": "controls",
+              "title": "Controls and link",
+              "items": [
+                {
+                  "id": "controller",
+                  "text": "Controller charged; link and video strong",
+                  "required": true
+                },
+                {
+                  "id": "gnss",
+                  "text": "GNSS lock; home point recorded",
+                  "required": true
+                },
+                {
+                  "id": "rth",
+                  "text": "Return-to-home altitude and failsafe set",
+                  "required": true
+                },
+                {
+                  "id": "compass",
+                  "text": "Compass and IMU healthy, no warnings",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "00000000-0000-7000-8000-00000000c002",
+          "name": "Lost link",
+          "kind": "emergency",
+          "kindLabel": "Emergency",
+          "version": 1,
+          "isDefault": false,
+          "summary": "2 items · 2 required",
+          "updated": {
+            "iso": "2026-10-08T16:00:00.000Z",
+            "absolute": "Oct 8, 2026, 10:00 AM MDT",
+            "relative": "today",
+            "display": "Oct 8, 2026, 10:00 AM MDT — today",
+            "daysFromToday": 0
+          },
+          "sections": [
+            {
+              "id": "ll",
+              "title": "Lost link",
+              "items": [
+                {
+                  "id": "rth",
+                  "text": "Confirm return-to-home engaged",
+                  "required": true
+                },
+                {
+                  "id": "notify",
+                  "text": "Notify visual observer and clear the landing zone",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "canManage": true,
+      "saving": false
     },
     "rulePackAdmin": {
       "loading": false,

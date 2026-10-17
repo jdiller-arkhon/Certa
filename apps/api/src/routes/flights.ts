@@ -1,8 +1,10 @@
-import { api, goNoGo, Id, newId, type GeoPoint } from '@certa/core';
+import { api, checklistComplete, goNoGo, Id, newId, type GeoPoint } from '@certa/core';
 import {
   aircraft,
   and,
   batteries,
+  checklistRuns,
+  checklistTemplates,
   desc,
   eq,
   flightBatteries,
@@ -62,7 +64,28 @@ export const flightRoutes =
       const rows = (await db.select(flightSelection).from(flights).where(and(eq(flights.id, id), isNull(flights.deletedAt)))) as FlightSelectRow[];
       const [f] = await toFlights(db, rows);
       if (!f) throw notFound('Flight');
-      return f;
+      return { ...f, checklist: await checklistOf(db, id) };
+    };
+    /** The flight's checklist run, resolved against the template version the pilot used. */
+    const checklistOf = async (db: Db, flightId: string): Promise<api.FlightChecklist | null> => {
+      const [r] = await db
+        .select({ run: checklistRuns, template: checklistTemplates })
+        .from(checklistRuns)
+        .innerJoin(checklistTemplates, eq(checklistTemplates.id, checklistRuns.templateId))
+        .where(and(eq(checklistRuns.flightId, flightId), isNull(checklistRuns.deletedAt)))
+        .limit(1);
+      if (!r) return null;
+      const byItem = new Map(r.run.responses.map((x) => [x.itemId, x]));
+      return {
+        templateName: r.template.name,
+        templateVersion: r.run.templateVersion,
+        completed: !!r.run.completedAt,
+        signedAt: r.run.signedAt ? new Date(r.run.signedAt).toISOString() : null,
+        sections: r.template.sections.map((sec) => ({
+          title: sec.title,
+          items: sec.items.map((i) => ({ id: i.id, text: i.text, required: i.required, checked: !!byItem.get(i.id)?.checked, note: byItem.get(i.id)?.note ?? null })),
+        })),
+      };
     };
 
     app.get(
@@ -179,6 +202,25 @@ export const flightRoutes =
           const observers = [...new Set(b.visualObserverIds.filter((o) => o !== b.pilotInCommandId))];
           if (observers.length) await db.insert(flightObservers).values(observers.map((pilotId) => ({ flightId: id, pilotId })));
           if (b.batteries.length) await db.insert(flightBatteries).values(b.batteries.map((x) => ({ flightId: id, batteryId: x.batteryId, startPct: x.startPct, endPct: x.endPct })));
+          if (b.checklist) {
+            // Any live or earlier version of an org template is accepted: an offline device may have an older copy.
+            const [t] = await db.select().from(checklistTemplates).where(eq(checklistTemplates.id, b.checklist.templateId));
+            if (!t || t.templateVersion !== b.checklist.templateVersion) throw badRequest('Unknown checklist template');
+            const known = new Set(t.sections.flatMap((sec) => sec.items.map((i) => i.id)));
+            const now = new Date().toISOString();
+            const responses = b.checklist.responses.filter((x) => known.has(x.itemId)).map((x) => ({ itemId: x.itemId, checked: x.checked, note: x.note ?? null, photoDocumentId: null, at: now }));
+            await db.insert(checklistRuns).values({
+              id: newId(),
+              templateId: t.id,
+              templateVersion: t.templateVersion,
+              flightId: id,
+              startedAt: b.takeoffAt,
+              completedAt: checklistComplete(t.sections, responses) ? now : null,
+              responses,
+              signedByPilotId: b.pilotInCommandId,
+              signedAt: now,
+            });
+          }
           await recomputeDerived(db, { aircraftIds: [b.aircraftId], batteryIds: b.batteries.map((x) => x.batteryId) });
           return { status: 201 as const, flight: await loadOne(db, id) };
         });

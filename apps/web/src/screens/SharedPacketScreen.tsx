@@ -110,7 +110,8 @@ export function SharedPacketScreen(props: SharedPacketScreenProps) {
                         <th className="px-5 py-2.5 font-semibold">Date (UTC)</th>
                         <th className="px-3 py-2.5 font-semibold">Duration</th>
                         <th className="px-3 py-2.5 font-semibold">{d.packet.subject.type === 'pilot' ? 'Aircraft' : 'Pilot'}</th>
-                        <th className="px-5 py-2.5 font-semibold">Location</th>
+                        <th className="px-3 py-2.5 font-semibold">Location</th>
+                        <th className="px-5 py-2.5 font-semibold">Checklist</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -119,7 +120,8 @@ export function SharedPacketScreen(props: SharedPacketScreenProps) {
                           <td className="tabular px-5 py-2.5">{f.date}</td>
                           <td className="tabular px-3 py-2.5">{f.duration}</td>
                           <td className="px-3 py-2.5">{f.with}</td>
-                          <td className="px-5 py-2.5 text-[var(--certa-muted)]">{f.location ?? '—'}</td>
+                          <td className="px-3 py-2.5 text-[var(--certa-muted)]">{f.location ?? '—'}</td>
+                          <td className="px-5 py-2.5">{f.checklist === 'complete' ? 'Complete' : f.checklist === 'incomplete' ? <span className="text-[var(--certa-warning)]">Incomplete</span> : <span className="text-[var(--certa-muted)]">—</span>}</td>
                         </tr>
                       ))}
                     </tbody>

@@ -3,8 +3,8 @@
  * OpenAPI document in contract/openapi.yaml is generated from exactly this code.
  */
 import { z } from 'zod';
-import { Aircraft, AuditEvent, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
-import { AirspaceClass, BatteryChemistry, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
+import { Aircraft, AuditEvent, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
+import { AirspaceClass, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
 import { FleetSnapshot, GoNoGoResult } from '../fleet/fleet.js';
 import { InspectorPacket } from '../fleet/packet.js';
 import { FlightVerificationResult, VerificationResult } from '../fleet/verify.js';
@@ -292,9 +292,18 @@ export const CreateFlightRequest = z.object({
    * check from records on file when it stores the flight and keeps its own result.
    */
   goNoGo: GoNoGoResult.nullable().optional(),
+  /** The pre-flight checklist as the pilot ticked it. Stored as a signed run linked to the flight. */
+  checklist: z
+    .object({
+      templateId: Id,
+      templateVersion: z.number().int().positive(),
+      responses: z.array(z.object({ itemId: z.string().min(1).max(64), checked: z.boolean(), note: opt(z.string().max(2000)) })).max(200),
+    })
+    .nullable()
+    .optional(),
 });
 export type CreateFlightRequest = z.infer<typeof CreateFlightRequest>;
-export const UpdateFlightRequest = CreateFlightRequest.omit({ id: true, goNoGo: true }).partial();
+export const UpdateFlightRequest = CreateFlightRequest.omit({ id: true, goNoGo: true, checklist: true }).partial();
 export type UpdateFlightRequest = z.infer<typeof UpdateFlightRequest>;
 
 export const FlightListQuery = z.object({
@@ -307,7 +316,17 @@ export const FlightListQuery = z.object({
 });
 export type FlightListQuery = z.infer<typeof FlightListQuery>;
 
-export const FlightWithGoNoGo = Flight.extend({ goNoGo: GoNoGoResult.nullable() });
+/** The checklist run stored with a flight, resolved against the template version it used. */
+export const FlightChecklist = z.object({
+  templateName: z.string(),
+  templateVersion: z.number().int(),
+  completed: z.boolean(),
+  signedAt: IsoDateTime.nullable(),
+  sections: z.array(z.object({ title: z.string(), items: z.array(z.object({ id: z.string(), text: z.string(), required: z.boolean(), checked: z.boolean(), note: z.string().nullable() })) })),
+});
+export type FlightChecklist = z.infer<typeof FlightChecklist>;
+
+export const FlightWithGoNoGo = Flight.extend({ goNoGo: GoNoGoResult.nullable(), checklist: FlightChecklist.nullable().optional() });
 export type FlightWithGoNoGo = z.infer<typeof FlightWithGoNoGo>;
 
 export const FlightListResponse = z.object({
@@ -436,3 +455,23 @@ export const VerifyLookupQuery = z
   .refine((q) => Object.values(q).filter(Boolean).length === 1, 'Give exactly one of certificateNumber, registration, serialNumber');
 export const VerifyFlightRequest = PreflightRequest;
 export { VerificationResult as VerificationResponse, FlightVerificationResult as FlightVerificationResponse };
+
+// ---------- Checklists ----------
+
+export const ChecklistTemplateRequest = z.object({
+  name: z.string().trim().min(1).max(200),
+  kind: ChecklistKind.default('preflight'),
+  isDefault: z.boolean().default(false),
+  sections: z
+    .array(ChecklistSection)
+    .min(1)
+    .max(20)
+    .refine((ss) => ss.every((s) => s.items.length > 0), 'Every section needs at least one item')
+    .refine((ss) => {
+      const ids = ss.flatMap((s) => s.items.map((i) => i.id));
+      return new Set(ids).size === ids.length;
+    }, 'Item ids must be unique'),
+});
+export type ChecklistTemplateRequest = z.infer<typeof ChecklistTemplateRequest>;
+export const ChecklistTemplateResponse = ChecklistTemplate;
+export const ChecklistTemplateListResponse = z.object({ templates: z.array(ChecklistTemplate) });

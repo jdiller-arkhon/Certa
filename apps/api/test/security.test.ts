@@ -14,7 +14,7 @@ let tdb: TestDatabase;
 let pool: pg.Pool;
 let app: App;
 const pusher: Pusher = { publicKey: 'BKey', send: async () => 'sent' };
-const days = (n: number) => new Date(Date.now() + n * 86400_000).toISOString().slice(0, 10);
+const days = (n: number) => new Date(Date.now() + n * 86400_000).toLocaleDateString('en-CA', { timeZone: 'America/Denver' });
 
 beforeAll(async () => {
   tdb = await createTestDatabase('security');

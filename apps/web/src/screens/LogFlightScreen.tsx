@@ -5,6 +5,7 @@ import { CloudSun, History, LocateFixed, MapPin } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/components/cn';
+import { ChecklistRunner } from '@/components/checklist';
 import { GoNoGoPanel } from '@/components/go-no-go';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -122,6 +123,16 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
   const toggleBattery = (id: string) => setBatteryIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]));
   const mins = num(minutes);
   const [allBatteries, setAllBatteries] = useState(false);
+  const [ticked, setTicked] = useState<Set<string>>(new Set());
+  const toggleTick = (id: string) =>
+    setTicked((t) => {
+      const n = new Set(t);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  const cl = props.checklist;
+  const missingRequired = cl ? cl.sections.flatMap((s) => s.items).filter((i) => i.required && !ticked.has(i.id)).length : 0;
   const model = props.aircraftOptions.find((o) => o.value === aircraftId)?.model;
   const fitting = props.batteryOptions.filter((b) => !model || !b.aircraftModel || b.aircraftModel === model || batteryIds.includes(b.value));
   const shownBatteries = allBatteries ? props.batteryOptions : fitting;
@@ -255,6 +266,12 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
     </>
   );
 
+  const checklist = cl && <ChecklistRunner checklist={cl} ticked={ticked} onToggle={toggleTick} />;
+  const incompleteNote = cl && missingRequired > 0 && (
+    <p className="text-[13px] text-[var(--certa-muted)]">
+      {missingRequired} required checklist {missingRequired === 1 ? 'item isn’t' : 'items aren’t'} ticked. You can still log; the flight records the checklist as incomplete.
+    </p>
+  );
   const preflight = props.preflight ? (
     <GoNoGoPanel result={props.preflight} />
   ) : (
@@ -312,6 +329,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
       ),
     },
     { id: 'details', title: 'Details', ready: true, body: details },
+    ...(cl ? [{ id: 'checklist', title: 'Checklist', ready: true, body: checklist }] : []),
     {
       id: 'check',
       title: 'Check and log',
@@ -320,6 +338,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
         <>
           {preflight}
           {summary}
+          {incompleteNote}
         </>
       ),
     },
@@ -340,6 +359,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
       maxAltitude: num(altitude),
       locationName: location.trim() || null,
       notes: notes.trim() || null,
+      checklist: cl ? { templateId: cl.templateId, templateVersion: cl.templateVersion, responses: cl.sections.flatMap((s) => s.items).map((i) => ({ itemId: i.id, checked: ticked.has(i.id) })) } : null,
     });
   };
 
@@ -396,7 +416,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
           </div>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={current.id} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.2 }} className="space-y-6">
-              {current.id === 'check' || current.id === 'where' ? current.body : <Card className="space-y-6 p-5">{current.body}</Card>}
+              {current.id === 'check' || current.id === 'where' || current.id === 'checklist' ? current.body : <Card className="space-y-6 p-5">{current.body}</Card>}
             </motion.div>
           </AnimatePresence>
           <div className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-[var(--certa-border)] bg-[color-mix(in_srgb,var(--certa-canvas)_92%,transparent)] px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] backdrop-blur-xl">
@@ -422,10 +442,12 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
             {where}
             {details}
           </Card>
+          {checklist && <div className="lg:col-start-1">{checklist}</div>}
 
-          <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+          <div className="space-y-4 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start">
             {preflight}
             {conditions}
+            {incompleteNote}
             <div className="flex flex-col gap-2">
               <Button type="submit" size="lg" arrow loading={props.saving} disabled={!aircraftId || !mins}>
                 Log flight

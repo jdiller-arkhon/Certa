@@ -7846,6 +7846,43 @@ paths:
                         - decision
                         - checks
                     - type: "null"
+                checklist:
+                  anyOf:
+                    - type: object
+                      properties:
+                        templateId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        templateVersion:
+                          type: integer
+                          exclusiveMinimum: 0
+                          maximum: 9007199254740991
+                        responses:
+                          maxItems: 200
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              itemId:
+                                type: string
+                                minLength: 1
+                                maxLength: 64
+                              checked:
+                                type: boolean
+                              note:
+                                anyOf:
+                                  - type: string
+                                    maxLength: 2000
+                                  - type: "null"
+                            required:
+                              - itemId
+                              - checked
+                      required:
+                        - templateId
+                        - templateVersion
+                        - responses
+                    - type: "null"
               required:
                 - pilotInCommandId
                 - aircraftId
@@ -8167,6 +8204,67 @@ paths:
                         required:
                           - decision
                           - checks
+                        additionalProperties: false
+                      - type: "null"
+                  checklist:
+                    anyOf:
+                      - type: object
+                        properties:
+                          templateName:
+                            type: string
+                          templateVersion:
+                            type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          completed:
+                            type: boolean
+                          signedAt:
+                            anyOf:
+                              - type: string
+                                format: date-time
+                                pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                              - type: "null"
+                          sections:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                title:
+                                  type: string
+                                items:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      text:
+                                        type: string
+                                      required:
+                                        type: boolean
+                                      checked:
+                                        type: boolean
+                                      note:
+                                        type:
+                                          - string
+                                          - "null"
+                                    required:
+                                      - id
+                                      - text
+                                      - required
+                                      - checked
+                                      - note
+                                    additionalProperties: false
+                              required:
+                                - title
+                                - items
+                              additionalProperties: false
+                        required:
+                          - templateName
+                          - templateVersion
+                          - completed
+                          - signedAt
+                          - sections
                         additionalProperties: false
                       - type: "null"
                 required:
@@ -8509,6 +8607,67 @@ paths:
                         required:
                           - decision
                           - checks
+                        additionalProperties: false
+                      - type: "null"
+                  checklist:
+                    anyOf:
+                      - type: object
+                        properties:
+                          templateName:
+                            type: string
+                          templateVersion:
+                            type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          completed:
+                            type: boolean
+                          signedAt:
+                            anyOf:
+                              - type: string
+                                format: date-time
+                                pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                              - type: "null"
+                          sections:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                title:
+                                  type: string
+                                items:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      text:
+                                        type: string
+                                      required:
+                                        type: boolean
+                                      checked:
+                                        type: boolean
+                                      note:
+                                        type:
+                                          - string
+                                          - "null"
+                                    required:
+                                      - id
+                                      - text
+                                      - required
+                                      - checked
+                                      - note
+                                    additionalProperties: false
+                              required:
+                                - title
+                                - items
+                              additionalProperties: false
+                        required:
+                          - templateName
+                          - templateVersion
+                          - completed
+                          - signedAt
+                          - sections
                         additionalProperties: false
                       - type: "null"
                 required:
@@ -8895,6 +9054,67 @@ paths:
                         required:
                           - decision
                           - checks
+                        additionalProperties: false
+                      - type: "null"
+                  checklist:
+                    anyOf:
+                      - type: object
+                        properties:
+                          templateName:
+                            type: string
+                          templateVersion:
+                            type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          completed:
+                            type: boolean
+                          signedAt:
+                            anyOf:
+                              - type: string
+                                format: date-time
+                                pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                              - type: "null"
+                          sections:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                title:
+                                  type: string
+                                items:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      text:
+                                        type: string
+                                      required:
+                                        type: boolean
+                                      checked:
+                                        type: boolean
+                                      note:
+                                        type:
+                                          - string
+                                          - "null"
+                                    required:
+                                      - id
+                                      - text
+                                      - required
+                                      - checked
+                                      - note
+                                    additionalProperties: false
+                              required:
+                                - title
+                                - items
+                              additionalProperties: false
+                        required:
+                          - templateName
+                          - templateVersion
+                          - completed
+                          - signedAt
+                          - sections
                         additionalProperties: false
                       - type: "null"
                 required:
@@ -9438,6 +9658,67 @@ paths:
                           - checks
                         additionalProperties: false
                       - type: "null"
+                  checklist:
+                    anyOf:
+                      - type: object
+                        properties:
+                          templateName:
+                            type: string
+                          templateVersion:
+                            type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          completed:
+                            type: boolean
+                          signedAt:
+                            anyOf:
+                              - type: string
+                                format: date-time
+                                pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                              - type: "null"
+                          sections:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                title:
+                                  type: string
+                                items:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      text:
+                                        type: string
+                                      required:
+                                        type: boolean
+                                      checked:
+                                        type: boolean
+                                      note:
+                                        type:
+                                          - string
+                                          - "null"
+                                    required:
+                                      - id
+                                      - text
+                                      - required
+                                      - checked
+                                      - note
+                                    additionalProperties: false
+                              required:
+                                - title
+                                - items
+                              additionalProperties: false
+                        required:
+                          - templateName
+                          - templateVersion
+                          - completed
+                          - signedAt
+                          - sections
+                        additionalProperties: false
+                      - type: "null"
                 required:
                   - id
                   - orgId
@@ -9490,6 +9771,532 @@ paths:
             pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
           in: path
           name: flightId
+          required: true
+      responses:
+        "204":
+          description: Default Response
+  /api/v1/orgs/{orgId}/checklists/templates:
+    get:
+      summary: Checklist templates (the built-in pre-flight checklist is created on first use).
+      tags:
+        - checklists
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  templates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        orgId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        createdAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        createdBy:
+                          anyOf:
+                            - type: string
+                              format: uuid
+                              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                            - type: "null"
+                        deletedAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        name:
+                          type: string
+                          minLength: 1
+                          maxLength: 200
+                        kind:
+                          type: string
+                          enum:
+                            - preflight
+                            - postflight
+                            - emergency
+                            - other
+                        version:
+                          type: integer
+                          exclusiveMinimum: 0
+                          maximum: 9007199254740991
+                        isDefault:
+                          type: boolean
+                        sections:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                minLength: 1
+                                maxLength: 64
+                              title:
+                                type: string
+                                minLength: 1
+                                maxLength: 200
+                              items:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    id:
+                                      type: string
+                                      minLength: 1
+                                      maxLength: 64
+                                    text:
+                                      type: string
+                                      minLength: 1
+                                      maxLength: 500
+                                    required:
+                                      type: boolean
+                                    photoRequired:
+                                      type: boolean
+                                  required:
+                                    - id
+                                    - text
+                                    - required
+                                    - photoRequired
+                                  additionalProperties: false
+                            required:
+                              - id
+                              - title
+                              - items
+                            additionalProperties: false
+                      required:
+                        - id
+                        - orgId
+                        - createdAt
+                        - updatedAt
+                        - createdBy
+                        - deletedAt
+                        - name
+                        - kind
+                        - version
+                        - isDefault
+                        - sections
+                      additionalProperties: false
+                required:
+                  - templates
+                additionalProperties: false
+    post:
+      tags:
+        - checklists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                kind:
+                  default: preflight
+                  type: string
+                  enum:
+                    - preflight
+                    - postflight
+                    - emergency
+                    - other
+                isDefault:
+                  default: false
+                  type: boolean
+                sections:
+                  minItems: 1
+                  maxItems: 20
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        minLength: 1
+                        maxLength: 64
+                      title:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              minLength: 1
+                              maxLength: 64
+                            text:
+                              type: string
+                              minLength: 1
+                              maxLength: 500
+                            required:
+                              type: boolean
+                            photoRequired:
+                              type: boolean
+                          required:
+                            - id
+                            - text
+                            - required
+                            - photoRequired
+                    required:
+                      - id
+                      - title
+                      - items
+              required:
+                - name
+                - sections
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  orgId:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  createdAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  createdBy:
+                    anyOf:
+                      - type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      - type: "null"
+                  deletedAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  name:
+                    type: string
+                    minLength: 1
+                    maxLength: 200
+                  kind:
+                    type: string
+                    enum:
+                      - preflight
+                      - postflight
+                      - emergency
+                      - other
+                  version:
+                    type: integer
+                    exclusiveMinimum: 0
+                    maximum: 9007199254740991
+                  isDefault:
+                    type: boolean
+                  sections:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          minLength: 1
+                          maxLength: 64
+                        title:
+                          type: string
+                          minLength: 1
+                          maxLength: 200
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                minLength: 1
+                                maxLength: 64
+                              text:
+                                type: string
+                                minLength: 1
+                                maxLength: 500
+                              required:
+                                type: boolean
+                              photoRequired:
+                                type: boolean
+                            required:
+                              - id
+                              - text
+                              - required
+                              - photoRequired
+                            additionalProperties: false
+                      required:
+                        - id
+                        - title
+                        - items
+                      additionalProperties: false
+                required:
+                  - id
+                  - orgId
+                  - createdAt
+                  - updatedAt
+                  - createdBy
+                  - deletedAt
+                  - name
+                  - kind
+                  - version
+                  - isDefault
+                  - sections
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/checklists/templates/{templateId}:
+    put:
+      summary: Publish the next version of a template. Returns the new version (a new id); earlier runs keep pointing at the version they used.
+      tags:
+        - checklists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 200
+                kind:
+                  default: preflight
+                  type: string
+                  enum:
+                    - preflight
+                    - postflight
+                    - emergency
+                    - other
+                isDefault:
+                  default: false
+                  type: boolean
+                sections:
+                  minItems: 1
+                  maxItems: 20
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        minLength: 1
+                        maxLength: 64
+                      title:
+                        type: string
+                        minLength: 1
+                        maxLength: 200
+                      items:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              minLength: 1
+                              maxLength: 64
+                            text:
+                              type: string
+                              minLength: 1
+                              maxLength: 500
+                            required:
+                              type: boolean
+                            photoRequired:
+                              type: boolean
+                          required:
+                            - id
+                            - text
+                            - required
+                            - photoRequired
+                    required:
+                      - id
+                      - title
+                      - items
+              required:
+                - name
+                - sections
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: templateId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  orgId:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  createdAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  createdBy:
+                    anyOf:
+                      - type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      - type: "null"
+                  deletedAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  name:
+                    type: string
+                    minLength: 1
+                    maxLength: 200
+                  kind:
+                    type: string
+                    enum:
+                      - preflight
+                      - postflight
+                      - emergency
+                      - other
+                  version:
+                    type: integer
+                    exclusiveMinimum: 0
+                    maximum: 9007199254740991
+                  isDefault:
+                    type: boolean
+                  sections:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          minLength: 1
+                          maxLength: 64
+                        title:
+                          type: string
+                          minLength: 1
+                          maxLength: 200
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                minLength: 1
+                                maxLength: 64
+                              text:
+                                type: string
+                                minLength: 1
+                                maxLength: 500
+                              required:
+                                type: boolean
+                              photoRequired:
+                                type: boolean
+                            required:
+                              - id
+                              - text
+                              - required
+                              - photoRequired
+                            additionalProperties: false
+                      required:
+                        - id
+                        - title
+                        - items
+                      additionalProperties: false
+                required:
+                  - id
+                  - orgId
+                  - createdAt
+                  - updatedAt
+                  - createdBy
+                  - deletedAt
+                  - name
+                  - kind
+                  - version
+                  - isDefault
+                  - sections
+                additionalProperties: false
+    delete:
+      tags:
+        - checklists
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: templateId
           required: true
       responses:
         "204":
@@ -9908,6 +10715,12 @@ paths:
                               type:
                                 - string
                                 - "null"
+                            checklist:
+                              type: string
+                              enum:
+                                - complete
+                                - incomplete
+                                - none
                           required:
                             - date
                             - duration

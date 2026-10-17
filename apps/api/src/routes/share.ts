@@ -9,7 +9,7 @@
  */
 import { createHash, randomBytes } from 'node:crypto';
 import { api, buildInspectorPacket, contentHash, grantFor, Id, newId, type Flight } from '@certa/core';
-import { aircraft, and, desc, eq, flights, isNull, pilots, shareLinks, withTenant, type Db } from '@certa/db';
+import { aircraft, and, checklistRuns, desc, eq, flights, inArray, isNull, pilots, shareLinks, withTenant, type Db } from '@certa/db';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { AppContext } from '../app.js';
@@ -49,7 +49,11 @@ async function packetFor(db: Db, orgId: string, subject: { type: 'pilot' | 'airc
   const where = subject.type === 'pilot' ? eq(flights.pilotInCommandId, subject.id) : eq(flights.aircraftId, subject.id);
   const rows = (await db.select(flightSelection).from(flights).where(and(where, isNull(flights.deletedAt))).orderBy(desc(flights.takeoffAt)).limit(500)) as FlightSelectRow[];
   const recent = (await toFlights(db, rows)) as Flight[];
-  return buildInspectorPacket(snapshot, subject, recent, ctx);
+  const shown = recent.slice(0, 15).map((f) => f.id);
+  const runs = shown.length
+    ? await db.select({ flightId: checklistRuns.flightId, completedAt: checklistRuns.completedAt }).from(checklistRuns).where(and(inArray(checklistRuns.flightId, shown), isNull(checklistRuns.deletedAt)))
+    : [];
+  return buildInspectorPacket(snapshot, subject, recent, ctx, new Map(runs.map((r) => [r.flightId!, !!r.completedAt])));
 }
 
 export const shareRoutes =

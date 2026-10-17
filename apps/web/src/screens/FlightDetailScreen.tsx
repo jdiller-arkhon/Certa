@@ -4,6 +4,7 @@ import type { FlightDetailScreenProps } from '@certa/contract';
 import { Fingerprint, Pencil, Route, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useMemo, useState } from 'react';
+import { ChecklistRecord } from '@/components/checklist';
 import { GoNoGoPanel } from '@/components/go-no-go';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -145,6 +146,7 @@ export function FlightDetailScreen(props: FlightDetailScreenProps) {
             </Section>
           )}
           {props.preflight && <GoNoGoPanel result={props.preflight} compact />}
+          {props.checklist && <ChecklistRecord checklist={props.checklist} />}
           {f.integrity && (
             <Section title="Integrity" aside={<Fingerprint className="size-4 text-[var(--certa-muted)]" aria-hidden />}>
               <p className="text-[13px] text-[var(--certa-muted)]">

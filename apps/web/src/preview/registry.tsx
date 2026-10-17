@@ -14,6 +14,7 @@ import {
   FlightListScreen,
   IntegrationsScreen,
   InsuranceScreen,
+  ChecklistsAdminScreen,
   LogFlightScreen,
   MaintenanceScreen,
   MembersAdminScreen,
@@ -216,6 +217,17 @@ export const SCREENS: PreviewScreen[] = [
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.maintenance, state, (x) => ({ ...x, due: [], history: [] }));
       return <MaintenanceScreen {...d} onAddSchedule={noop} onLogMaintenance={noop} onRemoveSchedule={noop} onOpenTarget={noop} />;
+    },
+  },
+  {
+    id: 'checklists-admin',
+    title: 'Checklists',
+    group: 'Admin',
+    route: '/admin/checklists',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.checklistsAdmin, state, (x) => ({ ...x, templates: [] }));
+      return <ChecklistsAdminScreen {...d} onSave={noop} onDelete={noop} />;
     },
   },
   {

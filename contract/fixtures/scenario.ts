@@ -7,6 +7,7 @@ import type {
   FlightDetailScreenProps,
   FlightListScreenProps,
   InsuranceScreenProps,
+  ChecklistsAdminScreenProps,
   LogFlightScreenProps,
   MaintenanceScreenProps,
   MembersAdminScreenProps,
@@ -41,6 +42,7 @@ export interface FixtureScenario {
     logFlight: ScreenData<LogFlightScreenProps>;
     maintenance: ScreenData<MaintenanceScreenProps>;
     insurance: ScreenData<InsuranceScreenProps>;
+    checklistsAdmin: ScreenData<ChecklistsAdminScreenProps>;
     rulePackAdmin: ScreenData<RulePackAdminScreenProps>;
     membersAdmin: ScreenData<MembersAdminScreenProps>;
     orgSettings: ScreenData<OrgSettingsScreenProps>;

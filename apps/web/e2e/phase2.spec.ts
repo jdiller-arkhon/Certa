@@ -72,15 +72,20 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   await page.getByRole('button', { name: '20 min' }).click();
   await page.getByLabel('Location').fill('Henderson Solar Farm');
   await page.getByLabel('Max altitude').fill('220');
-  const check = page.getByRole('region', { name: 'Pre-flight check' });
+  const check = page.getByRole('region', { name: 'Pre-flight check', exact: true });
   await expect(check).toContainText('Go');
   await expect(check).toContainText('Battery · M30 #1');
+  // Tick the standard pre-flight checklist; it's signed into the flight record.
+  const list = page.getByRole('region', { name: 'Standard pre-flight' });
+  for (const box of await list.getByRole('checkbox').all()) await box.check({ force: true });
+  await expect(list).toContainText('12 of 12 required');
   await page.getByRole('main').getByRole('button', { name: 'Log flight' }).click();
 
   await expect(page).toHaveURL(/\/certa\/flights\/[0-9a-f-]{36}$/);
   await expect(page.getByText('Henderson Solar Farm').first()).toBeVisible();
   await expect(page.getByText('220 ft')).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Pre-flight check' })).toContainText('Go');
+  await expect(page.getByRole('region', { name: 'Pre-flight checklist' })).toContainText('Complete');
+  await expect(page.getByRole('region', { name: 'Pre-flight check', exact: true })).toContainText('Go');
 
   // Totals and battery cycles are derived server-side.
   await go(page, 'Batteries');

@@ -11,7 +11,7 @@ const ORIGIN = 'http://localhost:8080';
 let tdb: TestDatabase;
 let pool: pg.Pool;
 let app: App;
-const days = (n: number) => new Date(Date.now() + n * 86400_000).toISOString().slice(0, 10);
+const days = (n: number) => new Date(Date.now() + n * 86400_000).toLocaleDateString('en-CA', { timeZone: 'America/Denver' });
 
 async function signUp(name: string, email: string, org: string) {
   const res = await app.inject({ method: 'POST', url: '/api/v1/signup', headers: { origin: ORIGIN }, payload: { name, email, password: 'correct-horse-battery', organizationName: org, timezone: 'America/Denver' } });

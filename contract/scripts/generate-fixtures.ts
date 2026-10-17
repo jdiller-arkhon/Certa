@@ -6,7 +6,9 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+  DEFAULT_PREFLIGHT_SECTIONS,
   buildAircraftDetail,
+  buildChecklistsAdmin,
   buildAircraftList,
   buildBatteryList,
   buildFlightDetail,
@@ -519,15 +521,33 @@ function toScenario(w: World): FixtureScenario {
         path: f0?.hasPath
           ? { type: 'LineString', coordinates: Array.from({ length: 24 }, (_, i) => [f0.takeoffPoint!.lon + Math.sin(i / 4) * 0.002, f0.takeoffPoint!.lat + i * 0.0001, 1650 + Math.min(i, 12) * 6]) }
           : null,
+        // A signed checklist with one optional item left open, so both states render.
+        checklist: f0 && f0.source === 'manual'
+          ? {
+              templateName: 'Standard pre-flight',
+              templateVersion: 1,
+              completed: true,
+              signedAt: f0.takeoffAt,
+              sections: DEFAULT_PREFLIGHT_SECTIONS.map((sec) => ({ title: sec.title, items: sec.items.map((it) => ({ id: it.id, text: it.text, required: it.required, checked: it.required, note: null })) })),
+            }
+          : null,
         altitudeProfile: f0 ? Array.from({ length: 24 }, (_, i) => ({ t: Math.round((f0.durationSeconds / 23) * i), altitude: Math.round(Math.min(i, 12, 23 - i) * ((f0.maxAltitudeAglM ?? 60) / 12) / 0.3048) })) : [],
       }),
       logFlight: (() => {
-        const lf = buildLogFlight(bi, { currentPilotId: p0?.id ?? null, now: NOW });
+        const lf = buildLogFlight(bi, {
+          currentPilotId: p0?.id ?? null,
+          now: NOW,
+          checklist: { id: '00000000-0000-7000-8000-00000000c001', orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, name: 'Standard pre-flight', kind: 'preflight', version: 1, isDefault: true, sections: DEFAULT_PREFLIGHT_SECTIONS },
+        });
         const d = lf.defaults;
         return { ...lf, preflight: d.pilotId && d.aircraftId ? goNoGo(snapshot, { pilotId: d.pilotId, aircraftId: d.aircraftId, batteryIds: d.batteryIds }, ctx) : null };
       })(),
       maintenance: buildMaintenance(bi, maintenanceHistoryFor(w, snapshot.maintenanceSchedules)),
       insurance: buildInsurance(bi),
+      checklistsAdmin: buildChecklistsAdmin(bi, [
+        { id: '00000000-0000-7000-8000-00000000c001', orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, name: 'Standard pre-flight', kind: 'preflight', version: 3, isDefault: true, sections: DEFAULT_PREFLIGHT_SECTIONS },
+        { id: '00000000-0000-7000-8000-00000000c002', orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, name: 'Lost link', kind: 'emergency', version: 1, isDefault: false, sections: [{ id: 'll', title: 'Lost link', items: [{ id: 'rth', text: 'Confirm return-to-home engaged', required: true, photoRequired: false }, { id: 'notify', text: 'Notify visual observer and clear the landing zone', required: true, photoRequired: false }] }] },
+      ]),
       rulePackAdmin: {
         ...ok,
         pack: {

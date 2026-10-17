@@ -19,3 +19,4 @@ export * from './fleet/fleet.js';
 export * from './fleet/packet.js';
 export * from './fleet/verify.js';
 export * from './fleet/advisories.js';
+export * from './fleet/checklists.js';

@@ -5,7 +5,8 @@
  * container adds the callbacks.
  */
 import { can } from '../domain/permissions.js';
-import type { Flight, MaintenanceEvent, WeatherSnapshot } from '../domain/entities.js';
+import type { ChecklistTemplate, Flight, MaintenanceEvent, WeatherSnapshot } from '../domain/entities.js';
+import type { FlightChecklist } from '../api/schemas.js';
 import type { Role, UnitsPreference } from '../domain/enums.js';
 import { fleetReadiness, maintenanceItems, type FleetReadiness, type FleetSnapshot, type GoNoGoResult } from '../fleet/fleet.js';
 import { addDays, displayDate, displayInstant } from '../format/dates.js';
@@ -33,6 +34,9 @@ import type {
   AircraftListScreenProps,
   BatteryListScreenProps,
   FlightDetailScreenProps,
+  FlightChecklistViewModel,
+  ChecklistViewModel,
+  ChecklistsAdminScreenProps,
   FlightListScreenProps,
   FlightRowViewModel,
   InsuranceScreenProps,
@@ -296,7 +300,11 @@ export function weatherSummary(w: WeatherSnapshot | null, units: UnitsPreference
   return parts.length ? parts.join(', ') : null;
 }
 
-export function buildFlightDetail(i: BuildInput, f: Flight | null, extra: { path?: unknown | null; altitudeProfile?: { t: number; altitude: number }[]; integrity?: { contentHash: string; verified: boolean | null } | null; preflight?: GoNoGoResult | null } = {}): ScreenData<FlightDetailScreenProps> {
+export function buildFlightDetail(
+  i: BuildInput,
+  f: Flight | null,
+  extra: { path?: unknown | null; altitudeProfile?: { t: number; altitude: number }[]; integrity?: { contentHash: string; verified: boolean | null } | null; preflight?: GoNoGoResult | null; checklist?: FlightChecklist | null } = {},
+): ScreenData<FlightDetailScreenProps> {
   const { snapshot: s, ctx } = i;
   const n = fleetNames(s);
   return {
@@ -326,11 +334,37 @@ export function buildFlightDetail(i: BuildInput, f: Flight | null, extra: { path
     path: extra.path ?? null,
     altitudeProfile: extra.altitudeProfile ?? [],
     preflight: extra.preflight ?? null,
+    checklist: extra.checklist ? toFlightChecklist(extra.checklist, ctx) : null,
     canEdit: can(i.role, 'flights.edit'),
   };
 }
 
-export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | null; now: Date }): ScreenData<LogFlightScreenProps> {
+/** A stored checklist run as the flight page shows it. */
+export function toFlightChecklist(c: FlightChecklist, ctx: BuildInput['ctx']): FlightChecklistViewModel {
+  const items = c.sections.flatMap((x) => x.items);
+  const missing = items.filter((x) => x.required && !x.checked).length;
+  const ticked = items.filter((x) => x.checked).length;
+  return {
+    name: c.templateName,
+    version: c.templateVersion,
+    completed: c.completed,
+    signed: c.signedAt ? displayInstant(c.signedAt, ctx.orgTimeZone, ctx.now) : null,
+    summary: `${ticked} of ${items.length} items${missing ? ` · ${missing} required ${missing === 1 ? 'item' : 'items'} not ticked` : ''}`,
+    sections: c.sections,
+  };
+}
+
+/** The template a pilot ticks while logging. */
+export function toChecklistViewModel(t: ChecklistTemplate): ChecklistViewModel {
+  return {
+    templateId: t.id,
+    templateVersion: t.version,
+    name: t.name,
+    sections: t.sections.map((x) => ({ id: x.id, title: x.title, items: x.items.map((it) => ({ id: it.id, text: it.text, required: it.required })) })),
+  };
+}
+
+export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | null; now: Date; checklist?: ChecklistTemplate | null }): ScreenData<LogFlightScreenProps> {
   const r = readinessOf(i);
   const { snapshot: s, ctx } = i;
   const last = s.lastFlight;
@@ -364,6 +398,7 @@ export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | n
     warnings: ps ? ps.reasons.map((x) => reasonFromItem(x, ctx.today, `/pilots/${pilotId}`)) : [],
     altitudeUnitLabel: ctx.units.length,
     preflight: null,
+    checklist: opts.checklist ? toChecklistViewModel(opts.checklist) : null,
     conditions: { status: 'idle', advisories: [], weatherSummary: null, checkedAt: null, error: null },
     fieldErrors: {},
     saving: false,
@@ -491,3 +526,29 @@ export function buildInsurance(i: BuildInput): ScreenData<InsuranceScreenProps> 
 
 /** Helper for callers that need a 90-day window start (e.g. pilot totals). */
 export const daysAgo = (today: string, n: number) => addDays(today, -n);
+
+const CHECKLIST_KIND_LABEL = { preflight: 'Pre-flight', postflight: 'Post-flight', emergency: 'Emergency', other: 'Other' } as const;
+
+export function buildChecklistsAdmin(i: BuildInput, templates: ChecklistTemplate[]): ScreenData<ChecklistsAdminScreenProps> {
+  const { ctx } = i;
+  return {
+    ...OK,
+    templates: templates.map((t) => {
+      const items = t.sections.flatMap((x) => x.items);
+      const req = items.filter((x) => x.required).length;
+      return {
+        id: t.id,
+        name: t.name,
+        kind: t.kind,
+        kindLabel: CHECKLIST_KIND_LABEL[t.kind],
+        version: t.version,
+        isDefault: t.isDefault,
+        summary: `${items.length} ${items.length === 1 ? 'item' : 'items'} · ${req} required`,
+        updated: displayInstant(t.updatedAt, ctx.orgTimeZone, ctx.now),
+        sections: t.sections.map((x) => ({ id: x.id, title: x.title, items: x.items.map((it) => ({ id: it.id, text: it.text, required: it.required })) })),
+      };
+    }),
+    canManage: can(i.role, 'checklists.manage_templates'),
+    saving: false,
+  };
+}

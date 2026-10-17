@@ -138,15 +138,16 @@ export async function renderPacketPdf(p: InspectorPacket, opts: { seal: string; 
 
   if (p.recentFlights.length) {
     heading('Recent flights');
-    const fc = [M, M + 80, M + 150, M + 330];
-    ['DATE (UTC)', 'DURATION', p.subject.type === 'pilot' ? 'AIRCRAFT' : 'PILOT', 'LOCATION'].forEach((h, i) => text(h, fc[i]!, y, 7, bold, MUTED));
+    const fc = [M, M + 80, M + 150, M + 300, W - M - 70];
+    ['DATE (UTC)', 'DURATION', p.subject.type === 'pilot' ? 'AIRCRAFT' : 'PILOT', 'LOCATION', 'CHECKLIST'].forEach((h, i) => text(h, fc[i]!, y, 7, bold, MUTED));
     y -= 14;
     for (const f of p.recentFlights) {
       ensure(16);
       text(f.date, fc[0]!, y, 9);
       text(f.duration, fc[1]!, y, 9);
-      text(fit(f.with, font, 9, 170), fc[2]!, y, 9);
-      text(fit(f.location ?? '—', font, 9, W - M - fc[3]!), fc[3]!, y, 9, font, f.location ? INK : MUTED);
+      text(fit(f.with, font, 9, 140), fc[2]!, y, 9);
+      text(fit(f.location ?? '—', font, 9, fc[4]! - fc[3]! - 10), fc[3]!, y, 9, font, f.location ? INK : MUTED);
+      text(f.checklist === 'complete' ? 'Complete' : f.checklist === 'incomplete' ? 'Incomplete' : '—', fc[4]!, y, 9, font, f.checklist === 'complete' ? INK : MUTED);
       y -= 15;
     }
   }
