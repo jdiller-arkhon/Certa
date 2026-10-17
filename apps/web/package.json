@@ -21,6 +21,7 @@
     "lucide-react": "1.53.0",
     "motion": "13.4.6",
     "next": "16.4.0",
+    "qrcode": "1.5.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "three": "0.186.1"
@@ -29,6 +30,7 @@
     "@certa/config": "workspace:*",
     "@playwright/test": "1.64.0",
     "@tailwindcss/postcss": "4.3.3",
+    "@types/qrcode": "1.5.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/three": "0.186.0",

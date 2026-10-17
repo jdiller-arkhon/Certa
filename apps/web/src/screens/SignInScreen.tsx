@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import type { SignInScreenProps } from '@certa/contract';
-import { KeyRound, Mail, MailCheck } from 'lucide-react';
+import { KeyRound, Mail, MailCheck, Smartphone } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState } from 'react';
 import { EASE, Rise } from '@/components/motion';
@@ -93,6 +94,11 @@ export function SignInScreen(props: SignInScreenProps) {
                 <button type="button" onClick={props.onGoToSignUp} className="font-semibold text-[var(--certa-text)] underline-offset-4 hover:underline">
                   Create an account
                 </button>
+              </p>
+              <p className="mt-3 text-sm text-[var(--certa-muted)]">
+                <Link href="/install" className="inline-flex items-center gap-1.5 font-semibold text-[var(--certa-text)] underline-offset-4 hover:underline">
+                  <Smartphone className="size-4" aria-hidden /> Get the app on your phone or computer
+                </Link>
               </p>
             </Rise>
           </motion.div>

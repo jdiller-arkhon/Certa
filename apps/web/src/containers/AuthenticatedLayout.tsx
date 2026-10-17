@@ -11,6 +11,7 @@ import { readTheme, writeTheme } from '@/lib/theme';
 import { BASE_PATH } from '@/lib/base-path';
 import { flushOutbox, setOutboxUser, useOutbox, useOutboxAutoFlush } from '@/lib/outbox';
 import { AppShell } from '@/screens';
+import { InstallNudge } from '@/components/install-nudge';
 
 export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -137,6 +138,8 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
           void qc.invalidateQueries();
         }}
       >
+        {/* Only on Today, so it never sits on top of a form in the field. */}
+        {pathname === '/' && <InstallNudge />}
         {children}
       </AppShell>
     </CurrentOrgContext.Provider>

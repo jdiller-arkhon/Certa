@@ -28,3 +28,4 @@ export { DiscordSettingsScreen } from './DiscordSettingsScreen';
 export { MissionsScreen } from './MissionsScreen';
 export { MissionDetailScreen } from './MissionDetailScreen';
 export { MissionFormScreen } from './MissionFormScreen';
+export { InstallScreen } from './InstallScreen';

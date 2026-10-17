@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { BASE_PATH } from '@/lib/base-path';
+import { INSTALL_CAPTURE_SCRIPT } from '@/lib/install-capture';
 import { Providers } from '@/lib/providers';
 import { RegisterServiceWorker } from '@/lib/register-sw';
 import './globals.css';
@@ -29,6 +30,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme="light">
+      <head>
+        {/* Holds the browser's install prompt for the Install button (it fires before hydration). */}
+        <script dangerouslySetInnerHTML={{ __html: INSTALL_CAPTURE_SCRIPT }} />
+      </head>
       <body className="certa">
         <Providers>{children}</Providers>
         <RegisterServiceWorker />

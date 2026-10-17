@@ -84,3 +84,32 @@ test('the fixture preview gallery is not exposed in production builds', async ({
   test.skip(!!process.env.E2E_PREVIEW, 'review build with the gallery enabled');
   expect((await request.get('preview')).status()).toBe(404);
 });
+
+test('install page: steps for the visitor’s device, a QR code on computers, and app shortcuts in the manifest', async ({ page, browser, request }) => {
+  await page.goto('sign-in');
+  await page.getByRole('link', { name: 'Get the app on your phone or computer' }).click();
+  await expect(page).toHaveURL(/\/certa\/install$/);
+  await expect(page.getByRole('heading', { name: 'Put Certa on your phone and computer' })).toBeVisible();
+  await expect(page.getByRole('region', { name: /Install on Windows, Mac/ })).toBeVisible();
+  await expect(page.getByAltText('QR code that opens this page')).toBeVisible();
+  // Chrome's own check that it can install Certa (what shows the Install button and address-bar
+  // icon). Test browsers are incognito, which never installs; nothing else may be missing.
+  const cdp = await page.context().newCDPSession(page);
+  await expect
+    .poll(async () => (await cdp.send('Page.getInstallabilityErrors')).installabilityErrors.map((e) => e.errorId).filter((id) => id !== 'in-incognito'), { timeout: 15_000 })
+    .toEqual([]);
+  await page.getByRole('radio', { name: 'iPhone & iPad' }).click();
+  await expect(page.getByRole('region', { name: 'Install on iPhone and iPad' })).toContainText('Add to Home Screen');
+
+  // An iPhone visitor lands straight on the iPhone steps, with no QR code.
+  const iphone = await browser.newContext({ userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1', viewport: { width: 390, height: 844 }, hasTouch: true });
+  const phone = await iphone.newPage();
+  await phone.goto(page.url());
+  await expect(phone.getByText('Add Certa to your Home Screen')).toBeVisible();
+  await expect(phone.getByRole('region', { name: 'Install on iPhone and iPad' })).toBeVisible();
+  await expect(phone.getByAltText('QR code that opens this page')).toHaveCount(0);
+  await iphone.close();
+
+  const manifest = await (await request.get('manifest.webmanifest')).json();
+  expect(manifest.shortcuts.map((s: { url: string }) => s.url)).toEqual(['/certa/flights/new', '/certa/missions', '/certa/flights']);
+});

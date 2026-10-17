@@ -17,6 +17,7 @@ import {
   KeyRound,
   LogOut,
   MessageSquare,
+  MonitorDown,
   Moon,
   Plane,
   Plus,
@@ -223,6 +224,15 @@ function UserMenu(props: AppShellProps & { side?: 'top' | 'bottom'; align?: 'sta
             }}
           >
             Connect Discord
+          </MenuItem>
+          <MenuItem
+            icon={<MonitorDown aria-hidden className="size-4" />}
+            onSelect={() => {
+              close();
+              props.onNavigate('/install');
+            }}
+          >
+            Install the app
           </MenuItem>
           <MenuItem
             icon={<LogOut aria-hidden className="size-4" />}
