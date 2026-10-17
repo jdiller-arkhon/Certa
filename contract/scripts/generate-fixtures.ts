@@ -9,6 +9,7 @@ import {
   DEFAULT_PREFLIGHT_SECTIONS,
   buildAircraftDetail,
   buildChecklistsAdmin,
+  buildAuthorizations,
   buildAircraftList,
   buildBatteryList,
   buildFlightDetail,
@@ -67,6 +68,19 @@ import {
 } from '@certa/core';
 import { latestPack } from '@certa/rulepacks';
 import type { AuthFixtures, FixtureScenario } from '../fixtures/scenario.ts';
+
+
+/** Fixed authorizations relative to NOW: a current waiver, an expiring COA, today's LAANC, an expired one. */
+function sampleAuthorizations(pilotId: string | null) {
+  const base = { orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, scope: null };
+  const at = (days: number) => new Date(NOW.getTime() + days * 86400_000).toISOString();
+  return [
+    { ...base, id: '00000000-0000-7000-8000-0000000a0001', kind: 'waiver' as const, reference: '107W-2026-01234', title: 'Operations over people (107.39)', conditions: 'Category 2 aircraft only; visual observer required.', validFrom: at(-200), validTo: at(530), pilotId: null },
+    { ...base, id: '00000000-0000-7000-8000-0000000a0002', kind: 'coa' as const, reference: '2026-WSA-412-COA', title: 'Henderson substation corridor', conditions: null, validFrom: at(-340), validTo: at(18), pilotId: null },
+    { ...base, id: '00000000-0000-7000-8000-0000000a0003', kind: 'laanc' as const, reference: 'LAANC-7F3K2Q', title: 'Centennial Class D, 200 ft', conditions: null, validFrom: at(-0.05), validTo: at(0.2), pilotId },
+    { ...base, id: '00000000-0000-7000-8000-0000000a0004', kind: 'airspace_authorization' as const, reference: 'FAA-AA-2025-0988', title: 'Denver Class B surface area', conditions: null, validFrom: at(-400), validTo: at(-35), pilotId },
+  ];
+}
 
 const TODAY = '2026-10-08';
 const NOW = new Date('2026-10-08T16:00:00Z');
@@ -537,6 +551,7 @@ function toScenario(w: World): FixtureScenario {
         const lf = buildLogFlight(bi, {
           currentPilotId: p0?.id ?? null,
           now: NOW,
+          authorizations: sampleAuthorizations(p0?.id ?? null),
           checklist: { id: '00000000-0000-7000-8000-00000000c001', orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, name: 'Standard pre-flight', kind: 'preflight', version: 1, isDefault: true, sections: DEFAULT_PREFLIGHT_SECTIONS },
         });
         const d = lf.defaults;
@@ -544,6 +559,7 @@ function toScenario(w: World): FixtureScenario {
       })(),
       maintenance: buildMaintenance(bi, maintenanceHistoryFor(w, snapshot.maintenanceSchedules)),
       insurance: buildInsurance(bi),
+      authorizations: buildAuthorizations(bi, sampleAuthorizations(p0?.id ?? null), { ownPilotId: null }),
       checklistsAdmin: buildChecklistsAdmin(bi, [
         { id: '00000000-0000-7000-8000-00000000c001', orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, name: 'Standard pre-flight', kind: 'preflight', version: 3, isDefault: true, sections: DEFAULT_PREFLIGHT_SECTIONS },
         { id: '00000000-0000-7000-8000-00000000c002', orgId: '00000000-0000-7000-8000-000000000001', createdAt: NOW.toISOString(), updatedAt: NOW.toISOString(), createdBy: null, deletedAt: null, name: 'Lost link', kind: 'emergency', version: 1, isDefault: false, sections: [{ id: 'll', title: 'Lost link', items: [{ id: 'rth', text: 'Confirm return-to-home engaged', required: true, photoRequired: false }, { id: 'notify', text: 'Notify visual observer and clear the landing zone', required: true, photoRequired: false }] }] },

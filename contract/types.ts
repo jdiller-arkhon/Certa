@@ -81,6 +81,8 @@ export type {
   InsurancePolicyViewModel,
   InsuranceScreenProps,
   ChecklistsAdminScreenProps,
+  AuthorizationsScreenProps,
+  AuthorizationRowViewModel,
   GoNoGoResult,
   GoNoGoCheck,
   // later phases (draft)

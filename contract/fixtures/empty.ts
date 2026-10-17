@@ -91,6 +91,15 @@ export const empty = {
         "group": "upkeep"
       },
       {
+        "id": "authorizations",
+        "label": "Authorizations",
+        "href": "/authorizations",
+        "icon": "records",
+        "active": false,
+        "badge": null,
+        "group": "upkeep"
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -172,6 +181,8 @@ export const empty = {
       "flights.edit",
       "missions.read",
       "missions.manage",
+      "authorizations.read",
+      "authorizations.manage",
       "checklists.read",
       "checklists.manage_templates",
       "checklists.run",
@@ -275,6 +286,13 @@ export const empty = {
         "href": "/insurance",
         "section": "Go to",
         "shortcut": "G I"
+      },
+      {
+        "id": "go-authorizations",
+        "label": "Authorizations",
+        "href": "/authorizations",
+        "section": "Go to",
+        "shortcut": null
       },
       {
         "id": "go-rules",
@@ -410,6 +428,15 @@ export const empty = {
         "group": "upkeep"
       },
       {
+        "id": "authorizations",
+        "label": "Authorizations",
+        "href": "/authorizations",
+        "icon": "records",
+        "active": false,
+        "badge": null,
+        "group": "upkeep"
+      },
+      {
         "id": "rules",
         "label": "Rule pack",
         "href": "/admin/rules",
@@ -491,6 +518,8 @@ export const empty = {
       "flights.edit",
       "missions.read",
       "missions.manage",
+      "authorizations.read",
+      "authorizations.manage",
       "checklists.read",
       "checklists.manage_templates",
       "checklists.run",
@@ -600,6 +629,13 @@ export const empty = {
         "href": "/insurance",
         "section": "Go to",
         "shortcut": "G I"
+      },
+      {
+        "id": "go-authorizations",
+        "label": "Authorizations",
+        "href": "/authorizations",
+        "section": "Go to",
+        "shortcut": null
       },
       {
         "id": "go-rules",
@@ -976,6 +1012,20 @@ export const empty = {
           }
         ]
       },
+      "authorizationOptions": [
+        {
+          "value": "00000000-0000-7000-8000-0000000a0001",
+          "label": "Part 107 waiver 107W-2026-01234 — Operations over people (107.39)"
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0002",
+          "label": "COA 2026-WSA-412-COA — Henderson substation corridor"
+        },
+        {
+          "value": "00000000-0000-7000-8000-0000000a0003",
+          "label": "LAANC LAANC-7F3K2Q — Centennial Class D, 200 ft"
+        }
+      ],
       "conditions": {
         "status": "idle",
         "advisories": [],
@@ -1013,6 +1063,133 @@ export const empty = {
         "body": "Add your liability and hull policies. Certa links them to aircraft and warns 30 days before they lapse.",
         "actionLabel": "Add policy"
       }
+    },
+    "authorizations": {
+      "loading": false,
+      "error": null,
+      "authorizations": [
+        {
+          "id": "00000000-0000-7000-8000-0000000a0004",
+          "kind": "airspace_authorization",
+          "kindLabel": "Airspace authorization",
+          "reference": "FAA-AA-2025-0988",
+          "title": "Denver Class B surface area",
+          "pilot": null,
+          "validFrom": {
+            "iso": "2025-09-03T16:00:00.000Z",
+            "absolute": "Sep 3, 2025, 10:00 AM MDT",
+            "relative": "13 months ago",
+            "display": "Sep 3, 2025, 10:00 AM MDT — 13 months ago",
+            "daysFromToday": -400
+          },
+          "validTo": {
+            "iso": "2026-09-03T16:00:00.000Z",
+            "absolute": "Sep 3, 2026, 10:00 AM MDT",
+            "relative": "35 days ago",
+            "display": "Sep 3, 2026, 10:00 AM MDT — 35 days ago",
+            "daysFromToday": -35
+          },
+          "status": {
+            "level": "red",
+            "label": "Expired"
+          },
+          "scope": null,
+          "conditions": null,
+          "canEdit": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000a0002",
+          "kind": "coa",
+          "kindLabel": "COA",
+          "reference": "2026-WSA-412-COA",
+          "title": "Henderson substation corridor",
+          "pilot": null,
+          "validFrom": {
+            "iso": "2025-11-02T16:00:00.000Z",
+            "absolute": "Nov 2, 2025, 9:00 AM MST",
+            "relative": "11 months ago",
+            "display": "Nov 2, 2025, 9:00 AM MST — 11 months ago",
+            "daysFromToday": -340
+          },
+          "validTo": {
+            "iso": "2026-10-26T16:00:00.000Z",
+            "absolute": "Oct 26, 2026, 10:00 AM MDT",
+            "relative": "in 18 days",
+            "display": "Oct 26, 2026, 10:00 AM MDT — in 18 days",
+            "daysFromToday": 18
+          },
+          "status": {
+            "level": "amber",
+            "label": "Expires in 18 days"
+          },
+          "scope": null,
+          "conditions": null,
+          "canEdit": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000a0003",
+          "kind": "laanc",
+          "kindLabel": "LAANC",
+          "reference": "LAANC-7F3K2Q",
+          "title": "Centennial Class D, 200 ft",
+          "pilot": null,
+          "validFrom": {
+            "iso": "2026-10-08T14:48:00.000Z",
+            "absolute": "Oct 8, 2026, 8:48 AM MDT",
+            "relative": "today",
+            "display": "Oct 8, 2026, 8:48 AM MDT — today",
+            "daysFromToday": 0
+          },
+          "validTo": {
+            "iso": "2026-10-08T20:48:00.000Z",
+            "absolute": "Oct 8, 2026, 2:48 PM MDT",
+            "relative": "today",
+            "display": "Oct 8, 2026, 2:48 PM MDT — today",
+            "daysFromToday": 0
+          },
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "scope": null,
+          "conditions": null,
+          "canEdit": true
+        },
+        {
+          "id": "00000000-0000-7000-8000-0000000a0001",
+          "kind": "waiver",
+          "kindLabel": "Part 107 waiver",
+          "reference": "107W-2026-01234",
+          "title": "Operations over people (107.39)",
+          "pilot": null,
+          "validFrom": {
+            "iso": "2026-03-22T16:00:00.000Z",
+            "absolute": "Mar 22, 2026, 10:00 AM MDT",
+            "relative": "7 months ago",
+            "display": "Mar 22, 2026, 10:00 AM MDT — 7 months ago",
+            "daysFromToday": -200
+          },
+          "validTo": {
+            "iso": "2028-03-21T16:00:00.000Z",
+            "absolute": "Mar 21, 2028, 10:00 AM MDT",
+            "relative": "in 17 months",
+            "display": "Mar 21, 2028, 10:00 AM MDT — in 17 months",
+            "daysFromToday": 530
+          },
+          "status": {
+            "level": "green",
+            "label": "Current"
+          },
+          "scope": null,
+          "conditions": "Category 2 aircraft only; visual observer required.",
+          "canEdit": true
+        }
+      ],
+      "pilotOptions": [],
+      "canCreate": true,
+      "ownPilotId": null,
+      "saving": false,
+      "fieldErrors": {}
     },
     "checklistsAdmin": {
       "loading": false,

@@ -13,6 +13,7 @@ export const fleetKeys = {
   flight: (orgId: string, flightId: string) => ['org', orgId, 'flight', flightId] as const,
   maintenanceEvents: (orgId: string) => ['org', orgId, 'maintenance-events'] as const,
   checklists: (orgId: string) => ['org', orgId, 'checklists'] as const,
+  authorizations: (orgId: string) => ['org', orgId, 'authorizations'] as const,
 };
 
 /** The fleet snapshot every Phase 2 screen is built from; cached for offline use. */
@@ -93,6 +94,15 @@ export function useChecklistTemplates(orgId: string) {
     queryKey: fleetKeys.checklists(orgId),
     queryFn: () =>
       networkFirst(`checklists:${orgId}`, async () => unwrap(await api.GET('/api/v1/orgs/{orgId}/checklists/templates', { params: { path: { orgId } } }))).then((r) => r.templates as ChecklistTemplate[]),
+  });
+}
+
+/** LAANC approvals, waivers and COAs, cached on the device for logging offline. */
+export function useAuthorizations(orgId: string) {
+  return useQuery({
+    queryKey: fleetKeys.authorizations(orgId),
+    queryFn: () =>
+      networkFirst(`authorizations:${orgId}`, async () => unwrap(await api.GET('/api/v1/orgs/{orgId}/authorizations', { params: { path: { orgId } } }))).then((r) => r.authorizations as apiTypes.AuthorizationRecord[]),
   });
 }
 

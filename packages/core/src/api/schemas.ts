@@ -3,8 +3,8 @@
  * OpenAPI document in contract/openapi.yaml is generated from exactly this code.
  */
 import { z } from 'zod';
-import { Aircraft, AuditEvent, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
-import { AirspaceClass, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
+import { Aircraft, AuditEvent, Authorization, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
+import { AirspaceClass, AuthorizationKind, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
 import { FleetSnapshot, GoNoGoResult } from '../fleet/fleet.js';
 import { InspectorPacket } from '../fleet/packet.js';
 import { FlightVerificationResult, VerificationResult } from '../fleet/verify.js';
@@ -292,6 +292,8 @@ export const CreateFlightRequest = z.object({
    * check from records on file when it stores the flight and keeps its own result.
    */
   goNoGo: GoNoGoResult.nullable().optional(),
+  /** LAANC approval, airspace authorization, or waiver the flight operated under. */
+  authorizationId: Id.nullable().optional(),
   /** The pre-flight checklist as the pilot ticked it. Stored as a signed run linked to the flight. */
   checklist: z
     .object({
@@ -326,7 +328,12 @@ export const FlightChecklist = z.object({
 });
 export type FlightChecklist = z.infer<typeof FlightChecklist>;
 
-export const FlightWithGoNoGo = Flight.extend({ goNoGo: GoNoGoResult.nullable(), checklist: FlightChecklist.nullable().optional() });
+export const FlightWithGoNoGo = Flight.extend({
+  goNoGo: GoNoGoResult.nullable(),
+  checklist: FlightChecklist.nullable().optional(),
+  /** The authorization the flight named, even if it has since been deleted from the list. */
+  authorization: z.object({ kind: AuthorizationKind, reference: z.string(), title: z.string().nullable() }).nullable().optional(),
+});
 export type FlightWithGoNoGo = z.infer<typeof FlightWithGoNoGo>;
 
 export const FlightListResponse = z.object({
@@ -475,3 +482,37 @@ export const ChecklistTemplateRequest = z.object({
 export type ChecklistTemplateRequest = z.infer<typeof ChecklistTemplateRequest>;
 export const ChecklistTemplateResponse = ChecklistTemplate;
 export const ChecklistTemplateListResponse = z.object({ templates: z.array(ChecklistTemplate) });
+
+// ---------- Authorizations (LAANC, airspace authorizations, waivers, COAs) ----------
+
+export const AuthorizationRecord = Authorization.omit({ geometry: true, documentIds: true }).extend({
+  /** The pilot it was issued to; null for org-wide waivers. */
+  pilotId: Id.nullable(),
+});
+export type AuthorizationRecord = z.infer<typeof AuthorizationRecord>;
+
+export const CreateAuthorizationRequest = z
+  .object({
+    kind: AuthorizationKind,
+    reference: z.string().trim().min(1).max(100),
+    title: opt(z.string().trim().max(200)),
+    scope: opt(z.string().max(4000)),
+    conditions: opt(z.string().max(10000)),
+    validFrom: IsoDateTime.nullable().optional(),
+    validTo: IsoDateTime.nullable().optional(),
+    pilotId: Id.nullable().optional(),
+  })
+  .refine((a) => !a.validFrom || !a.validTo || Date.parse(a.validTo) > Date.parse(a.validFrom), { message: 'Valid until must be after valid from', path: ['validTo'] });
+export type CreateAuthorizationRequest = z.infer<typeof CreateAuthorizationRequest>;
+export const UpdateAuthorizationRequest = z.object({
+  kind: AuthorizationKind.optional(),
+  reference: z.string().trim().min(1).max(100).optional(),
+  title: opt(z.string().trim().max(200)),
+  scope: opt(z.string().max(4000)),
+  conditions: opt(z.string().max(10000)),
+  validFrom: IsoDateTime.nullable().optional(),
+  validTo: IsoDateTime.nullable().optional(),
+  pilotId: Id.nullable().optional(),
+});
+export type UpdateAuthorizationRequest = z.infer<typeof UpdateAuthorizationRequest>;
+export const AuthorizationListResponse = z.object({ authorizations: z.array(AuthorizationRecord) });

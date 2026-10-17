@@ -32,6 +32,8 @@ export const ACTIONS = [
   'flights.edit',
   'missions.read',
   'missions.manage',
+  'authorizations.read',
+  'authorizations.manage',
   'checklists.read',
   'checklists.manage_templates',
   'checklists.run',
@@ -57,6 +59,7 @@ const READ_ALL: Partial<Record<Action, Grant>> = {
   'maintenance.read': 'all',
   'flights.read': 'all',
   'missions.read': 'all',
+  'authorizations.read': 'all',
   'checklists.read': 'all',
   'incidents.read': 'all',
 };
@@ -77,6 +80,7 @@ export const PERMISSIONS: Record<Role, Partial<Record<Action, Grant>>> = {
     'flights.log': 'all',
     'flights.edit': 'all',
     'missions.manage': 'all',
+    'authorizations.manage': 'all',
     'checklists.manage_templates': 'all',
     'checklists.run': 'all',
     'incidents.report': 'all',
@@ -89,6 +93,8 @@ export const PERMISSIONS: Record<Role, Partial<Record<Action, Grant>>> = {
     'credentials.manage': 'own',
     'flights.log': 'own',
     'flights.edit': 'own',
+    // A pilot records the LAANC approvals and waivers issued to them.
+    'authorizations.manage': 'own',
     'checklists.run': 'all',
     'incidents.report': 'all',
     'exports.create': 'own',

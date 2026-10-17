@@ -15,6 +15,7 @@ import {
   IntegrationsScreen,
   InsuranceScreen,
   ChecklistsAdminScreen,
+  AuthorizationsScreen,
   LogFlightScreen,
   MaintenanceScreen,
   MembersAdminScreen,
@@ -217,6 +218,17 @@ export const SCREENS: PreviewScreen[] = [
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.maintenance, state, (x) => ({ ...x, due: [], history: [] }));
       return <MaintenanceScreen {...d} onAddSchedule={noop} onLogMaintenance={noop} onRemoveSchedule={noop} onOpenTarget={noop} />;
+    },
+  },
+  {
+    id: 'authorizations',
+    title: 'Authorizations',
+    group: 'Fleet',
+    route: '/authorizations',
+    shell: true,
+    render: ({ scenario, state }) => {
+      const d = withState(scenarios[scenario]!.screens.authorizations, state, (x) => ({ ...x, authorizations: [] }));
+      return <AuthorizationsScreen {...d} onSave={noop} onDelete={noop} />;
     },
   },
   {

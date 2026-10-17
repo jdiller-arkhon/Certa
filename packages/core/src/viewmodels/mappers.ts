@@ -433,6 +433,7 @@ const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; req
   { id: 'batteries', label: 'Batteries', href: '/batteries', icon: 'batteries', requires: 'batteries.read', group: 'fleet' },
   { id: 'maintenance', label: 'Maintenance', href: '/maintenance', icon: 'maintenance', requires: 'maintenance.read', group: 'upkeep' },
   { id: 'insurance', label: 'Insurance', href: '/insurance', icon: 'insurance', requires: 'aircraft.read', group: 'upkeep' },
+  { id: 'authorizations', label: 'Authorizations', href: '/authorizations', icon: 'records', requires: 'authorizations.read', group: 'upkeep' },
   { id: 'rules', label: 'Rule pack', href: '/admin/rules', icon: 'admin', requires: 'rules.read', group: 'admin' },
   { id: 'members', label: 'Members', href: '/admin/members', icon: 'admin', requires: 'members.read', group: 'admin' },
   { id: 'checklists', label: 'Checklists', href: '/admin/checklists', icon: 'records', requires: 'checklists.manage_templates', group: 'admin' },

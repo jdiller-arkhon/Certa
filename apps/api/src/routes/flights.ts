@@ -2,6 +2,7 @@ import { api, checklistComplete, goNoGo, Id, newId, type GeoPoint } from '@certa
 import {
   aircraft,
   and,
+  authorizations,
   batteries,
   checklistRuns,
   checklistTemplates,
@@ -39,7 +40,7 @@ function decodeCursor(c: string): { takeoffAt: string; id: string } {
 }
 
 /** Validates the people and equipment a flight references, inside the org's RLS context. */
-async function checkReferences(db: Db, b: { pilotInCommandId?: string; visualObserverIds?: string[]; aircraftId?: string; batteries?: { batteryId: string }[] }) {
+async function checkReferences(db: Db, b: { pilotInCommandId?: string; visualObserverIds?: string[]; aircraftId?: string; batteries?: { batteryId: string }[]; authorizationId?: string | null }) {
   const people = [...new Set([b.pilotInCommandId, ...(b.visualObserverIds ?? [])].filter(Boolean) as string[])];
   if (people.length) {
     const found = await db.select({ id: pilots.id }).from(pilots).where(and(inArray(pilots.id, people), isNull(pilots.deletedAt)));
@@ -55,6 +56,10 @@ async function checkReferences(db: Db, b: { pilotInCommandId?: string; visualObs
     const found = await db.select({ id: batteries.id }).from(batteries).where(and(inArray(batteries.id, batteryIds), isNull(batteries.deletedAt)));
     if (found.length !== batteryIds.length) throw badRequest('Unknown battery');
   }
+  if (b.authorizationId) {
+    const [x] = await db.select({ id: authorizations.id }).from(authorizations).where(and(eq(authorizations.id, b.authorizationId), isNull(authorizations.deletedAt)));
+    if (!x) throw badRequest('Unknown authorization');
+  }
 }
 
 export const flightRoutes =
@@ -64,7 +69,8 @@ export const flightRoutes =
       const rows = (await db.select(flightSelection).from(flights).where(and(eq(flights.id, id), isNull(flights.deletedAt)))) as FlightSelectRow[];
       const [f] = await toFlights(db, rows);
       if (!f) throw notFound('Flight');
-      return { ...f, checklist: await checklistOf(db, id) };
+      const [auth] = f.authorizationId ? await db.select({ kind: authorizations.kind, reference: authorizations.reference, title: authorizations.title }).from(authorizations).where(eq(authorizations.id, f.authorizationId)) : [];
+      return { ...f, checklist: await checklistOf(db, id), authorization: auth ?? null };
     };
     /** The flight's checklist run, resolved against the template version the pilot used. */
     const checklistOf = async (db: Db, flightId: string): Promise<api.FlightChecklist | null> => {
@@ -191,6 +197,7 @@ export const flightRoutes =
               airspaceClass: b.airspaceClass ?? null,
               weather: b.weather ?? null,
               notes: b.notes ?? null,
+              authorizationId: b.authorizationId ?? null,
               source: 'manual',
               goNoGo: check,
             });
@@ -262,6 +269,7 @@ export const flightRoutes =
               airspaceClass: b.airspaceClass === undefined ? undefined : b.airspaceClass,
               weather: b.weather === undefined ? undefined : b.weather,
               notes: b.notes === undefined ? undefined : b.notes,
+              authorizationId: b.authorizationId === undefined ? undefined : b.authorizationId,
             })
             .where(eq(flights.id, cur.id));
           if (b.visualObserverIds) {

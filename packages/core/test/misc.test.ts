@@ -6,6 +6,13 @@ describe('permissions', () => {
     expect(can('pilot', 'flights.edit', { actorPilotId: 'a', resourcePilotId: 'a' })).toBe(true);
     expect(can('pilot', 'flights.edit', { actorPilotId: 'a', resourcePilotId: 'b' })).toBe(false);
     expect(can('chief_pilot', 'flights.edit', { actorPilotId: 'a', resourcePilotId: 'b' })).toBe(true);
+    // Pilots record their own LAANC approvals and waivers; not other pilots' or org-wide ones.
+    expect(can('pilot', 'authorizations.manage', { actorPilotId: 'a', resourcePilotId: 'a' })).toBe(true);
+    expect(can('pilot', 'authorizations.manage', { actorPilotId: 'a', resourcePilotId: 'b' })).toBe(false);
+    expect(can('pilot', 'authorizations.manage', { actorPilotId: 'a', resourcePilotId: null })).toBe(false);
+    expect(can('chief_pilot', 'authorizations.manage', { actorPilotId: 'a', resourcePilotId: null })).toBe(true);
+    expect(can('viewer', 'authorizations.read')).toBe(true);
+    expect(can('viewer', 'authorizations.manage')).toBe(false);
   });
   it('viewers and auditors are read-only; only owners bill', () => {
     expect(can('viewer', 'flights.log')).toBe(false);

@@ -23,3 +23,4 @@ export { InsuranceScreen } from './InsuranceScreen';
 export { SharedPacketScreen } from './SharedPacketScreen';
 export { IntegrationsScreen } from './IntegrationsScreen';
 export { ChecklistsAdminScreen } from './ChecklistsAdminScreen';
+export { AuthorizationsScreen } from './AuthorizationsScreen';

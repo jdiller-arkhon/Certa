@@ -113,6 +113,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
   const [minutes, setMinutes] = useState(d.durationMinutes ? String(d.durationMinutes) : '');
   const [altitude, setAltitude] = useState(d.maxAltitude != null ? String(d.maxAltitude) : '');
   const [notes, setNotes] = useState(d.notes ?? '');
+  const [authorizationId, setAuthorizationId] = useState('');
 
   // Report selection changes so the host can recompute the go / no-go.
   const onSel = useRef(props.onSelectionChange);
@@ -269,6 +270,16 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
           {(a) => <Input {...a} inputMode="numeric" suffix={props.altitudeUnitLabel} value={altitude} onChange={(e) => setAltitude(e.target.value)} />}
         </Field>
       </div>
+      {props.authorizationOptions.length > 0 && (
+        <Field label="Authorization" hint="LAANC approval, waiver or COA this flight operates under">
+          {(a) => (
+            <Select {...a} value={authorizationId} onChange={(e) => setAuthorizationId(e.target.value)}>
+              <option value="">None</option>
+              {props.authorizationOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+            </Select>
+          )}
+        </Field>
+      )}
       <Field label="Notes" hint="Optional">
         {(a) => <TextArea {...a} value={notes} onChange={(e) => setNotes(e.target.value)} />}
       </Field>
@@ -368,6 +379,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
       maxAltitude: num(altitude),
       locationName: location.trim() || null,
       notes: notes.trim() || null,
+      authorizationId: authorizationId || null,
       checklist: cl ? { templateId: cl.templateId, templateVersion: cl.templateVersion, responses: cl.sections.flatMap((s) => s.items).map((i) => ({ itemId: i.id, checked: ticked.has(i.id) })) } : null,
     });
   };

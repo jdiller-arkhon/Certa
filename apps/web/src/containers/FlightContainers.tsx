@@ -22,7 +22,7 @@ import { CloudUpload } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/feedback';
-import { defaultPreflight, ensureOk, fleetKeys, useChecklistTemplates, useFlight, useFleetMutation, useFlights, type FlightFilter } from '@/data/fleet';
+import { defaultPreflight, ensureOk, fleetKeys, useAuthorizations, useChecklistTemplates, useFlight, useFleetMutation, useFlights, type FlightFilter } from '@/data/fleet';
 import { api } from '@/lib/api';
 import { uuidv7 } from '@/lib/idb';
 import { discardOutboxItem, enqueueFlight, retryRejected, useOutbox, type OutboxItem } from '@/lib/outbox';
@@ -115,6 +115,7 @@ export function FlightDetailContainer({ flightId }: { flightId: string }) {
   const router = useRouter();
   const outbox = useOutbox();
   const q = useFlight(f.orgId, flightId);
+  const auths = useAuthorizations(f.orgId);
   const local = outbox.items.find((i) => i.id === flightId);
   const remove = useFleetMutation(f.orgId, async () => ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/flights/{flightId}', { params: { path: { orgId: f.orgId, flightId } } })), {
     flights: true,
@@ -123,7 +124,7 @@ export function FlightDetailContainer({ flightId }: { flightId: string }) {
   if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
   const flight: Flight | null = (q.data as Flight | undefined) ?? (local ? outboxFlight(local) : null);
   const preflight = (q.data?.goNoGo ?? local?.body.goNoGo ?? null) as GoNoGoResult | null;
-  const data = buildFlightDetail(f.bi, flight, { preflight, checklist: q.data?.checklist ?? null });
+  const data = buildFlightDetail(f.bi, flight, { preflight, checklist: q.data?.checklist ?? null, authorization: q.data?.authorization ?? auths.data?.find((a) => a.id === flight?.authorizationId) ?? null });
   const notFound = q.error instanceof CertaApiError && q.error.status === 404;
   return (
     <FlightDetailScreen
@@ -165,6 +166,7 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
   const qc = useQueryClient();
   const existing = useFlight(f.orgId, flightId ?? '');
   const templates = useChecklistTemplates(f.orgId);
+  const authorizations = useAuthorizations(f.orgId);
   const [selection, setSelection] = useState<{ pilotId: string; aircraftId: string | null; batteryIds: string[] } | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -227,7 +229,7 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
       />
     );
   // The checklist is ticked when a flight is logged, not when it's edited later.
-  const base = buildLogFlight(f.bi, { currentPilotId: f.myPilotId, now: new Date(), checklist: flightId ? null : defaultPreflight(templates.data) });
+  const base = buildLogFlight(f.bi, { currentPilotId: f.myPilotId, now: new Date(), checklist: flightId ? null : defaultPreflight(templates.data), authorizations: authorizations.data });
   const ex = flightId ? (existing.data as Flight | undefined) : undefined;
   const defaults = ex
     ? {
@@ -280,6 +282,7 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
           operationType: v.operationType as Flight['operationType'],
           notes: v.notes,
           ...(v.checklist && !ex ? { checklist: v.checklist } : {}),
+          ...(v.authorizationId ? { authorizationId: v.authorizationId } : {}),
           // Conditions checked at the site: keep where and in what weather the flight happened.
           ...(conditions.data && !ex
             ? {

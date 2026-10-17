@@ -6,7 +6,7 @@
  */
 import { can } from '../domain/permissions.js';
 import type { ChecklistTemplate, Flight, MaintenanceEvent, WeatherSnapshot } from '../domain/entities.js';
-import type { FlightChecklist } from '../api/schemas.js';
+import type { AuthorizationRecord, FlightChecklist } from '../api/schemas.js';
 import type { Role, UnitsPreference } from '../domain/enums.js';
 import { fleetReadiness, maintenanceItems, type FleetReadiness, type FleetSnapshot, type GoNoGoResult } from '../fleet/fleet.js';
 import { addDays, displayDate, displayInstant } from '../format/dates.js';
@@ -37,6 +37,8 @@ import type {
   FlightChecklistViewModel,
   ChecklistViewModel,
   ChecklistsAdminScreenProps,
+  AuthorizationsScreenProps,
+  AuthorizationRowViewModel,
   FlightListScreenProps,
   FlightRowViewModel,
   InsuranceScreenProps,
@@ -303,7 +305,7 @@ export function weatherSummary(w: WeatherSnapshot | null, units: UnitsPreference
 export function buildFlightDetail(
   i: BuildInput,
   f: Flight | null,
-  extra: { path?: unknown | null; altitudeProfile?: { t: number; altitude: number }[]; integrity?: { contentHash: string; verified: boolean | null } | null; preflight?: GoNoGoResult | null; checklist?: FlightChecklist | null } = {},
+  extra: { path?: unknown | null; altitudeProfile?: { t: number; altitude: number }[]; integrity?: { contentHash: string; verified: boolean | null } | null; preflight?: GoNoGoResult | null; checklist?: FlightChecklist | null; authorization?: Pick<AuthorizationRecord, 'kind' | 'reference'> | null } = {},
 ): ScreenData<FlightDetailScreenProps> {
   const { snapshot: s, ctx } = i;
   const n = fleetNames(s);
@@ -324,7 +326,7 @@ export function buildFlightDetail(
           maxDistance: f.maxDistanceM == null ? null : formatLength(f.maxDistanceM, ctx.units),
           operationType: OPERATION_TYPE_LABEL[f.operationType] ?? f.operationType,
           airspaceClass: f.airspaceClass ? `Class ${f.airspaceClass}` : null,
-          authorizationRef: null,
+          authorizationRef: extra.authorization ? `${AUTHORIZATION_KIND_LABEL[extra.authorization.kind]} ${extra.authorization.reference}` : null,
           weatherSummary: weatherSummary(f.weather, ctx.units),
           notes: f.notes,
           source: f.source === 'manual' ? 'Logged manually' : `Imported${f.importParser ? ` (${f.importParser})` : ''}`,
@@ -364,7 +366,7 @@ export function toChecklistViewModel(t: ChecklistTemplate): ChecklistViewModel {
   };
 }
 
-export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | null; now: Date; checklist?: ChecklistTemplate | null }): ScreenData<LogFlightScreenProps> {
+export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | null; now: Date; checklist?: ChecklistTemplate | null; authorizations?: AuthorizationRecord[] }): ScreenData<LogFlightScreenProps> {
   const r = readinessOf(i);
   const { snapshot: s, ctx } = i;
   const last = s.lastFlight;
@@ -399,6 +401,7 @@ export function buildLogFlight(i: BuildInput, opts: { currentPilotId: string | n
     altitudeUnitLabel: ctx.units.length,
     preflight: null,
     checklist: opts.checklist ? toChecklistViewModel(opts.checklist) : null,
+    authorizationOptions: authorizationOptions(opts.authorizations ?? [], opts.now),
     conditions: { status: 'idle', advisories: [], weatherSummary: null, checkedAt: null, error: null },
     fieldErrors: {},
     saving: false,
@@ -551,4 +554,68 @@ export function buildChecklistsAdmin(i: BuildInput, templates: ChecklistTemplate
     canManage: can(i.role, 'checklists.manage_templates'),
     saving: false,
   };
+}
+
+export const AUTHORIZATION_KIND_LABEL: Record<AuthorizationRowViewModel['kind'], string> = {
+  laanc: 'LAANC',
+  airspace_authorization: 'Airspace authorization',
+  waiver: 'Part 107 waiver',
+  coa: 'COA',
+  other: 'Other',
+};
+
+const authLevel = (a: AuthorizationRecord, now: Date): { rank: number; status: { level: 'green' | 'amber' | 'red'; label: string } } => {
+  const t = now.getTime();
+  if (a.validTo && Date.parse(a.validTo) <= t) return { rank: 0, status: { level: 'red', label: 'Expired' } };
+  if (a.validFrom && Date.parse(a.validFrom) > t) return { rank: 3, status: { level: 'amber', label: 'Not yet valid' } };
+  const days = a.validTo ? (Date.parse(a.validTo) - t) / 86400_000 : Infinity;
+  // A LAANC approval lasts hours; only longer-lived authorizations get a 30-day warning.
+  if (a.kind !== 'laanc' && days <= 30) return { rank: 1, status: { level: 'amber', label: `Expires in ${Math.max(1, Math.ceil(days))} ${Math.ceil(days) === 1 ? 'day' : 'days'}` } };
+  return { rank: 2, status: { level: 'green', label: 'Current' } };
+};
+
+export function buildAuthorizations(i: BuildInput, list: AuthorizationRecord[], opts: { ownPilotId: string | null }): ScreenData<AuthorizationsScreenProps> {
+  const { snapshot: s, ctx } = i;
+  const n = fleetNames(s);
+  const manageAll = can(i.role, 'authorizations.manage', { actorPilotId: opts.ownPilotId, resourcePilotId: null });
+  const rows = list
+    .filter((a) => !a.deletedAt)
+    .map((a) => {
+      const l = authLevel(a, ctx.now);
+      return {
+        rank: l.rank,
+        row: {
+          id: a.id,
+          kind: a.kind,
+          kindLabel: AUTHORIZATION_KIND_LABEL[a.kind],
+          reference: a.reference,
+          title: a.title,
+          pilot: a.pilotId ? { id: a.pilotId, name: n.pilot(a.pilotId) } : null,
+          validFrom: a.validFrom ? displayInstant(a.validFrom, ctx.orgTimeZone, ctx.now) : null,
+          validTo: a.validTo ? displayInstant(a.validTo, ctx.orgTimeZone, ctx.now) : null,
+          status: l.status,
+          scope: a.scope,
+          conditions: a.conditions,
+          canEdit: can(i.role, 'authorizations.manage', { actorPilotId: opts.ownPilotId, resourcePilotId: a.pilotId }),
+        } satisfies AuthorizationRowViewModel,
+      };
+    })
+    .sort((a, b) => a.rank - b.rank || (a.row.validTo?.iso ?? '9').localeCompare(b.row.validTo?.iso ?? '9'))
+    .map((x) => x.row);
+  return {
+    ...OK,
+    authorizations: rows,
+    pilotOptions: s.pilots.filter((p) => !p.deletedAt && p.active).map((p) => ({ value: p.id, label: p.displayName })),
+    canCreate: manageAll || (!!opts.ownPilotId && can(i.role, 'authorizations.manage', { actorPilotId: opts.ownPilotId, resourcePilotId: opts.ownPilotId })),
+    ownPilotId: manageAll ? null : opts.ownPilotId,
+    saving: false,
+    fieldErrors: {},
+  };
+}
+
+/** Authorizations a pilot can attach to a flight now: current or starting today, never expired. */
+export function authorizationOptions(list: AuthorizationRecord[], now: Date): { value: string; label: string }[] {
+  return list
+    .filter((a) => !a.deletedAt && authLevel(a, now).status.label !== 'Expired')
+    .map((a) => ({ value: a.id, label: `${AUTHORIZATION_KIND_LABEL[a.kind]} ${a.reference}${a.title ? ` — ${a.title}` : ''}` }));
 }

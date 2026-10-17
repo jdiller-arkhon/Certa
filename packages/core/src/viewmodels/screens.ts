@@ -605,6 +605,8 @@ export interface LogFlightScreenProps extends AsyncState {
    * (it recomputes when `onSelectionChange` fires). Advisory: never blocks logging. Stored with the flight.
    */
   preflight: GoNoGoResult | null;
+  /** Authorizations valid now, for the pilot to attach (LAANC approval, waiver, COA). */
+  authorizationOptions: { value: string; label: string }[];
   /** The org's default pre-flight checklist to tick before logging; null when editing or none is set. */
   checklist: ChecklistViewModel | null;
   /**
@@ -636,6 +638,8 @@ export interface LogFlightScreenProps extends AsyncState {
     maxAltitude: number | null;
     locationName: string | null;
     notes: string | null;
+    /** The authorization (LAANC, waiver…) the flight operates under, if any. */
+    authorizationId: string | null;
     /** Ticked items; an incomplete checklist is stored as incomplete, never blocks logging. */
     checklist: { templateId: string; templateVersion: number; responses: { itemId: string; checked: boolean }[] } | null;
   }) => void;
@@ -897,5 +901,35 @@ export interface ChecklistsAdminScreenProps extends AsyncState {
   saving: boolean;
   /** `id` null creates a template; otherwise publishes the next version of it. */
   onSave: (input: { id: string | null; name: string; kind: 'preflight' | 'postflight' | 'emergency' | 'other'; isDefault: boolean; sections: { id: string; title: string; items: { id: string; text: string; required: boolean }[] }[] }) => void;
+  onDelete: (id: string) => void;
+}
+
+export interface AuthorizationRowViewModel {
+  id: string;
+  kind: 'laanc' | 'airspace_authorization' | 'waiver' | 'coa' | 'other';
+  kindLabel: string;
+  reference: string;
+  title: string | null;
+  pilot: { id: string; name: string } | null;
+  validFrom: DateDisplay | null;
+  validTo: DateDisplay | null;
+  status: StatusBadge;
+  scope: string | null;
+  conditions: string | null;
+  /** The signed-in member may edit or delete it. */
+  canEdit: boolean;
+}
+
+/** @status beta — route: /authorizations */
+export interface AuthorizationsScreenProps extends AsyncState {
+  /** Expired and expiring first, then current, then not yet valid. */
+  authorizations: AuthorizationRowViewModel[];
+  pilotOptions: { value: string; label: string }[];
+  canCreate: boolean;
+  /** Pilots may only record authorizations issued to themselves. */
+  ownPilotId: string | null;
+  saving: boolean;
+  fieldErrors: Record<string, string>;
+  onSave: (input: { id: string | null; kind: AuthorizationRowViewModel['kind']; reference: string; title: string | null; pilotId: string | null; validFrom: string | null; validTo: string | null; scope: string | null; conditions: string | null }) => void;
   onDelete: (id: string) => void;
 }

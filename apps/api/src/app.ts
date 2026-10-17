@@ -25,6 +25,7 @@ import { authRoutes } from './routes/auth.js';
 import { fleetRoutes } from './routes/fleet.js';
 import { flightRoutes } from './routes/flights.js';
 import { checklistRoutes } from './routes/checklists.js';
+import { authorizationRoutes } from './routes/authorizations.js';
 import { shareRoutes } from './routes/share.js';
 import { integrationRoutes } from './routes/integrations.js';
 import { conditionsRoutes } from './routes/conditions.js';
@@ -173,6 +174,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(fleetRoutes(ctx), { prefix: v1 });
   await app.register(flightRoutes(ctx), { prefix: v1 });
   await app.register(checklistRoutes(ctx), { prefix: v1 });
+  await app.register(authorizationRoutes(ctx), { prefix: v1 });
   await app.register(shareRoutes(ctx), { prefix: v1 });
   await app.register(integrationRoutes(ctx), { prefix: v1 });
   await app.register(conditionsRoutes(ctx), { prefix: v1 });

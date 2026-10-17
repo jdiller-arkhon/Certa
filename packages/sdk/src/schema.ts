@@ -338,7 +338,7 @@ export interface paths {
                                     aircraftIds: string[] | null;
                                 } | null;
                             };
-                            permissions: ("org.read" | "org.update" | "org.billing" | "members.read" | "members.manage" | "rules.read" | "rules.override" | "audit.read" | "pilots.read" | "pilots.manage" | "credentials.read" | "credentials.manage" | "aircraft.read" | "aircraft.manage" | "aircraft.ground" | "aircraft.override_grounding" | "batteries.read" | "batteries.manage" | "components.manage" | "maintenance.read" | "maintenance.manage" | "flights.read" | "flights.log" | "flights.edit" | "missions.read" | "missions.manage" | "checklists.read" | "checklists.manage_templates" | "checklists.run" | "incidents.read" | "incidents.report" | "incidents.manage" | "exports.create" | "integrity.verify" | "integrations.manage")[];
+                            permissions: ("org.read" | "org.update" | "org.billing" | "members.read" | "members.manage" | "rules.read" | "rules.override" | "audit.read" | "pilots.read" | "pilots.manage" | "credentials.read" | "credentials.manage" | "aircraft.read" | "aircraft.manage" | "aircraft.ground" | "aircraft.override_grounding" | "batteries.read" | "batteries.manage" | "components.manage" | "maintenance.read" | "maintenance.manage" | "flights.read" | "flights.log" | "flights.edit" | "missions.read" | "missions.manage" | "authorizations.read" | "authorizations.manage" | "checklists.read" | "checklists.manage_templates" | "checklists.run" | "incidents.read" | "incidents.report" | "incidents.manage" | "exports.create" | "integrity.verify" | "integrations.manage")[];
                         };
                     };
                 };
@@ -423,7 +423,7 @@ export interface paths {
                                     aircraftIds: string[] | null;
                                 } | null;
                             };
-                            permissions: ("org.read" | "org.update" | "org.billing" | "members.read" | "members.manage" | "rules.read" | "rules.override" | "audit.read" | "pilots.read" | "pilots.manage" | "credentials.read" | "credentials.manage" | "aircraft.read" | "aircraft.manage" | "aircraft.ground" | "aircraft.override_grounding" | "batteries.read" | "batteries.manage" | "components.manage" | "maintenance.read" | "maintenance.manage" | "flights.read" | "flights.log" | "flights.edit" | "missions.read" | "missions.manage" | "checklists.read" | "checklists.manage_templates" | "checklists.run" | "incidents.read" | "incidents.report" | "incidents.manage" | "exports.create" | "integrity.verify" | "integrations.manage")[];
+                            permissions: ("org.read" | "org.update" | "org.billing" | "members.read" | "members.manage" | "rules.read" | "rules.override" | "audit.read" | "pilots.read" | "pilots.manage" | "credentials.read" | "credentials.manage" | "aircraft.read" | "aircraft.manage" | "aircraft.ground" | "aircraft.override_grounding" | "batteries.read" | "batteries.manage" | "components.manage" | "maintenance.read" | "maintenance.manage" | "flights.read" | "flights.log" | "flights.edit" | "missions.read" | "missions.manage" | "authorizations.read" | "authorizations.manage" | "checklists.read" | "checklists.manage_templates" | "checklists.run" | "incidents.read" | "incidents.report" | "incidents.manage" | "exports.create" | "integrity.verify" | "integrations.manage")[];
                         };
                     };
                 };
@@ -519,7 +519,7 @@ export interface paths {
                                     aircraftIds: string[] | null;
                                 } | null;
                             };
-                            permissions: ("org.read" | "org.update" | "org.billing" | "members.read" | "members.manage" | "rules.read" | "rules.override" | "audit.read" | "pilots.read" | "pilots.manage" | "credentials.read" | "credentials.manage" | "aircraft.read" | "aircraft.manage" | "aircraft.ground" | "aircraft.override_grounding" | "batteries.read" | "batteries.manage" | "components.manage" | "maintenance.read" | "maintenance.manage" | "flights.read" | "flights.log" | "flights.edit" | "missions.read" | "missions.manage" | "checklists.read" | "checklists.manage_templates" | "checklists.run" | "incidents.read" | "incidents.report" | "incidents.manage" | "exports.create" | "integrity.verify" | "integrations.manage")[];
+                            permissions: ("org.read" | "org.update" | "org.billing" | "members.read" | "members.manage" | "rules.read" | "rules.override" | "audit.read" | "pilots.read" | "pilots.manage" | "credentials.read" | "credentials.manage" | "aircraft.read" | "aircraft.manage" | "aircraft.ground" | "aircraft.override_grounding" | "batteries.read" | "batteries.manage" | "components.manage" | "maintenance.read" | "maintenance.manage" | "flights.read" | "flights.log" | "flights.edit" | "missions.read" | "missions.manage" | "authorizations.read" | "authorizations.manage" | "checklists.read" | "checklists.manage_templates" | "checklists.run" | "incidents.read" | "incidents.report" | "incidents.manage" | "exports.create" | "integrity.verify" | "integrations.manage")[];
                         };
                     };
                 };
@@ -3279,6 +3279,7 @@ export interface paths {
                                 detail: string;
                             }[];
                         } | null;
+                        authorizationId?: string | null;
                         checklist?: {
                             /** Format: uuid */
                             templateId: string;
@@ -3393,6 +3394,12 @@ export interface paths {
                                     }[];
                                 }[];
                             } | null;
+                            authorization?: {
+                                /** @enum {string} */
+                                kind: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                                reference: string;
+                                title: string | null;
+                            } | null;
                         };
                     };
                 };
@@ -3495,6 +3502,12 @@ export interface paths {
                                         note: string | null;
                                     }[];
                                 }[];
+                            } | null;
+                            authorization?: {
+                                /** @enum {string} */
+                                kind: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                                reference: string;
+                                title: string | null;
                             } | null;
                         };
                     };
@@ -3642,6 +3655,12 @@ export interface paths {
                                     }[];
                                 }[];
                             } | null;
+                            authorization?: {
+                                /** @enum {string} */
+                                kind: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                                reference: string;
+                                title: string | null;
+                            } | null;
                         };
                     };
                 };
@@ -3732,6 +3751,7 @@ export interface paths {
                             summary: string | null;
                         } | null;
                         notes?: string | null;
+                        authorizationId?: string | null;
                     };
                 };
             };
@@ -3835,6 +3855,12 @@ export interface paths {
                                         note: string | null;
                                     }[];
                                 }[];
+                            } | null;
+                            authorization?: {
+                                /** @enum {string} */
+                                kind: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                                reference: string;
+                                title: string | null;
                             } | null;
                         };
                     };
@@ -4085,6 +4111,212 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/authorizations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            authorizations: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                /** @enum {string} */
+                                kind: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                                reference: string;
+                                title: string | null;
+                                scope: string | null;
+                                conditions: string | null;
+                                validFrom: string | null;
+                                validTo: string | null;
+                                pilotId: string | null;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                        reference: string;
+                        title?: string | null;
+                        scope?: string | null;
+                        conditions?: string | null;
+                        validFrom?: string | null;
+                        validTo?: string | null;
+                        pilotId?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** @enum {string} */
+                            kind: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                            reference: string;
+                            title: string | null;
+                            scope: string | null;
+                            conditions: string | null;
+                            validFrom: string | null;
+                            validTo: string | null;
+                            pilotId: string | null;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/authorizations/{authorizationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    authorizationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    authorizationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** @enum {string} */
+                        kind?: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                        reference?: string;
+                        title?: string | null;
+                        scope?: string | null;
+                        conditions?: string | null;
+                        validFrom?: string | null;
+                        validTo?: string | null;
+                        pilotId?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** @enum {string} */
+                            kind: "laanc" | "airspace_authorization" | "waiver" | "coa" | "other";
+                            reference: string;
+                            title: string | null;
+                            scope: string | null;
+                            conditions: string | null;
+                            validFrom: string | null;
+                            validTo: string | null;
+                            pilotId: string | null;
+                        };
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/v1/orgs/{orgId}/share-links": {
