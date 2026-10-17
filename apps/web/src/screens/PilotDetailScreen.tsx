@@ -9,10 +9,14 @@ import { Card } from '@/components/ui/card';
 import { Dialog } from '@/components/ui/dialog';
 import { Banner, Banners, EmptyState, SkeletonRows } from '@/components/ui/feedback';
 import { Field, Input, Select } from '@/components/ui/field';
-import { StatusBadge } from '@/components/ui/status';
+import { Panel, PanelRow, StatStrip } from '@/components/ui/panel';
+import { LEVEL_COLOR, StatusBadge } from '@/components/ui/status';
+import { TabPanel, Tabs, useHashTab } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/ui/text';
 import { ShareButton, ShareDialog } from './_share';
-import { FlightRows, ListCard, Reasons, RowButton, RowTitle, Section, Stat, StatGrid, When } from './_parts';
+import { FlightRows, ListCard, Reasons, RowButton, RowTitle, When } from './_parts';
+
+const TABS = ['overview', 'credentials', 'flights'] as const;
 
 const initials = (name: string) =>
   name
@@ -23,6 +27,7 @@ const initials = (name: string) =>
     .join('');
 
 export function PilotDetailScreen(props: PilotDetailScreenProps) {
+  const [tab, setTab] = useHashTab(TABS);
   const [adding, setAdding] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [editing, setEditing] = useState<{ id: string; identifier: string; issuedOn: string; expiresOn: string } | null>(null);
@@ -61,54 +66,85 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
       />
       <Banners>{props.error && <Banner key="e" tone="error">{props.error}</Banner>}</Banners>
 
-      <Card className="mb-6 flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:p-6">
-        <div className="shrink-0"><StatusBadge status={p.status} /></div>
-        <div className="flex-1">{p.reasons.length ? <Reasons reasons={p.reasons} /> : <p className="text-[15px] text-[var(--certa-muted)]">Certificate and recurrent training are current. Legal to fly under the active rule pack.</p>}</div>
-      </Card>
+      <Tabs label="Pilot sections" tabs={[{ id: 'overview', label: 'Overview' }, { id: 'credentials', label: 'Credentials', count: props.credentials.length }, { id: 'flights', label: 'Flights', count: p.totals.flights }]} value={tab} onChange={setTab} />
 
-      <StatGrid>
-        <Stat label="Flights" value={p.totals.flights} />
-        <Stat label="Flight time" value={p.totals.flightTime.display} />
-        <Stat label="Last 90 days" value={p.totals.last90DaysFlights} sub="flights" />
-        <Stat label="Credentials" value={props.credentials.length} />
-      </StatGrid>
+      {tab === 'overview' && (
+        <TabPanel key="overview" label="Overview" className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+          <Panel label="Readiness" meta={<StatusBadge status={p.status} size="sm" />}>
+            <StatStrip
+              items={[
+                { label: 'Flights', value: p.totals.flights },
+                { label: 'Flight time', value: p.totals.flightTime.display },
+                { label: 'Last 90 days', value: p.totals.last90DaysFlights },
+              ]}
+            />
+            <div className="px-5 py-4">
+              {p.reasons.length ? <Reasons reasons={p.reasons} onOpen={props.canEdit ? () => setTab('credentials') : undefined} /> : <p className="text-[15px] text-[var(--certa-muted)]">Certificate and recurrent training are current. Legal to fly under the active rule pack.</p>}
+            </div>
+          </Panel>
+          <div className="space-y-6">
+            <Panel label="Contact">
+              <div className="py-1.5">
+                <PanelRow label="Certificate" value={p.certificateNumber ?? '—'} />
+                <PanelRow label="Email" value={p.email ?? '—'} />
+                <PanelRow label="Phone" value={p.phone ?? '—'} />
+              </div>
+            </Panel>
+            <Panel label="Credentials" meta={<button type="button" onClick={() => setTab('credentials')} className="hover:text-[var(--certa-text)]">View all</button>}>
+              <div className="py-1.5">
+                {props.credentials.length ? (
+                  props.credentials.slice(0, 4).map((c) => <PanelRow key={c.id} dot={LEVEL_COLOR[c.status.level]} label={c.typeLabel} value={c.expires ? c.expires.display : 'No expiry'} onClick={() => setTab('credentials')} />)
+                ) : (
+                  <p className="px-5 py-3 text-[14px] text-[var(--certa-muted)]">None on file yet.</p>
+                )}
+              </div>
+            </Panel>
+          </div>
+        </TabPanel>
+      )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <ListCard
-          title="Credentials"
-          count={props.credentials.length}
-          aside={props.canEdit && <Button size="sm" variant="secondary" icon={<Plus className="size-4" aria-hidden />} onClick={() => setAdding(true)}>Add</Button>}
-        >
-          {props.credentials.length ? (
-            props.credentials.map((c) => (
-              <RowButton key={c.id} onClick={props.canEdit ? () => openEdit(c.id) : undefined} label={`Edit ${c.typeLabel}`}>
-                <RowTitle
-                  title={c.typeLabel}
-                  sub={
-                    <>
-                      {c.identifier && <span className="tabular">{c.identifier} · </span>}
-                      {c.expires ? <>Expires <When d={c.expires} /></> : c.expiryBasis}
-                    </>
-                  }
-                />
-                <StatusBadge status={c.status} size="sm" />
-              </RowButton>
-            ))
-          ) : (
-            <li className="px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]">No credentials on file. Add the Part 107 certificate and recurrent training to compute currency.</li>
-          )}
-        </ListCard>
+      {tab === 'credentials' && (
+        <TabPanel key="credentials" label="Credentials">
+          <ListCard
+            title="Credentials"
+            count={props.credentials.length}
+            aside={props.canEdit && <Button size="sm" variant="secondary" icon={<Plus className="size-4" aria-hidden />} onClick={() => setAdding(true)}>Add</Button>}
+          >
+            {props.credentials.length ? (
+              props.credentials.map((c) => (
+                <RowButton key={c.id} onClick={props.canEdit ? () => openEdit(c.id) : undefined} label={`Edit ${c.typeLabel}`}>
+                  <RowTitle
+                    title={c.typeLabel}
+                    sub={
+                      <>
+                        {c.identifier && <span className="tabular">{c.identifier} · </span>}
+                        {c.expires ? <>Expires <When d={c.expires} /></> : c.expiryBasis}
+                      </>
+                    }
+                  />
+                  <StatusBadge status={c.status} size="sm" />
+                </RowButton>
+              ))
+            ) : (
+              <li className="px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]">No credentials on file. Add the Part 107 certificate and recurrent training to compute currency.</li>
+            )}
+          </ListCard>
+        </TabPanel>
+      )}
 
-        <ListCard title="Recent flights" count={props.recentFlights.length}>
-          {props.recentFlights.length ? (
-            <FlightRows flights={props.recentFlights} onOpen={props.onOpenFlight} showPilot={false} />
-          ) : (
-            <li className="flex flex-col items-center gap-2 px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]">
-              <Route className="size-5" aria-hidden /> No flights logged yet.
-            </li>
-          )}
-        </ListCard>
-      </div>
+      {tab === 'flights' && (
+        <TabPanel key="flights" label="Flights">
+          <ListCard title="Recent flights" count={props.recentFlights.length}>
+            {props.recentFlights.length ? (
+              <FlightRows flights={props.recentFlights} onOpen={props.onOpenFlight} showPilot={false} />
+            ) : (
+              <li className="flex flex-col items-center gap-2 px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]">
+                <Route className="size-5" aria-hidden /> No flights logged yet.
+              </li>
+            )}
+          </ListCard>
+        </TabPanel>
+      )}
 
       <Dialog
         open={adding}
