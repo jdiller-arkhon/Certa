@@ -16,6 +16,7 @@ import { Label, PageHeader } from '@/components/ui/text';
 import { TextArea, num } from './_parts';
 
 const DURATIONS = [10, 15, 20, 25, 30, 45];
+const RANK = { green: 0, amber: 1, red: 2 } as const;
 
 /** Phones get the step-by-step form; tablets and desktops keep the single page. */
 function useFieldMode() {
@@ -67,7 +68,7 @@ function ConditionsPanel({ conditions: c, onCheck }: { conditions: LogFlightScre
           {c.status === 'locating' ? 'Locating…' : c.status === 'loading' ? 'Checking…' : c.status === 'ready' ? 'Refresh' : 'Check'}
         </Button>
       </div>
-      {c.status === 'idle' && <p className="px-5 pb-4 text-[13px] text-[var(--certa-muted)]">Airspace, weather, and daylight at your location. Advisory only; saved with the flight.</p>}
+      {c.status === 'idle' && <p className="px-5 pb-4 text-[13px] text-[var(--certa-muted)]">Airspace, TFRs, restricted areas, weather, and daylight at your location, from FAA, NWS and NOAA data. Advisory only; saved with the flight.</p>}
       {c.error && (
         <p role="alert" className="px-5 pb-4 text-[13px] text-[var(--certa-expired)]">
           {c.error}
@@ -76,14 +77,22 @@ function ConditionsPanel({ conditions: c, onCheck }: { conditions: LogFlightScre
       {c.status === 'ready' && (
         <ul aria-label="Conditions advisories" className="border-t border-[var(--certa-border)]">
           {c.weatherSummary && <li className="border-b border-[var(--certa-border)] px-5 py-2.5 text-[13px]">{c.weatherSummary}</li>}
-          {c.advisories.map((a, i) => (
+          {[...c.advisories].sort((x, y) => RANK[y.level] - RANK[x.level]).map((a, i) => (
             <li key={i} className="flex items-start gap-2.5 border-b border-[var(--certa-border)] px-5 py-2.5 last:border-b-0">
               <span className="mt-[3px]" style={{ color: LEVEL_COLOR[a.level] }}>
                 <LevelIcon level={a.level} />
               </span>
               <span className="min-w-0 text-[13px]">
                 <span className="font-semibold">{a.title}</span>
-                <span className="block text-[var(--certa-muted)]">{a.detail}</span>
+                <span className="block break-words whitespace-pre-line text-[var(--certa-muted)]">{a.detail}</span>
+                <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[11px] text-[var(--certa-muted)]">
+                  {a.source}
+                  {a.href && (
+                    <a href={a.href} target="_blank" rel="noopener noreferrer" className="font-semibold text-[var(--certa-text)] underline-offset-4 hover:underline">
+                      Open ↗
+                    </a>
+                  )}
+                </span>
               </span>
             </li>
           ))}

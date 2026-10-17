@@ -44,9 +44,9 @@ const Env = z.object({
   S3_SECRET_ACCESS_KEY: z.string().optional(),
   BLOB_DIR: z.string().default('./data/blobs'),
   /**
-   * Pre-flight conditions call two public US services (api.weather.gov and the FAA UAS Facility
-   * Map on services6.arcgis.com). "off" keeps the stack fully offline; the app then shows
-   * airspace and weather as "not checked".
+   * Pre-flight conditions call free, keyless public US services: api.weather.gov, the FAA on
+   * services6.arcgis.com and tfr.faa.gov, aviationweather.gov, and services.swpc.noaa.gov. "off"
+   * keeps the stack fully offline; the app then shows airspace, TFRs and weather as "not checked".
    */
   CONDITIONS_LOOKUPS: z.enum(['on', 'off']).default('on'),
 });

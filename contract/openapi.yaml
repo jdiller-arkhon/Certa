@@ -11473,6 +11473,135 @@ paths:
                       - civilDusk
                       - isDaylight
                     additionalProperties: false
+                  tfrs:
+                    anyOf:
+                      - type: array
+                        items:
+                          type: object
+                          properties:
+                            kind:
+                              type: string
+                              enum:
+                                - tfr
+                                - prohibited
+                                - restricted
+                                - special_use
+                                - national_security
+                                - national_security_part_time
+                                - national_defense
+                                - stadium
+                                - fria
+                            name:
+                              type: string
+                            detail:
+                              type: string
+                            inside:
+                              type: boolean
+                          required:
+                            - kind
+                            - name
+                            - detail
+                            - inside
+                          additionalProperties: false
+                      - type: string
+                        enum:
+                          - unavailable
+                  restrictions:
+                    anyOf:
+                      - type: array
+                        items:
+                          type: object
+                          properties:
+                            kind:
+                              type: string
+                              enum:
+                                - tfr
+                                - prohibited
+                                - restricted
+                                - special_use
+                                - national_security
+                                - national_security_part_time
+                                - national_defense
+                                - stadium
+                                - fria
+                            name:
+                              type: string
+                            detail:
+                              type: string
+                            inside:
+                              type: boolean
+                          required:
+                            - kind
+                            - name
+                            - detail
+                            - inside
+                          additionalProperties: false
+                      - type: string
+                        enum:
+                          - unavailable
+                  aviation:
+                    anyOf:
+                      - type: object
+                        properties:
+                          station:
+                            type: string
+                          name:
+                            type:
+                              - string
+                              - "null"
+                          distanceKm:
+                            type: number
+                          flightCategory:
+                            type:
+                              - string
+                              - "null"
+                          ceilingFt:
+                            type:
+                              - number
+                              - "null"
+                          visibilitySm:
+                            type:
+                              - number
+                              - "null"
+                          metar:
+                            type: string
+                          taf:
+                            type:
+                              - string
+                              - "null"
+                        required:
+                          - station
+                          - name
+                          - distanceKm
+                          - flightCategory
+                          - ceilingFt
+                          - visibilitySm
+                          - metar
+                          - taf
+                        additionalProperties: false
+                      - type: "null"
+                  forecast:
+                    anyOf:
+                      - type: object
+                        properties:
+                          hours:
+                            type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          maxWindMph:
+                            type: number
+                          summary:
+                            type: string
+                        required:
+                          - hours
+                          - maxWindMph
+                          - summary
+                        additionalProperties: false
+                      - type: "null"
+                  kp:
+                    type:
+                      - number
+                      - "null"
                   advisories:
                     type: array
                     items:
@@ -11492,6 +11621,10 @@ paths:
                           type: string
                         source:
                           type: string
+                        href:
+                          type:
+                            - string
+                            - "null"
                       required:
                         - key
                         - level

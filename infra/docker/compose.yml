@@ -1,6 +1,7 @@
 # Certa self-hosted stack. One command: `pnpm stack:up` (or `docker compose -f infra/docker/compose.yml --env-file .env up -d --build`).
 # Every service runs inside your network. The only outbound calls are optional: pre-flight
-# conditions (api.weather.gov, services6.arcgis.com; CONDITIONS_LOOKUPS=off disables them) and
+# conditions (api.weather.gov, services6.arcgis.com, tfr.faa.gov, aviationweather.gov,
+# services.swpc.noaa.gov; CONDITIONS_LOOKUPS=off disables them) and
 # Web Push to browser push services (only when VAPID keys are set).
 name: certa
 

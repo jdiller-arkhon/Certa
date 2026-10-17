@@ -4805,6 +4805,36 @@ export interface paths {
                                 civilDusk: string | null;
                                 isDaylight: boolean;
                             };
+                            tfrs?: {
+                                /** @enum {string} */
+                                kind: "tfr" | "prohibited" | "restricted" | "special_use" | "national_security" | "national_security_part_time" | "national_defense" | "stadium" | "fria";
+                                name: string;
+                                detail: string;
+                                inside: boolean;
+                            }[] | "unavailable";
+                            restrictions?: {
+                                /** @enum {string} */
+                                kind: "tfr" | "prohibited" | "restricted" | "special_use" | "national_security" | "national_security_part_time" | "national_defense" | "stadium" | "fria";
+                                name: string;
+                                detail: string;
+                                inside: boolean;
+                            }[] | "unavailable";
+                            aviation?: {
+                                station: string;
+                                name: string | null;
+                                distanceKm: number;
+                                flightCategory: string | null;
+                                ceilingFt: number | null;
+                                visibilitySm: number | null;
+                                metar: string;
+                                taf: string | null;
+                            } | null;
+                            forecast?: {
+                                hours: number;
+                                maxWindMph: number;
+                                summary: string;
+                            } | null;
+                            kp?: number | null;
                             advisories: {
                                 key: string;
                                 /** @enum {string} */
@@ -4812,6 +4842,7 @@ export interface paths {
                                 title: string;
                                 detail: string;
                                 source: string;
+                                href?: string | null;
                             }[];
                         };
                     };

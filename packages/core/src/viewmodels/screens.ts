@@ -613,7 +613,8 @@ export interface LogFlightScreenProps extends AsyncState {
    */
   conditions: {
     status: 'idle' | 'locating' | 'loading' | 'ready' | 'error';
-    advisories: { level: ReadinessLevel; title: string; detail: string; source: string }[];
+    /** Worst first. `href` points to where the pilot can act (LAANC, DroneZone, the TFR list). */
+    advisories: { level: ReadinessLevel; title: string; detail: string; source: string; href?: string | null }[];
     /** e.g. "Clear, 14°C, wind 8 mph from 150°". */
     weatherSummary: string | null;
     checkedAt: DateDisplay | null;

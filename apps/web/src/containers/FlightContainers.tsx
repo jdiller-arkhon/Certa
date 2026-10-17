@@ -19,7 +19,7 @@ import { CertaApiError, unwrap } from '@certa/sdk';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { CloudUpload } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/feedback';
 import { defaultPreflight, ensureOk, fleetKeys, useChecklistTemplates, useFlight, useFleetMutation, useFlights, type FlightFilter } from '@/data/fleet';
@@ -189,6 +189,18 @@ export function LogFlightContainer({ flightId }: { flightId?: string }) {
       { enableHighAccuracy: true, timeout: 15_000, maximumAge: 60_000 },
     );
   };
+  // If the pilot already allowed location, check conditions as soon as the form opens.
+  const autoChecked = useRef(false);
+  useEffect(() => {
+    if (flightId || autoChecked.current || !navigator.permissions) return;
+    autoChecked.current = true;
+    navigator.permissions
+      .query({ name: 'geolocation' })
+      .then((p) => {
+        if (p.state === 'granted' && navigator.onLine) checkConditions();
+      })
+      .catch(() => {});
+  }, [flightId]);
   const [formKey, setFormKey] = useState(0);
   const update = useFleetMutation(f.orgId, async (body: Record<string, unknown>) => unwrap(await api.PATCH('/api/v1/orgs/{orgId}/flights/{flightId}', { params: { path: { orgId: f.orgId, flightId: flightId! } }, body: body as never })), {
     flights: true,

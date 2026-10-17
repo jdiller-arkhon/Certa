@@ -1,8 +1,10 @@
 /**
- * Pre-flight conditions advisories: airspace (FAA UAS Facility Map grid), weather (NWS
- * observation), and daylight (computed). Advisory only — they never block logging, and the
- * remote pilot in command remains responsible. TFRs and NOTAMs are not checked; the result
- * says so every time.
+ * Pre-flight conditions advisories from free, authoritative public sources: airspace (FAA UAS
+ * Facility Map grid), TFRs (FAA TFR service), special-use airspace and UAS flight restrictions
+ * (FAA ADDS layers), weather (NWS observation and hourly forecast, aviationweather.gov METAR /
+ * TAF), geomagnetic activity (NOAA SWPC), and daylight (computed). Advisory only — they never
+ * block logging, and the remote pilot in command remains responsible. NOTAMs are not checked;
+ * the result says so every time.
  */
 import { z } from 'zod';
 import { AirspaceClass } from '../domain/enums.js';
@@ -16,8 +18,36 @@ export const Advisory = z.object({
   title: z.string(),
   detail: z.string(),
   source: z.string(),
+  /** Where to act on it (e.g. the FAA's list of LAANC providers). */
+  href: z.string().nullable().optional(),
 });
 export type Advisory = z.infer<typeof Advisory>;
+
+export const Restriction = z.object({
+  kind: z.enum(['tfr', 'prohibited', 'restricted', 'special_use', 'national_security', 'national_security_part_time', 'national_defense', 'stadium', 'fria']),
+  name: z.string(),
+  detail: z.string(),
+  /** false = nearby rather than over the point (TFRs within 5 NM, stadiums within 3 NM). */
+  inside: z.boolean(),
+});
+export type Restriction = z.infer<typeof Restriction>;
+
+export const AviationWeather = z.object({
+  station: z.string(),
+  name: z.string().nullable(),
+  distanceKm: z.number(),
+  /** VFR / MVFR / IFR / LIFR as reported. */
+  flightCategory: z.string().nullable(),
+  /** Lowest broken or overcast layer, feet AGL. */
+  ceilingFt: z.number().nullable(),
+  visibilitySm: z.number().nullable(),
+  metar: z.string(),
+  taf: z.string().nullable(),
+});
+export type AviationWeather = z.infer<typeof AviationWeather>;
+
+export const WindForecast = z.object({ hours: z.number().int(), maxWindMph: z.number(), summary: z.string() });
+export type WindForecast = z.infer<typeof WindForecast>;
 
 export const AirspaceInfo = z.object({
   class: AirspaceClass,
@@ -35,6 +65,14 @@ export const ConditionsResponse = z.object({
   airspace: z.union([AirspaceInfo, z.literal('unavailable')]).nullable(),
   weather: WeatherSnapshot.nullable(),
   daylight: z.object({ civilDawn: z.string().nullable(), civilDusk: z.string().nullable(), isDaylight: z.boolean() }),
+  /** Active TFRs over or near the point; 'unavailable' = lookup failed. */
+  tfrs: z.union([z.array(Restriction), z.literal('unavailable')]).optional(),
+  /** Special-use airspace and UAS restrictions over or near the point; 'unavailable' = lookup failed. */
+  restrictions: z.union([z.array(Restriction), z.literal('unavailable')]).optional(),
+  aviation: AviationWeather.nullable().optional(),
+  forecast: WindForecast.nullable().optional(),
+  /** Latest planetary K index (0–9). */
+  kp: z.number().nullable().optional(),
   advisories: z.array(Advisory),
 });
 export type ConditionsResponse = z.infer<typeof ConditionsResponse>;
@@ -84,12 +122,33 @@ const MIN_VISIBILITY_M = 4828;
 const GUST_AMBER_MPS = 10.3; // 20 kt
 const WIND_AMBER_MPS = 8; // ~15 kt
 
+const RESTRICTION_TITLE: Record<Restriction['kind'], (name: string, inside: boolean) => string> = {
+  tfr: (n) => `TFR: ${n}`,
+  prohibited: (n) => `Prohibited area ${n}`,
+  restricted: (n, i) => `${i ? 'Inside restricted area' : 'Near restricted area'} ${n}`,
+  special_use: (n) => `Special-use airspace: ${n}`,
+  national_security: (n) => `UAS flight restriction: ${n}`,
+  national_security_part_time: (n) => `Part-time UAS restriction: ${n}`,
+  national_defense: (n) => `National defense airspace: ${n}`,
+  stadium: (n) => `Stadium within 3 NM: ${n}`,
+  fria: (n) => `FAA-recognized identification area: ${n}`,
+};
+
 const SURFACE_CONTROLLED: Record<string, string> = { B: 'Class B', C: 'Class C', D: 'Class D', E: 'Class E (surface)' };
+
+const LAANC_HELP = 'https://www.faa.gov/uas/getting_started/laanc';
+const TFR_HELP = 'https://tfr.faa.gov/';
 
 export function buildAdvisories(input: {
   airspace: AirspaceInfo | 'unavailable' | null;
   weather: WeatherSnapshot | null;
   daylight: { isDaylight: boolean; civilDawn: string | null; civilDusk: string | null };
+  /** Omitted = not looked up (older callers): a reminder replaces the result. */
+  tfrs?: Restriction[] | 'unavailable';
+  restrictions?: Restriction[] | 'unavailable';
+  aviation?: AviationWeather | null;
+  forecast?: WindForecast | null;
+  kp?: number | null;
 }): Advisory[] {
   const out: Advisory[] = [];
   const a = input.airspace;
@@ -101,14 +160,15 @@ export function buildAdvisories(input: {
     const name = SURFACE_CONTROLLED[a.class] ?? `Class ${a.class}`;
     const near = a.airport ? ` near ${a.airport}` : '';
     if (a.ceilingFt === 0)
-      out.push({ key: 'airspace', level: 'red', title: `${name}${near} — 0 ft grid`, detail: 'No automatic authorization here. Flight needs an FAA authorization through DroneZone (14 CFR 107.41).', source: 'FAA UAS Facility Map' });
+      out.push({ key: 'airspace', level: 'red', title: `${name}${near} — 0 ft grid`, detail: 'No automatic authorization here. Flight needs an FAA authorization through DroneZone (14 CFR 107.41).', source: 'FAA UAS Facility Map', href: 'https://faadronezone-access.faa.gov/' });
     else
       out.push({
         key: 'airspace',
         level: 'amber',
         title: `${name}${near}`,
-        detail: `Authorization required (14 CFR 107.41).${a.laanc ? ` LAANC available up to ${a.ceilingFt} ft AGL.` : ' LAANC not available here.'}`,
+        detail: `Authorization required (14 CFR 107.41).${a.laanc ? ` LAANC available up to ${a.ceilingFt} ft AGL — request it in any FAA-approved LAANC app (several are free).` : ' LAANC not available here; apply through DroneZone.'}`,
         source: 'FAA UAS Facility Map',
+        href: a.laanc ? LAANC_HELP : 'https://faadronezone-access.faa.gov/',
       });
   }
 
@@ -131,9 +191,49 @@ export function buildAdvisories(input: {
       out.push({ key: 'weather', level: 'green', title: 'Weather within typical limits', detail: w.summary ?? 'No significant weather reported.', source: 'National Weather Service' });
   }
 
+  const av = input.aviation;
+  if (av) {
+    const at = `${av.station}${av.name ? ` (${av.name})` : ''}, ${Math.round(av.distanceKm)} km away`;
+    if (av.visibilitySm != null && av.visibilitySm < 3 && !out.some((x) => x.key === 'visibility'))
+      out.push({ key: 'visibility', level: 'red', title: 'Visibility below 3 statute miles', detail: `${at} reports ${av.visibilitySm} SM (14 CFR 107.51(c)).`, source: 'aviationweather.gov METAR' });
+    if (av.ceilingFt != null && av.ceilingFt < 900)
+      out.push({ key: 'ceiling', level: 'amber', title: `Low ceiling: ${av.ceilingFt} ft`, detail: `${at}. Stay 500 ft below clouds (14 CFR 107.51(d)) — that caps you at ${Math.max(0, av.ceilingFt - 500)} ft AGL.`, source: 'aviationweather.gov METAR' });
+    out.push({ key: 'metar', level: av.flightCategory === 'IFR' || av.flightCategory === 'LIFR' ? 'amber' : 'green', title: `Nearest airport: ${av.flightCategory ?? 'reported'}`, detail: av.metar + (av.taf ? `\n${av.taf}` : ''), source: 'aviationweather.gov METAR / TAF' });
+  }
+
+  const fc = input.forecast;
+  if (fc && fc.maxWindMph >= 20)
+    out.push({ key: 'forecast_wind', level: 'amber', title: `Wind building to ${fc.maxWindMph} mph`, detail: `${fc.summary} over the next ${fc.hours} hours.`, source: 'National Weather Service forecast' });
+
+  if (input.kp != null && input.kp >= 5)
+    out.push({ key: 'kp', level: 'amber', title: `Geomagnetic storm (Kp ${input.kp})`, detail: 'GNSS positioning and compass may be degraded. Be ready to fly in attitude mode.', source: 'NOAA Space Weather Prediction Center' });
+
   if (!input.daylight.isDaylight)
     out.push({ key: 'night', level: 'amber', title: 'Night or twilight', detail: 'Anti-collision lighting visible for 3 statute miles is required, and the pilot needs current night training (14 CFR 107.29).', source: 'Computed sunrise/sunset' });
 
-  out.push({ key: 'tfr', level: 'amber', title: 'Check TFRs and NOTAMs', detail: 'Temporary flight restrictions are not checked by Certa. Use B4UFLY or an FAA-approved LAANC provider.', source: 'Reminder' });
+  const t = input.tfrs;
+  if (t === undefined) {
+    out.push({ key: 'tfr', level: 'amber', title: 'Check TFRs and NOTAMs', detail: 'Temporary flight restrictions are not checked by Certa. Use B4UFLY or an FAA-approved LAANC provider.', source: 'Reminder' });
+  } else {
+    if (t === 'unavailable') out.push({ key: 'tfr', level: 'amber', title: 'TFRs not checked', detail: 'The FAA TFR service couldn’t be reached. Check tfr.faa.gov before flight.', source: 'FAA TFR service', href: TFR_HELP });
+    else {
+      const over = t.filter((x) => x.inside);
+      const near = t.filter((x) => !x.inside);
+      for (const x of over) out.push({ key: `tfr:${x.name}`, level: 'red', title: `Inside a TFR: ${x.name}`, detail: x.detail, source: 'FAA TFR service', href: TFR_HELP });
+      for (const x of near) out.push({ key: `tfr:${x.name}`, level: 'amber', title: `TFR nearby: ${x.name}`, detail: x.detail, source: 'FAA TFR service', href: TFR_HELP });
+      if (!t.length) out.push({ key: 'tfr', level: 'green', title: 'No active TFRs here', detail: 'No temporary flight restriction over or within 5 NM of this point right now.', source: 'FAA TFR service' });
+    }
+    out.push({ key: 'notam', level: 'amber', title: 'Check NOTAMs', detail: 'Other NOTAMs (equipment, obstacles, airshows) aren’t checked by Certa yet. Review them before flight.', source: 'Reminder', href: 'https://notams.aim.faa.gov/notamSearch/' });
+  }
+
+  const r = input.restrictions;
+  if (r === 'unavailable') out.push({ key: 'restrictions', level: 'amber', title: 'Special-use airspace not checked', detail: 'FAA restriction layers couldn’t be reached. Check B4UFLY or the FAA UAS Data Delivery System.', source: 'FAA ADDS' });
+  else if (r) {
+    for (const x of r) {
+      const red = x.inside && ['prohibited', 'restricted', 'national_security', 'national_defense'].includes(x.kind);
+      const info = x.kind === 'fria';
+      out.push({ key: `${x.kind}:${x.name}`, level: info ? 'green' : red ? 'red' : 'amber', title: RESTRICTION_TITLE[x.kind](x.name, x.inside), detail: x.detail, source: 'FAA ADDS' });
+    }
+  }
   return out;
 }
