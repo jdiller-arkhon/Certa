@@ -434,6 +434,10 @@ export interface AircraftDetailScreenProps extends AsyncState {
   model: { custom: boolean; uploading: boolean; error: string | null; airframe: Airframe; url: string | null };
   onUploadModel: (file: PickedFile) => void;
   onRemoveModel: () => void;
+  /** Schedules and work history for this aircraft only (worst-first, newest-first). */
+  maintenance: { due: MaintenanceDueRowViewModel[]; history: MaintenanceHistoryRowViewModel[]; canManage: boolean; saving: boolean };
+  /** Records work on this aircraft; `scheduleId` null for unscheduled work. */
+  onLogMaintenance: (input: { scheduleId: string | null; performedOn: string; performedBy: string; description: string }) => void;
   onEdit: () => void;
   onGround: (input: { reason: string }) => void;
   onUnground: (input: { reason: string }) => void;

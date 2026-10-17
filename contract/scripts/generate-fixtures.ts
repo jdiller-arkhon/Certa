@@ -505,7 +505,7 @@ function toScenario(w: World): FixtureScenario {
       pilotList: buildPilotList(bi),
       pilotDetail: p0 ? buildPilotDetail(bi, p0.id, w.flights) : { ...buildPilotDetail(bi, '', []), pilot: null },
       aircraftList: buildAircraftList(bi),
-      aircraftDetail: a0 ? buildAircraftDetail(bi, a0.id, w.flights) : buildAircraftDetail(bi, '', []),
+      aircraftDetail: a0 ? buildAircraftDetail(bi, a0.id, w.flights, maintenanceHistoryFor(w, snapshot.maintenanceSchedules)) : buildAircraftDetail(bi, '', []),
       batteryList: buildBatteryList(bi),
       flightList: buildFlightList(
         bi,

@@ -5,7 +5,7 @@ import { CertaApiError, unwrap } from '@certa/sdk';
 import { withBase } from '@/lib/base-path';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { ensureOk, useFleetMutation, useRecentFlights } from '@/data/fleet';
+import { ensureOk, useFleetMutation, useMaintenanceEvents, useRecentFlights } from '@/data/fleet';
 import { api } from '@/lib/api';
 import { AircraftDetailScreen, AircraftFormScreen, AircraftListScreen, BatteryListScreen } from '@/screens';
 import { exportLogbook, toCsv } from './logbook';
@@ -68,17 +68,32 @@ export function AircraftDetailContainer({ aircraftId }: { aircraftId: string }) 
     }
   });
   const removeModel = useFleetMutation(f.orgId, async () => ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/aircraft/{aircraftId}/model', { params: { path: { orgId: f.orgId, aircraftId } } })));
+  const events = useMaintenanceEvents(f.orgId);
+  const logWork = useFleetMutation(
+    f.orgId,
+    async (v: { scheduleId: string | null; performedOn: string; performedBy: string; description: string }) =>
+      unwrap(
+        await api.POST('/api/v1/orgs/{orgId}/maintenance/events', {
+          params: { path: { orgId: f.orgId } },
+          // Noon UTC keeps the calendar date stable in every US time zone.
+          body: { scheduleId: v.scheduleId, target: { type: 'aircraft', id: aircraftId }, performedAt: `${v.performedOn}T12:00:00.000Z`, performedBy: v.performedBy, description: v.description },
+        }),
+      ),
+    { maintenance: true },
+  );
   if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
-  const data = buildAircraftDetail(f.bi, aircraftId, recent.flights as Flight[]);
+  const data = buildAircraftDetail(f.bi, aircraftId, recent.flights as Flight[], events.data ?? []);
   return (
     <AircraftDetailScreen
       {...data}
       loading={ground.isPending || unground.isPending}
-      error={ground.error ?? unground.error ?? sharing.error ?? f.loadError}
+      error={ground.error ?? unground.error ?? logWork.error ?? sharing.error ?? f.loadError}
       share={sharing.share}
       onCreateShareLink={sharing.onCreateShareLink}
       onRevokeShareLink={sharing.onRevokeShareLink}
       model={{ ...data.model, uploading: uploadModel.isPending || removeModel.isPending, error: uploadModel.error ?? removeModel.error }}
+      maintenance={{ ...data.maintenance, saving: logWork.isPending }}
+      onLogMaintenance={(v) => logWork.mutate(v)}
       onUploadModel={(file) => uploadModel.mutate(file)}
       onRemoveModel={() => removeModel.mutate(undefined)}
       onEdit={() => router.push(`/aircraft/${aircraftId}/edit`)}

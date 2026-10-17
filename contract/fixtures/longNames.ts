@@ -1584,6 +1584,84 @@ export const longNames = {
       ],
       "canEdit": true,
       "canGround": true,
+      "maintenance": {
+        "due": [
+          {
+            "id": "0199c4a0-0000-7000-9000-0000004c4ba4",
+            "target": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+            "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000004c4b55",
+            "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+            "name": "Motor and propeller inspection",
+            "interval": "Every 50 h",
+            "due": null,
+            "usage": "2 h of 50 h",
+            "status": {
+              "level": "green",
+              "label": "Current"
+            },
+            "grounds": true
+          },
+          {
+            "id": "0199c4a0-0000-7000-9000-0000004c4ba5",
+            "target": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+            "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000004c4b55",
+            "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+            "name": "Airframe and gimbal inspection",
+            "interval": "Every 200 flights · 180 days",
+            "due": {
+              "iso": "2027-01-16",
+              "absolute": "Jan 16, 2027",
+              "relative": "in 3 months",
+              "display": "Jan 16, 2027 — in 3 months",
+              "daysFromToday": 100
+            },
+            "usage": "7 of 200 flights",
+            "status": {
+              "level": "green",
+              "label": "Current"
+            },
+            "grounds": false
+          }
+        ],
+        "history": [
+          {
+            "id": "0199c4a0-0000-7000-9000-0000004c4d35",
+            "target": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+            "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+            "performed": {
+              "iso": "2026-07-20T16:00:00.000Z",
+              "absolute": "Jul 20, 2026, 10:00 AM MDT",
+              "relative": "3 months ago",
+              "display": "Jul 20, 2026, 10:00 AM MDT — 3 months ago",
+              "daysFromToday": -80
+            },
+            "kind": "Scheduled",
+            "scheduleName": "Airframe and gimbal inspection",
+            "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+            "performedBy": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+            "signedOff": false
+          },
+          {
+            "id": "0199c4a0-0000-7000-9000-0000004c4d34",
+            "target": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration",
+            "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000004c4b55",
+            "performed": {
+              "iso": "2026-06-01T16:00:00.000Z",
+              "absolute": "Jun 1, 2026, 10:00 AM MDT",
+              "relative": "4 months ago",
+              "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+              "daysFromToday": -129
+            },
+            "kind": "Scheduled",
+            "scheduleName": "Motor and propeller inspection",
+            "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+            "performedBy": "Maximilian Alexander Featherstonehaugh-Montgomery III",
+            "signedOff": false
+          }
+        ],
+        "canManage": true,
+        "saving": false
+      },
       "model": {
         "custom": false,
         "uploading": false,

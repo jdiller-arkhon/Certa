@@ -2094,6 +2094,84 @@ export const expired = {
       ],
       "canEdit": true,
       "canGround": true,
+      "maintenance": {
+        "due": [
+          {
+            "id": "0199c4a0-0000-7000-9000-0000002dc725",
+            "target": "Falcon 1",
+            "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000002dc6d5",
+            "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+            "name": "Airframe and gimbal inspection",
+            "interval": "Every 200 flights · 180 days",
+            "due": {
+              "iso": "2026-07-31",
+              "absolute": "Jul 31, 2026",
+              "relative": "2 months ago",
+              "display": "Jul 31, 2026 — 2 months ago",
+              "daysFromToday": -69
+            },
+            "usage": "8 of 200 flights",
+            "status": {
+              "level": "red",
+              "label": "Overdue"
+            },
+            "grounds": false
+          },
+          {
+            "id": "0199c4a0-0000-7000-9000-0000002dc724",
+            "target": "Falcon 1",
+            "targetKey": "aircraft:0199c4a0-0000-7000-8000-0000002dc6d5",
+            "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+            "name": "Motor and propeller inspection",
+            "interval": "Every 50 h",
+            "due": null,
+            "usage": "2.3 h of 50 h",
+            "status": {
+              "level": "green",
+              "label": "Current"
+            },
+            "grounds": true
+          }
+        ],
+        "history": [
+          {
+            "id": "0199c4a0-0000-7000-9000-0000002dc8b4",
+            "target": "Falcon 1",
+            "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+            "performed": {
+              "iso": "2026-06-01T16:00:00.000Z",
+              "absolute": "Jun 1, 2026, 10:00 AM MDT",
+              "relative": "4 months ago",
+              "display": "Jun 1, 2026, 10:00 AM MDT — 4 months ago",
+              "daysFromToday": -129
+            },
+            "kind": "Scheduled",
+            "scheduleName": "Motor and propeller inspection",
+            "description": "Inspected motors for bearing play; replaced 2 propellers (nicks on leading edge).",
+            "performedBy": "Riley Fenwick",
+            "signedOff": false
+          },
+          {
+            "id": "0199c4a0-0000-7000-9000-0000002dc8b5",
+            "target": "Falcon 1",
+            "targetHref": "/aircraft/0199c4a0-0000-7000-8000-0000002dc6d5",
+            "performed": {
+              "iso": "2026-02-01T16:00:00.000Z",
+              "absolute": "Feb 1, 2026, 9:00 AM MST",
+              "relative": "8 months ago",
+              "display": "Feb 1, 2026, 9:00 AM MST — 8 months ago",
+              "daysFromToday": -249
+            },
+            "kind": "Scheduled",
+            "scheduleName": "Airframe and gimbal inspection",
+            "description": "Airframe, arms, and gimbal dampers inspected. No defects found.",
+            "performedBy": "Riley Fenwick",
+            "signedOff": false
+          }
+        ],
+        "canManage": true,
+        "saving": false
+      },
       "model": {
         "custom": false,
         "uploading": false,

@@ -167,7 +167,7 @@ export const SCREENS: PreviewScreen[] = [
     shell: true,
     render: ({ scenario, state }) => {
       const d = withState(scenarios[scenario]!.screens.aircraftDetail, state, (x) => ({ ...x, aircraft: null, recentFlights: [], batteries: [] }));
-      return <AircraftDetailScreen {...d} onEdit={noop} onGround={noop} onUnground={noop} onExportLogbook={noop} onOpenFlight={noop} onCreateShareLink={noop} onRevokeShareLink={noop} onUploadModel={noop} onRemoveModel={noop} />;
+      return <AircraftDetailScreen {...d} onEdit={noop} onGround={noop} onUnground={noop} onExportLogbook={noop} onOpenFlight={noop} onCreateShareLink={noop} onRevokeShareLink={noop} onUploadModel={noop} onRemoveModel={noop} onLogMaintenance={noop} />;
     },
   },
   {

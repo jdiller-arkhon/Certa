@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog } from '@/components/ui/dialog';
 import { Banner, Banners, EmptyState, SkeletonRows } from '@/components/ui/feedback';
-import { Field } from '@/components/ui/field';
+import { Field, Input } from '@/components/ui/field';
 import { Panel, PanelRow, StatStrip } from '@/components/ui/panel';
 import { StatusBadge } from '@/components/ui/status';
 import { TabPanel, Tabs, useHashTab, type TabDef } from '@/components/ui/tabs';
@@ -16,12 +16,28 @@ import { PageHeader } from '@/components/ui/text';
 import { ShareButton, ShareDialog } from './_share';
 import { FlightRows, ListCard, Reasons, RowButton, RowMetric, RowTitle, Section, TextArea, When } from './_parts';
 
-const TABS = ['overview', 'flights', 'batteries', 'model'] as const;
+const TABS = ['overview', 'flights', 'maintenance', 'batteries', 'model'] as const;
+
+/** Today's date on this device, as YYYY-MM-DD. */
+const todayIso = () => {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+};
 
 export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
   const [dialog, setDialog] = useState<'ground' | 'unground' | null>(null);
   const [reason, setReason] = useState('');
   const [sharing, setSharing] = useState(false);
+  /** undefined = closed; null = unscheduled work; string = schedule id. */
+  const [logging, setLogging] = useState<string | null | undefined>(undefined);
+  const [work, setWork] = useState({ performedOn: todayIso(), performedBy: '', description: '' });
+  const loggingSchedule = props.maintenance.due.find((d) => d.id === logging);
+  const openLog = (scheduleId: string | null) => {
+    const sched = props.maintenance.due.find((d) => d.id === scheduleId);
+    setWork({ performedOn: todayIso(), performedBy: work.performedBy, description: sched ? `${sched.name} completed.` : '' });
+    setLogging(scheduleId);
+  };
   const a = props.aircraft;
   const tabIds = props.canEdit ? TABS : TABS.filter((t) => t !== 'model');
   const [tab, setTab] = useHashTab(tabIds);
@@ -32,6 +48,7 @@ export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
   const tabs: TabDef<(typeof TABS)[number]>[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'flights', label: 'Flights', count: a.totals.flights },
+    { id: 'maintenance', label: 'Maintenance', count: props.maintenance.due.filter((d) => d.status.level !== 'green').length || undefined },
     { id: 'batteries', label: 'Batteries', count: props.batteries.length },
     ...(props.canEdit ? [{ id: 'model' as const, label: '3D model' }] : []),
   ];
@@ -101,6 +118,58 @@ export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
               <li className="flex flex-col items-center gap-2 px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]"><Route className="size-5" aria-hidden /> No flights logged yet.</li>
             )}
           </ListCard>
+        </TabPanel>
+      )}
+
+      {tab === 'maintenance' && (
+        <TabPanel key="maintenance" label="Maintenance" className="space-y-6">
+          <Panel
+            label="Schedules"
+            meta={props.maintenance.canManage && <button type="button" onClick={() => openLog(null)} className="hover:text-[var(--certa-text)]">Log unscheduled work</button>}
+          >
+            {props.maintenance.due.length ? (
+              <ul>
+                {props.maintenance.due.map((d) => (
+                  <li key={d.id} className="flex flex-col gap-3 border-b border-[var(--certa-border)] px-5 py-3.5 last:border-b-0 sm:flex-row sm:items-center sm:gap-4">
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[15px] font-semibold">{d.name}</span>
+                      <span className="block text-[13px] text-[var(--certa-muted)]">
+                        {[d.interval, d.usage, d.due && `due ${d.due.display}`].filter(Boolean).join(' · ')}
+                      </span>
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <StatusBadge status={d.status} size="sm" />
+                      {props.maintenance.canManage && (
+                        <Button size="sm" variant={d.status.level === 'green' ? 'ghost' : 'secondary'} onClick={() => openLog(d.id)}>Log done</Button>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]">No maintenance schedules for this aircraft. Add one on the Maintenance page.</p>
+            )}
+          </Panel>
+          <Panel label="History" meta={<span className="tabular">{props.maintenance.history.length}</span>}>
+            {props.maintenance.history.length ? (
+              <ul>
+                {props.maintenance.history.map((h) => (
+                  <li key={h.id} className="flex flex-col gap-1 border-b border-[var(--certa-border)] px-5 py-3 last:border-b-0 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+                    <span className="min-w-0">
+                      <span className="block text-[14px] font-semibold">{h.scheduleName ?? h.description}</span>
+                      <span className="block text-[13px] text-[var(--certa-muted)]">
+                        {h.scheduleName && `${h.description} · `}
+                        {h.kind} · {h.performedBy}
+                      </span>
+                    </span>
+                    <span className="tabular shrink-0 text-[13px] text-[var(--certa-muted)]"><When d={h.performed} /></span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]">No work recorded yet.</p>
+            )}
+          </Panel>
         </TabPanel>
       )}
 
@@ -179,6 +248,35 @@ export function AircraftDetailScreen(props: AircraftDetailScreenProps) {
           }}
         >
           <Field label={dialog === 'ground' ? 'Reason' : 'Work performed'}>{(f) => <TextArea {...f} required minLength={3} value={reason} onChange={(e) => setReason(e.target.value)} />}</Field>
+        </form>
+      </Dialog>
+      <Dialog
+        open={logging !== undefined}
+        onClose={() => setLogging(undefined)}
+        title={loggingSchedule ? `Log ${loggingSchedule.name}` : 'Log unscheduled work'}
+        description={loggingSchedule ? 'Marks it done and restarts its interval.' : 'Repairs, part swaps, or anything outside a schedule.'}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setLogging(undefined)}>Cancel</Button>
+            <Button type="submit" form="log-work-form" loading={props.maintenance.saving}>Save</Button>
+          </>
+        }
+      >
+        <form
+          id="log-work-form"
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!work.performedBy.trim() || !work.description.trim()) return;
+            props.onLogMaintenance({ scheduleId: logging ?? null, performedOn: work.performedOn, performedBy: work.performedBy.trim(), description: work.description.trim() });
+            setLogging(undefined);
+          }}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Date">{(f) => <Input {...f} type="date" required max={todayIso()} value={work.performedOn} onChange={(e) => setWork({ ...work, performedOn: e.target.value })} />}</Field>
+            <Field label="Performed by">{(f) => <Input {...f} required autoComplete="name" value={work.performedBy} onChange={(e) => setWork({ ...work, performedBy: e.target.value })} />}</Field>
+          </div>
+          <Field label="Work performed">{(f) => <TextArea {...f} required value={work.description} onChange={(e) => setWork({ ...work, description: e.target.value })} />}</Field>
         </form>
       </Dialog>
       <ShareDialog open={sharing} onClose={() => setSharing(false)} subject={a.name} share={props.share} onCreate={props.onCreateShareLink} onRevoke={props.onRevokeShareLink} />

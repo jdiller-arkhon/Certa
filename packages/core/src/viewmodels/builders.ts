@@ -197,7 +197,7 @@ export const REMOTE_ID_LABEL: Record<string, string> = {
   none: 'None',
 };
 
-export function buildAircraftDetail(i: BuildInput, aircraftId: string, recentFlights: Flight[]): ScreenData<AircraftDetailScreenProps> {
+export function buildAircraftDetail(i: BuildInput, aircraftId: string, recentFlights: Flight[], maintenanceEvents: MaintenanceEvent[] = []): ScreenData<AircraftDetailScreenProps> {
   const r = readinessOf(i);
   const { snapshot: s, ctx } = i;
   const a = s.aircraft.find((x) => x.id === aircraftId && !x.deletedAt);
@@ -225,6 +225,11 @@ export function buildAircraftDetail(i: BuildInput, aircraftId: string, recentFli
     batteries: a ? s.batteries.filter((b) => !b.deletedAt && b.aircraftModel === a.model).map((b) => toBatteryRow(b, s.batteryLastUsed[b.id] ?? null, ctx)) : [],
     canEdit: can(i.role, 'aircraft.manage'),
     canGround: can(i.role, 'aircraft.ground'),
+    maintenance: (() => {
+      const key = `aircraft:${aircraftId}`;
+      const m = buildMaintenance(i, maintenanceEvents.filter((e) => `${e.target.type}:${e.target.id}` === key));
+      return { due: m.due.filter((d) => d.targetKey === key), history: m.history, canManage: m.canManage, saving: false };
+    })(),
     model: {
       custom: !!a?.modelDocumentId,
       uploading: false,

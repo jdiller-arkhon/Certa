@@ -734,6 +734,12 @@ export const empty = {
       "batteries": [],
       "canEdit": true,
       "canGround": true,
+      "maintenance": {
+        "due": [],
+        "history": [],
+        "canManage": true,
+        "saving": false
+      },
       "model": {
         "custom": false,
         "uploading": false,
