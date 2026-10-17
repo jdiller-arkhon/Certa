@@ -933,3 +933,21 @@ export interface AuthorizationsScreenProps extends AsyncState {
   onSave: (input: { id: string | null; kind: AuthorizationRowViewModel['kind']; reference: string; title: string | null; pilotId: string | null; validFrom: string | null; validTo: string | null; scope: string | null; conditions: string | null }) => void;
   onDelete: (id: string) => void;
 }
+
+/** @status beta — route: /settings/discord */
+export interface DiscordSettingsScreenProps extends AsyncState {
+  /** False when the member has no pilot record here (only pilots can link). */
+  canLink: boolean;
+  linked: boolean;
+  linkedAt: DateDisplay | null;
+  leaderboardOptIn: boolean;
+  orgLeaderboardEnabled: boolean;
+  canManageOrg: boolean;
+  /** A freshly issued code, shown until it expires or the page is left. */
+  code: { value: string; expiresAt: string } | null;
+  busy: boolean;
+  onGenerateCode: () => void;
+  onUnlink: () => void;
+  onLeaderboardChange: (on: boolean) => void;
+  onOrgLeaderboardChange: (on: boolean) => void;
+}

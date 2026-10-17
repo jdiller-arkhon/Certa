@@ -43,6 +43,13 @@
       "when": 1791770000000,
       "tag": "0005_audit_redaction",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791780000000,
+      "tag": "0006_discord_link",
+      "breakpoints": true
     }
   ]
 }

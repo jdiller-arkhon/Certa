@@ -49,6 +49,11 @@ const Env = z.object({
    * keeps the stack fully offline; the app then shows airspace, TFRs and weather as "not checked".
    */
   CONDITIONS_LOOKUPS: z.enum(['on', 'off']).default('on'),
+  /**
+   * Bearer token the community Discord bot uses for /v1/discord, /v1/users and /v1/leaderboard.
+   * Unset disables those endpoints. Generate with `openssl rand -base64 48`.
+   */
+  DISCORD_BOT_API_TOKEN: z.string().min(32, 'DISCORD_BOT_API_TOKEN must be at least 32 characters').optional(),
 });
 
 export type Config = z.infer<typeof Env> & {

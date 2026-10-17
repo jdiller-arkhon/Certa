@@ -81,6 +81,7 @@ export type {
   InsurancePolicyViewModel,
   InsuranceScreenProps,
   ChecklistsAdminScreenProps,
+  DiscordSettingsScreenProps,
   AuthorizationsScreenProps,
   AuthorizationRowViewModel,
   GoNoGoResult,

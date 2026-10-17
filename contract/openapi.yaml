@@ -233,6 +233,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   error:
                     type: object
                     properties:
@@ -1355,6 +1357,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   error:
                     type: object
                     properties:
@@ -5306,6 +5310,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   error:
                     type: object
                     properties:
@@ -5546,6 +5552,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   error:
                     type: object
                     properties:
@@ -6157,6 +6165,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   error:
                     type: object
                     properties:
@@ -6425,6 +6435,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   error:
                     type: object
                     properties:
@@ -8771,6 +8783,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   error:
                     type: object
                     properties:
@@ -10884,6 +10898,590 @@ paths:
       responses:
         "204":
           description: Default Response
+  /api/v1/orgs/{orgId}/discord/link:
+    get:
+      summary: Your Discord link status
+      tags:
+        - discord
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  canLink:
+                    type: boolean
+                  linked:
+                    type: boolean
+                  linkedAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  leaderboardOptIn:
+                    type: boolean
+                  orgLeaderboardEnabled:
+                    type: boolean
+                  canManageOrg:
+                    type: boolean
+                required:
+                  - canLink
+                  - linked
+                  - linkedAt
+                  - leaderboardOptIn
+                  - orgLeaderboardEnabled
+                  - canManageOrg
+                additionalProperties: false
+    patch:
+      summary: Opt in or out of the community leaderboard
+      tags:
+        - discord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                leaderboardOptIn:
+                  type: boolean
+              required:
+                - leaderboardOptIn
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  canLink:
+                    type: boolean
+                  linked:
+                    type: boolean
+                  linkedAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  leaderboardOptIn:
+                    type: boolean
+                  orgLeaderboardEnabled:
+                    type: boolean
+                  canManageOrg:
+                    type: boolean
+                required:
+                  - canLink
+                  - linked
+                  - linkedAt
+                  - leaderboardOptIn
+                  - orgLeaderboardEnabled
+                  - canManageOrg
+                additionalProperties: false
+    delete:
+      summary: Unlink Discord. The bot loses access at once.
+      tags:
+        - discord
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "204":
+          description: Default Response
+  /api/v1/orgs/{orgId}/discord/link-code:
+    post:
+      summary: A single-use code to redeem with /certa link in Discord (valid 10 minutes; issuing one cancels the last)
+      tags:
+        - discord
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: string
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                required:
+                  - code
+                  - expiresAt
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/discord/settings:
+    put:
+      summary: Allow or block this org on the community leaderboard
+      tags:
+        - discord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                leaderboardEnabled:
+                  type: boolean
+              required:
+                - leaderboardEnabled
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  canLink:
+                    type: boolean
+                  linked:
+                    type: boolean
+                  linkedAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  leaderboardOptIn:
+                    type: boolean
+                  orgLeaderboardEnabled:
+                    type: boolean
+                  canManageOrg:
+                    type: boolean
+                required:
+                  - canLink
+                  - linked
+                  - linkedAt
+                  - leaderboardOptIn
+                  - orgLeaderboardEnabled
+                  - canManageOrg
+                additionalProperties: false
+  /api/v1/discord/link-codes/redeem:
+    post:
+      summary: Redeem a link code from Certa (single use, 10 minutes)
+      tags:
+        - discord bot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  minLength: 6
+                  maxLength: 40
+                discordUserId:
+                  type: string
+                  pattern: ^\d{17,20}$
+              required:
+                - code
+                - discordUserId
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  certaUserId:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  displayName:
+                    type: string
+                required:
+                  - certaUserId
+                  - displayName
+                additionalProperties: false
+        "404":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+                      requestId:
+                        type: string
+                      details: {}
+                    required:
+                      - code
+                      - message
+                    additionalProperties: false
+                required:
+                  - error
+                additionalProperties: false
+  /api/v1/users/{certaUserId}/flights:
+    post:
+      summary: "Log a flight from Discord. Date-only: stored at local noon with a note that the time was not recorded. Idempotent per Idempotency-Key."
+      tags:
+        - discord bot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                location:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                locationIsIcao:
+                  type: boolean
+                aircraft:
+                  type: string
+                  minLength: 1
+                  maxLength: 80
+                durationMinutes:
+                  type: integer
+                  minimum: 1
+                  maximum: 1440
+                missionType:
+                  type: string
+                  enum:
+                    - Commercial
+                    - Recreational
+                    - Training
+                    - Inspection
+                    - Mapping
+                    - Cinematography
+                    - Other
+                notes:
+                  type: string
+                  maxLength: 1000
+              required:
+                - date
+                - location
+                - locationIsIcao
+                - aircraft
+                - durationMinutes
+                - missionType
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: certaUserId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flightId:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                required:
+                  - flightId
+                additionalProperties: false
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flightId:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                required:
+                  - flightId
+                additionalProperties: false
+        "422":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+                      requestId:
+                        type: string
+                      details: {}
+                    required:
+                      - code
+                      - message
+                    additionalProperties: false
+                required:
+                  - error
+                additionalProperties: false
+  /api/v1/users/{certaUserId}/flight-totals:
+    get:
+      tags:
+        - discord bot
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: certaUserId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalFlights:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                  totalMinutes:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                  last30Days:
+                    type: object
+                    properties:
+                      flights:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      minutes:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                    required:
+                      - flights
+                      - minutes
+                    additionalProperties: false
+                  last90Days:
+                    type: object
+                    properties:
+                      flights:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      minutes:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                    required:
+                      - flights
+                      - minutes
+                    additionalProperties: false
+                  last365Days:
+                    type: object
+                    properties:
+                      flights:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      minutes:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                    required:
+                      - flights
+                      - minutes
+                    additionalProperties: false
+                required:
+                  - totalFlights
+                  - totalMinutes
+                  - last30Days
+                  - last90Days
+                  - last365Days
+                additionalProperties: false
+  /api/v1/users/{certaUserId}/currency:
+    get:
+      summary: Part 107 training on file and the recurrent due date from the org’s rule pack
+      tags:
+        - discord bot
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: certaUserId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lastTrainingDate:
+                    anyOf:
+                      - type: string
+                        format: date
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                      - type: "null"
+                  lastTrainingKind:
+                    anyOf:
+                      - type: string
+                        enum:
+                          - initial
+                          - recurrent
+                      - type: "null"
+                  dueDate:
+                    anyOf:
+                      - type: string
+                        format: date
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                      - type: "null"
+                  status:
+                    type: string
+                    enum:
+                      - current
+                      - due_soon
+                      - overdue
+                      - unknown
+                required:
+                  - lastTrainingDate
+                  - lastTrainingKind
+                  - dueDate
+                  - status
+                additionalProperties: false
+  /api/v1/leaderboard:
+    get:
+      summary: "Community leaderboard: only pilots who opted in, in orgs that allow it"
+      tags:
+        - discord bot
+      parameters:
+        - schema:
+            default: month
+            type: string
+            enum:
+              - month
+              - all
+          in: query
+          name: period
+          required: false
+        - schema:
+            type: string
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+          in: query
+          name: month
+          required: false
+        - schema:
+            default: 10
+            type: integer
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rank:
+                          type: integer
+                          exclusiveMinimum: 0
+                          maximum: 9007199254740991
+                        certaUserId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        displayName:
+                          type: string
+                        totalMinutes:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        flightCount:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                      required:
+                        - rank
+                        - certaUserId
+                        - displayName
+                        - totalMinutes
+                        - flightCount
+                      additionalProperties: false
+                required:
+                  - entries
+                additionalProperties: false
   /api/v1/orgs/{orgId}/share-links:
     post:
       summary: Create a time-boxed inspector packet link (the URL is returned once)

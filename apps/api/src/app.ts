@@ -26,6 +26,7 @@ import { fleetRoutes } from './routes/fleet.js';
 import { flightRoutes } from './routes/flights.js';
 import { checklistRoutes } from './routes/checklists.js';
 import { authorizationRoutes } from './routes/authorizations.js';
+import { discordRoutes } from './routes/discord.js';
 import { shareRoutes } from './routes/share.js';
 import { integrationRoutes } from './routes/integrations.js';
 import { conditionsRoutes } from './routes/conditions.js';
@@ -146,7 +147,9 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
       });
     }
     if (err instanceof ApiError) {
+      // `message` at the top level too, for clients that read only that (e.g. the Discord bot).
       return reply.status(err.statusCode).send({
+        message: err.message,
         error: { code: err.code, message: err.message, requestId: req.id, details: err.details },
       });
     }
@@ -175,6 +178,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(flightRoutes(ctx), { prefix: v1 });
   await app.register(checklistRoutes(ctx), { prefix: v1 });
   await app.register(authorizationRoutes(ctx), { prefix: v1 });
+  await app.register(discordRoutes(ctx), { prefix: v1 });
   await app.register(shareRoutes(ctx), { prefix: v1 });
   await app.register(integrationRoutes(ctx), { prefix: v1 });
   await app.register(conditionsRoutes(ctx), { prefix: v1 });

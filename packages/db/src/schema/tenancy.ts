@@ -31,6 +31,8 @@ export const organizations = pgTable('organizations', {
     .notNull()
     .default({ amberWithinDays: 30, alertThresholdsDays: [90, 30, 7] }),
   branding: jsonb('branding').$type<{ logoDocumentId?: string; primaryColor?: string }>(),
+  /** Pilots who opted in may appear on the community Discord leaderboard; admins can turn it off. */
+  discordLeaderboard: boolean('discord_leaderboard').notNull().default(true),
   createdAt: ts('created_at').notNull().defaultNow(),
   updatedAt: ts('updated_at').notNull().defaultNow(),
   createdBy: uuid('created_by'),

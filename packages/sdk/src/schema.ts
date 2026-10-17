@@ -172,6 +172,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            message?: string;
                             error: {
                                 code: string;
                                 message: string;
@@ -624,6 +625,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            message?: string;
                             error: {
                                 code: string;
                                 message: string;
@@ -2173,6 +2175,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            message?: string;
                             error: {
                                 code: string;
                                 message: string;
@@ -2301,6 +2304,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            message?: string;
                             error: {
                                 code: string;
                                 message: string;
@@ -2548,6 +2552,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            message?: string;
                             error: {
                                 code: string;
                                 message: string;
@@ -2680,6 +2685,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            message?: string;
                             error: {
                                 code: string;
                                 message: string;
@@ -3519,6 +3525,7 @@ export interface paths {
                     };
                     content: {
                         "application/json": {
+                            message?: string;
                             error: {
                                 code: string;
                                 message: string;
@@ -4317,6 +4324,492 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/discord/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Your Discord link status */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            canLink: boolean;
+                            linked: boolean;
+                            linkedAt: string | null;
+                            leaderboardOptIn: boolean;
+                            orgLeaderboardEnabled: boolean;
+                            canManageOrg: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Unlink Discord. The bot loses access at once. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        /** Opt in or out of the community leaderboard */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        leaderboardOptIn: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            canLink: boolean;
+                            linked: boolean;
+                            linkedAt: string | null;
+                            leaderboardOptIn: boolean;
+                            orgLeaderboardEnabled: boolean;
+                            canManageOrg: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/discord/link-code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** A single-use code to redeem with /certa link in Discord (valid 10 minutes; issuing one cancels the last) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            code: string;
+                            /** Format: date-time */
+                            expiresAt: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/discord/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Allow or block this org on the community leaderboard */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        leaderboardEnabled: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            canLink: boolean;
+                            linked: boolean;
+                            linkedAt: string | null;
+                            leaderboardOptIn: boolean;
+                            orgLeaderboardEnabled: boolean;
+                            canManageOrg: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/discord/link-codes/redeem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Redeem a link code from Certa (single use, 10 minutes) */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        code: string;
+                        discordUserId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            certaUserId: string;
+                            displayName: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{certaUserId}/flights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Log a flight from Discord. Date-only: stored at local noon with a note that the time was not recorded. Idempotent per Idempotency-Key. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    certaUserId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: date */
+                        date: string;
+                        location: string;
+                        locationIsIcao: boolean;
+                        aircraft: string;
+                        durationMinutes: number;
+                        /** @enum {string} */
+                        missionType: "Commercial" | "Recreational" | "Training" | "Inspection" | "Mapping" | "Cinematography" | "Other";
+                        notes?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            flightId: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            flightId: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{certaUserId}/flight-totals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    certaUserId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            totalFlights: number;
+                            totalMinutes: number;
+                            last30Days: {
+                                flights: number;
+                                minutes: number;
+                            };
+                            last90Days: {
+                                flights: number;
+                                minutes: number;
+                            };
+                            last365Days: {
+                                flights: number;
+                                minutes: number;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{certaUserId}/currency": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Part 107 training on file and the recurrent due date from the org’s rule pack */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    certaUserId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            lastTrainingDate: string | null;
+                            lastTrainingKind: ("initial" | "recurrent") | null;
+                            dueDate: string | null;
+                            /** @enum {string} */
+                            status: "current" | "due_soon" | "overdue" | "unknown";
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leaderboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Community leaderboard: only pilots who opted in, in orgs that allow it */
+        get: {
+            parameters: {
+                query?: {
+                    period?: "month" | "all";
+                    month?: string;
+                    limit?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            entries: {
+                                rank: number;
+                                /** Format: uuid */
+                                certaUserId: string;
+                                displayName: string;
+                                totalMinutes: number;
+                                flightCount: number;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/orgs/{orgId}/share-links": {

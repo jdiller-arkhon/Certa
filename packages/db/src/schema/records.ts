@@ -230,3 +230,40 @@ export const pushSubscriptions = pgTable(
   },
   (t) => [uniqueIndex('push_subscriptions_endpoint_uq').on(t.orgId, t.endpoint).where(sql`deleted_at is null`)],
 );
+
+/** Shared columns for the Discord tables (no soft delete: codes expire, links are revoked). */
+const discordColumns = () => ({
+  id: uuid('id').primaryKey(),
+  orgId: orgIdColumn(),
+  createdAt: ts('created_at').notNull().defaultNow(),
+  updatedAt: ts('updated_at').notNull().defaultNow(),
+  createdBy: uuid('created_by').default(sql`nullif(current_setting('app.user_id', true), '')::uuid`),
+  updatedBy: uuid('updated_by'),
+  version: bigint('version', { mode: 'number' }).notNull().default(1),
+});
+
+/** Single-use codes a pilot generates in Certa and redeems in the community Discord bot. */
+export const discordLinkCodes = pgTable('discord_link_codes', {
+  ...discordColumns(),
+  pilotId: uuid('pilot_id').notNull(),
+  /** SHA-256 of the code; the code is shown once. Named token_hash so the audit trail redacts it. */
+  tokenHash: text('token_hash').notNull().unique(),
+  expiresAt: ts('expires_at').notNull(),
+  usedAt: ts('used_at'),
+});
+
+/** A pilot's link to a Discord account. The bot addresses the pilot only by this row's id. */
+export const discordLinks = pgTable(
+  'discord_links',
+  {
+    ...discordColumns(),
+    pilotId: uuid('pilot_id').notNull(),
+    discordUserId: text('discord_user_id').notNull(),
+    leaderboardOptIn: boolean('leaderboard_opt_in').notNull().default(false),
+    revokedAt: ts('revoked_at'),
+  },
+  (t) => [
+    uniqueIndex('discord_links_discord_uq').on(t.discordUserId).where(sql`revoked_at is null`),
+    uniqueIndex('discord_links_pilot_uq').on(t.pilotId).where(sql`revoked_at is null`),
+  ],
+);

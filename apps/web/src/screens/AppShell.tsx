@@ -16,6 +16,7 @@ import {
   History,
   KeyRound,
   LogOut,
+  MessageSquare,
   Moon,
   Plane,
   Plus,
@@ -214,6 +215,15 @@ function UserMenu(props: AppShellProps & { side?: 'top' | 'bottom'; align?: 'sta
             <Segmented label="Theme" value={props.theme} options={THEMES} onChange={props.onThemeChange} className="w-full justify-between" />
           </div>
           <div className="h-px bg-[var(--certa-border)]" />
+          <MenuItem
+            icon={<MessageSquare aria-hidden className="size-4" />}
+            onSelect={() => {
+              close();
+              props.onNavigate('/settings/discord');
+            }}
+          >
+            Connect Discord
+          </MenuItem>
           <MenuItem
             icon={<LogOut aria-hidden className="size-4" />}
             onSelect={() => {

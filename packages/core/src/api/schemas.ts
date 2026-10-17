@@ -12,6 +12,8 @@ import { ACTIONS } from '../domain/permissions.js';
 import { Rule, RuleSource } from '../rules/schema.js';
 
 export const ErrorResponse = z.object({
+  /** Same as error.message, for clients that read only a top-level message. */
+  message: z.string().optional(),
   error: z.object({
     code: z.string(),
     message: z.string(),
@@ -516,3 +518,65 @@ export const UpdateAuthorizationRequest = z.object({
 });
 export type UpdateAuthorizationRequest = z.infer<typeof UpdateAuthorizationRequest>;
 export const AuthorizationListResponse = z.object({ authorizations: z.array(AuthorizationRecord) });
+
+// ---------- Discord link (community bot) ----------
+
+/** A pilot's own link status, for Settings → Discord. */
+export const DiscordLinkStatus = z.object({
+  /** False when the signed-in member has no pilot record in this org (nothing to link). */
+  canLink: z.boolean(),
+  linked: z.boolean(),
+  linkedAt: IsoDateTime.nullable(),
+  leaderboardOptIn: z.boolean(),
+  /** Org-wide switch an admin controls; when off, no one in the org appears on the leaderboard. */
+  orgLeaderboardEnabled: z.boolean(),
+  canManageOrg: z.boolean(),
+});
+export type DiscordLinkStatus = z.infer<typeof DiscordLinkStatus>;
+export const DiscordLinkCode = z.object({ code: z.string(), expiresAt: IsoDateTime });
+export const UpdateDiscordLinkRequest = z.object({ leaderboardOptIn: z.boolean() });
+export const UpdateDiscordOrgSettingsRequest = z.object({ leaderboardEnabled: z.boolean() });
+
+/** Discord snowflake ids are 17–20 digit integers. */
+const Snowflake = z.string().regex(/^\d{17,20}$/, 'Expected a Discord user id');
+
+export const BotRedeemRequest = z.object({ code: z.string().trim().min(6).max(40), discordUserId: Snowflake });
+export const BotRedeemResponse = z.object({ certaUserId: Id, displayName: z.string() });
+export const BotUserParams = z.object({ certaUserId: Id });
+
+export const BOT_MISSION_TYPES = ['Commercial', 'Recreational', 'Training', 'Inspection', 'Mapping', 'Cinematography', 'Other'] as const;
+export const BotFlightRequest = z.object({
+  date: IsoDate,
+  location: z.string().trim().min(1).max(100),
+  locationIsIcao: z.boolean(),
+  aircraft: z.string().trim().min(1).max(80),
+  durationMinutes: z.number().int().min(1).max(1440),
+  missionType: z.enum(BOT_MISSION_TYPES),
+  notes: z.string().trim().max(1000).optional(),
+});
+export type BotFlightRequest = z.infer<typeof BotFlightRequest>;
+export const BotFlightResponse = z.object({ flightId: Id });
+
+const BotPeriod = z.object({ flights: z.number().int().nonnegative(), minutes: z.number().int().nonnegative() });
+export const BotTotalsResponse = z.object({
+  totalFlights: z.number().int().nonnegative(),
+  totalMinutes: z.number().int().nonnegative(),
+  last30Days: BotPeriod,
+  last90Days: BotPeriod,
+  last365Days: BotPeriod,
+});
+export const BotCurrencyResponse = z.object({
+  lastTrainingDate: IsoDate.nullable(),
+  lastTrainingKind: z.enum(['initial', 'recurrent']).nullable(),
+  /** Recurrent training due date from the org's rule pack; null when nothing is on file. */
+  dueDate: IsoDate.nullable(),
+  status: z.enum(['current', 'due_soon', 'overdue', 'unknown']),
+});
+export const BotLeaderboardQuery = z.object({
+  period: z.enum(['month', 'all']).default('month'),
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional(),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
+});
+export const BotLeaderboardResponse = z.object({
+  entries: z.array(z.object({ rank: z.number().int().positive(), certaUserId: Id, displayName: z.string(), totalMinutes: z.number().int().nonnegative(), flightCount: z.number().int().nonnegative() })),
+});

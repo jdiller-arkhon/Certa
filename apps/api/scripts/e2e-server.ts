@@ -8,4 +8,5 @@ process.env.PUBLIC_URL = process.env.E2E_PUBLIC_URL ?? 'http://localhost:3100';
 process.env.PORT = '4100';
 process.env.LOG_LEVEL = 'warn';
 process.env.SMTP_URL = 'smtp://localhost:1025';
+process.env.DISCORD_BOT_API_TOKEN ??= 'e2e-discord-bot-token-e2e-discord-bot-token';
 await import('../src/server.js');

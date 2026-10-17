@@ -244,3 +244,27 @@ test('3D model: upload a GLB for an aircraft and switch back to the generic mode
   await page.getByRole('button', { name: 'Use generic model' }).click();
   await expect(page.getByText('Upload .glb')).toBeVisible();
 });
+
+test('discord: a pilot gets a link code, the bot redeems it, and the page shows the link', async ({ page, playwright }) => {
+  await signUp(page, 'Discord Pilots');
+  await page.goto('settings/discord');
+  await page.getByRole('button', { name: 'Get code' }).click();
+  const command = await page.locator('code').filter({ hasText: '/certa link code:' }).innerText();
+  const code = command.split('code:')[1]!.trim();
+  expect(code).toMatch(/^CERTA-[A-Z0-9]{4}-[A-Z0-9]{4}$/);
+
+  const origin = new URL(page.url()).origin;
+  const bot = await playwright.request.newContext({ extraHTTPHeaders: { authorization: 'Bearer e2e-discord-bot-token-e2e-discord-bot-token' } });
+  const res = await bot.post(`${origin}/certa/api/v1/discord/link-codes/redeem`, { data: { code, discordUserId: '123456789012345678' } });
+  expect(res.status()).toBe(200);
+  // Single use.
+  expect((await bot.post(`${origin}/certa/api/v1/discord/link-codes/redeem`, { data: { code, discordUserId: '123456789012345678' } })).status()).toBeGreaterThanOrEqual(400);
+  await bot.dispose();
+
+  await expect(page.getByText('Linked to Discord')).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('switch', { name: /community leaderboard/ }).check({ force: true });
+  await expect(page.getByRole('switch', { name: /community leaderboard/ })).toBeChecked();
+  await page.getByRole('button', { name: 'Unlink' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Unlink' }).click();
+  await expect(page.getByRole('button', { name: 'Get code' })).toBeVisible();
+});
