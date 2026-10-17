@@ -422,7 +422,7 @@ export function AppShell(props: AppShellProps & { children: ReactNode }) {
       </main>
 
       {/* Mobile field mode: Today · Flights · (+ Log) · Aircraft · More */}
-      <nav aria-label="Main" className="safe-bottom fixed inset-x-0 bottom-0 z-30 border-t border-[var(--certa-border)] bg-[color-mix(in_srgb,var(--certa-canvas)_90%,transparent)] backdrop-blur-xl lg:hidden">
+      <nav aria-label="Main" className="safe-bottom fixed inset-x-0 bottom-0 z-30 in-data-[task-flow]:hidden border-t border-[var(--certa-border)] bg-[color-mix(in_srgb,var(--certa-canvas)_90%,transparent)] backdrop-blur-xl lg:hidden">
         <ul className="mx-auto grid h-[68px] max-w-md grid-cols-5 items-center px-2">
           <li>{tabs[0] && <TabLink item={tabs[0]} {...props} />}</li>
           <li>{tabs[1] && <TabLink item={tabs[1]} {...props} />}</li>
