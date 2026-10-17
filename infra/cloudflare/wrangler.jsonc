@@ -1,0 +1,62 @@
+// Certa on Cloudflare Containers. Deploy with `pnpm deploy` from this folder (see README.md).
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "certa",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-13",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  // Only /certa on the Arkhon website. This route runs before the site's own Worker.
+  "routes": [{ "pattern": "arkhonindustries.com/certa*", "zone_name": "arkhonindustries.com" }],
+  "vars": {
+    "PUBLIC_URL": "https://arkhonindustries.com/certa",
+    "S3_BUCKET": "certa-files",
+    "MAIL_FROM": "Certa <certa@arkhonindustries.com>"
+  },
+  // 07:00 in Denver is 13:00 UTC in summer and 14:00 UTC in winter; the second run is a no-op.
+  "triggers": { "crons": ["0 13 * * *", "0 14 * * *"] },
+  "observability": { "enabled": true },
+  "containers": [
+    {
+      "class_name": "CertaWeb",
+      "image": "../docker/Dockerfile",
+      "image_build_context": "../..",
+      "image_vars": { "TARGET": "web", "NEXT_PUBLIC_BASE_PATH": "/certa" },
+      "instance_type": "basic",
+      "max_instances": 2,
+      "constraints": { "regions": ["ENAM"] }
+    },
+    {
+      "class_name": "CertaApi",
+      "image": "../docker/Dockerfile",
+      "image_build_context": "../..",
+      "image_vars": { "TARGET": "api", "NEXT_PUBLIC_BASE_PATH": "/certa" },
+      "instance_type": "basic",
+      "max_instances": 2,
+      // Next to the Neon database (AWS us-east-1).
+      "constraints": { "regions": ["ENAM"] }
+    },
+    {
+      "class_name": "CertaJobs",
+      "image": "../docker/Dockerfile",
+      "image_build_context": "../..",
+      "image_vars": { "TARGET": "api", "NEXT_PUBLIC_BASE_PATH": "/certa" },
+      // The API image is ~2.4 GB, more than lite's 2 GB disk.
+      "instance_type": "basic",
+      "max_instances": 1,
+      "constraints": { "regions": ["ENAM"] }
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "CERTA_WEB", "class_name": "CertaWeb" },
+      { "name": "CERTA_API", "class_name": "CertaApi" },
+      { "name": "CERTA_JOBS", "class_name": "CertaJobs" }
+    ]
+  },
+  "exports": {
+    "CertaWeb": { "type": "durable-object", "storage": "sqlite" },
+    "CertaApi": { "type": "durable-object", "storage": "sqlite" },
+    "CertaJobs": { "type": "durable-object", "storage": "sqlite" }
+  }
+}
