@@ -192,7 +192,7 @@ function UserMenu(props: AppShellProps & { side?: 'top' | 'bottom'; align?: 'sta
           type="button"
           onClick={t.toggle}
           aria-expanded={t['aria-expanded']}
-          aria-haspopup="menu"
+          aria-haspopup="true"
           aria-label="Account menu"
           className="flex w-full items-center gap-3 rounded-2xl p-2 text-left transition-colors hover:bg-[var(--certa-inset)]"
         >
@@ -261,7 +261,7 @@ function GroupMenu({ label, items, basePath, onNavigate }: { label: string; item
           type="button"
           onClick={t.toggle}
           aria-expanded={t['aria-expanded']}
-          aria-haspopup="menu"
+          aria-haspopup="true"
           className={cn('flex h-9 items-center gap-1 rounded-full px-3.5 text-[15px] transition-colors duration-200', active ? 'font-semibold text-[var(--certa-text)]' : 'text-[var(--certa-muted)] hover:text-[var(--certa-text)]')}
         >
           {label}

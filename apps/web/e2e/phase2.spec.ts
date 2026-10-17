@@ -1,3 +1,4 @@
+import { go } from './nav';
 import { expect, test, type Page } from '@playwright/test';
 
 async function signUp(page: Page, org: string) {
@@ -15,7 +16,7 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   await signUp(page, 'Summit Inspection');
 
   // Signing up made the owner a pilot; add their certificate number.
-  await page.getByRole('link', { name: 'Pilots' }).click();
+  await go(page, 'Pilots');
   await page.getByRole('button', { name: 'Open Maya Thornton' }).click();
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await page.waitForLoadState('networkidle');
@@ -25,6 +26,7 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   await expect(page.getByText('Certificate 4760825')).toBeVisible();
 
   // Without a certificate on file the pilot isn't current.
+  await page.getByRole('tab', { name: /Credentials/ }).click();
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await page.getByLabel('Type').selectOption({ label: 'Remote Pilot Certificate (Part 107)' });
   await page.getByLabel('Issued').fill('2024-03-01');
@@ -37,7 +39,7 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   await expect(page.getByRole('button', { name: 'Edit Recurrent training (Part 107)' })).toBeVisible();
 
   // Aircraft
-  await page.getByRole('link', { name: 'Aircraft' }).click();
+  await go(page, 'Aircraft');
   await page.getByRole('button', { name: 'Add aircraft' }).first().click();
   await page.waitForLoadState('networkidle');
   await page.getByLabel('Make').fill('DJI');
@@ -52,17 +54,17 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   await expect(page.getByText('8.3 lb')).toBeVisible();
 
   // Battery
-  await page.getByRole('link', { name: 'Batteries' }).click();
+  await go(page, 'Batteries');
   await page.getByRole('button', { name: 'Add battery' }).first().click();
   await page.getByLabel('Serial number').fill('TB30-0001');
   await page.getByLabel('Label').fill('M30 #1');
   await page.getByLabel('Fits').selectOption('Matrice 30T');
   await page.getByLabel('Retire at').fill('200');
   await page.getByRole('dialog').getByRole('button', { name: 'Add battery' }).click();
-  await expect(page.getByText('M30 #1')).toBeVisible();
+  await expect(page.getByText('M30 #1', { exact: true })).toBeVisible();
 
   // Log a flight: the pre-flight check is computed from records on file.
-  await page.getByRole('link', { name: 'Flights' }).click();
+  await go(page, 'Flights');
   await page.getByRole('button', { name: 'Log a flight' }).click();
   await page.waitForLoadState('networkidle');
   await page.getByLabel('Aircraft').selectOption({ label: 'Falcon 1' });
@@ -73,7 +75,7 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   const check = page.getByRole('region', { name: 'Pre-flight check' });
   await expect(check).toContainText('Go');
   await expect(check).toContainText('Battery · M30 #1');
-  await page.getByRole('button', { name: 'Log flight' }).click();
+  await page.getByRole('main').getByRole('button', { name: 'Log flight' }).click();
 
   await expect(page).toHaveURL(/\/certa\/flights\/[0-9a-f-]{36}$/);
   await expect(page.getByText('Henderson Solar Farm').first()).toBeVisible();
@@ -81,9 +83,9 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   await expect(page.getByRole('region', { name: 'Pre-flight check' })).toContainText('Go');
 
   // Totals and battery cycles are derived server-side.
-  await page.getByRole('link', { name: 'Batteries' }).click();
+  await go(page, 'Batteries');
   await expect(page.getByRole('meter', { name: 'M30 #1 cycles' })).toHaveAttribute('aria-valuenow', '1');
-  await page.getByRole('link', { name: 'Today' }).click();
+  await go(page, 'Today');
   await expect(page.getByText('Everyone is legal to fly').first()).toBeVisible();
 });
 
@@ -103,7 +105,7 @@ test('offline: a flight logged without signal syncs when the connection returns'
   await context.setOffline(true);
   await page.getByRole('button', { name: '15 min' }).click();
   await page.getByLabel('Location').fill('Cherry Creek Bridge');
-  await page.getByRole('button', { name: 'Log flight' }).click();
+  await page.getByRole('main').getByRole('button', { name: 'Log flight' }).click();
   await expect(page.getByText('Flight saved on this device')).toBeVisible();
   await expect(page.getByRole('button', { name: /Offline/ }).first()).toBeVisible();
 
@@ -123,7 +125,7 @@ test('maintenance schedule and insurance policy feed readiness', async ({ page }
   expect(res.status()).toBe(201);
   await page.reload();
 
-  await page.getByRole('link', { name: 'Maintenance' }).click();
+  await go(page, 'Maintenance');
   await page.getByRole('button', { name: 'Add schedule' }).first().click();
   await page.getByLabel('Name').fill('Motor inspection');
   await page.getByLabel('Every', { exact: true }).fill('25');
@@ -137,7 +139,7 @@ test('maintenance schedule and insurance policy feed readiness', async ({ page }
   await expect(page.getByText('History')).toBeVisible();
   await expect(page.getByText(/Jordan Pike/)).toBeVisible();
 
-  await page.getByRole('link', { name: 'Insurance' }).click();
+  await go(page, 'Insurance');
   await page.getByRole('button', { name: 'Add policy' }).first().click();
   await page.getByLabel('Carrier').fill('Skyward Aviation');
   await page.getByLabel('Policy number').fill('SAI-448812');
@@ -149,7 +151,7 @@ test('maintenance schedule and insurance policy feed readiness', async ({ page }
   await expect(page.getByText(/Expires in 1\d? days|Expires in \d days/).first()).toBeVisible();
 
   // Expiring insurance shows on Today.
-  await page.getByRole('link', { name: 'Today' }).click();
+  await go(page, 'Today');
   await expect(page.getByText('Insurance (Skyward Aviation)').first()).toBeVisible();
 });
 
@@ -189,7 +191,7 @@ test('inspector packet: share a read-only link that works without an account', a
 
 test('integrations: an admin creates an API key and Argus verifies a pilot with it', async ({ page, playwright }) => {
   await signUp(page, 'Argus Customer');
-  await page.getByRole('link', { name: 'Integrations' }).click();
+  await go(page, 'Integrations');
   await page.getByRole('button', { name: 'Create API key' }).first().click();
   await page.getByRole('button', { name: 'Create key' }).click();
   const key = await page.getByLabel('New API key').inputValue();
@@ -226,7 +228,7 @@ test('3D model: upload a GLB for an aircraft and switch back to the generic mode
   const me = await (await page.request.get(`${origin}/certa/api/v1/me`)).json();
   const org = me.memberships[0].orgId;
   const ac = await (await page.request.post(`${origin}/certa/api/v1/orgs/${org}/aircraft`, { data: { nickname: 'Heron 9', make: 'Freefly', model: 'Alta X', serialNumber: 'FFX-9' }, headers: { origin } })).json();
-  await page.goto(`aircraft/${ac.id}`);
+  await page.goto(`aircraft/${ac.id}#model`);
   await page.getByLabel('Upload 3D model').setInputFiles({ name: 'heron.glb', mimeType: 'model/gltf-binary', buffer: tinyGlb() });
   await expect(page.getByText('Replace model')).toBeVisible();
   expect((await page.request.get(`${origin}/certa/api/v1/orgs/${org}/aircraft/${ac.id}/model`)).status()).toBe(200);

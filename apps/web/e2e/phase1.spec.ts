@@ -1,3 +1,4 @@
+import { go } from './nav';
 import { expect, test } from '@playwright/test';
 
 test('sign up, see the compliance notice, and review the US rule pack in admin', async ({ page }) => {
@@ -14,7 +15,7 @@ test('sign up, see the compliance notice, and review the US rule pack in admin',
   await expect(page.getByTestId('compliance-notice')).toContainText('record-keeping tool');
   await expect(page.getByTestId('today-empty')).toBeVisible();
 
-  await page.getByRole('link', { name: 'Rule pack' }).click();
+  await go(page, 'Rule pack');
   await expect(page).toHaveURL(/\/certa\/admin\/rules$/);
   await expect(page.getByTestId('rule-pack-header')).toContainText('US-FAA-Part107');
   await expect(page.getByTestId('unverified-count')).toContainText(/(\d+) of \1 values pending verification/);
@@ -35,7 +36,7 @@ test('sign up, see the compliance notice, and review the US rule pack in admin',
   await expect(altitude).toContainText('300 ft');
   await expect(altitude).toContainText('Company SOP caps altitude at 300 ft');
 
-  await page.getByRole('link', { name: 'Audit log' }).click();
+  await go(page, 'Audit log');
   await expect(page.getByTestId('audit-events')).toContainText('Rule override');
   await expect(page.getByTestId('audit-events')).toContainText('Dana Reyes');
 

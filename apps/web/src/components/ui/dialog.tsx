@@ -33,7 +33,12 @@ export function Dialog({
   useEffect(() => {
     if (!open) return;
     restore.current = document.activeElement as HTMLElement | null;
-    const t = setTimeout(() => panel.current?.querySelector<HTMLElement>('input,select,textarea,button:not([data-close])')?.focus(), 60);
+    // Focus the first field once the panel has mounted, unless the person already clicked into one.
+    const t = setTimeout(() => {
+      const p = panel.current;
+      if (!p || p.contains(document.activeElement)) return;
+      p.querySelector<HTMLElement>('input,select,textarea,button:not([data-close])')?.focus();
+    }, 60);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeRef.current();
       if (e.key !== 'Tab' || !panel.current) return;
