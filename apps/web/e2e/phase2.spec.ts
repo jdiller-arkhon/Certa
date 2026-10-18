@@ -254,7 +254,7 @@ test('discord: a pilot gets a link code, the bot redeems it, and the page shows 
   expect(code).toMatch(/^CERTA-[A-Z0-9]{4}-[A-Z0-9]{4}$/);
 
   const origin = new URL(page.url()).origin;
-  const bot = await playwright.request.newContext({ extraHTTPHeaders: { authorization: 'Bearer e2e-discord-bot-token-e2e-discord-bot-token' } });
+  const bot = await playwright.request.newContext({ extraHTTPHeaders: { authorization: `Bearer ${process.env.E2E_DISCORD_BOT_TOKEN ?? 'e2e-discord-bot-token-e2e-discord-bot-token'}` } });
   const res = await bot.post(`${origin}/certa/api/v1/discord/link-codes/redeem`, { data: { code, discordUserId: '123456789012345678' } });
   expect(res.status()).toBe(200);
   // Single use.
