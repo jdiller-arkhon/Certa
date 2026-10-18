@@ -5,6 +5,7 @@
  * readiness from it with these same pure functions.
  */
 import { z } from 'zod';
+import type { Advisory } from './advisories.js';
 import { Aircraft, Battery, Credential, Flight, Id, IsoDateTime, InsurancePolicy, MaintenanceSchedule, Pilot, PriorExperience, ExternalFlight } from '../domain/entities.js';
 import { JurisdictionId, UnitsPreference, type ReadinessLevel } from '../domain/enums.js';
 import { addDays, daysBetween } from '../format/dates.js';
@@ -209,6 +210,27 @@ export function goNoGo(
       detail: b.status === 'retired' ? 'Retired' : limit ? `${b.cycleCount} of ${limit} cycles` : `${b.cycleCount} cycles`,
     });
   }
+  const worst = worstLevel(checks.map((c) => c.level));
+  return { decision: worst === 'red' ? 'no_go' : worst === 'amber' ? 'caution' : 'go', checks };
+}
+
+/**
+ * The conditions row of a go / no-go: the worst weather, airspace, TFR and daylight advisory at
+ * the launch point, so a red one (inside a TFR, a 0 ft LAANC grid, visibility under 3 SM) makes
+ * the verdict No-go rather than sitting beside a Go. Standing reminders (e.g. "Check NOTAMs")
+ * don't count, or no flight could ever be Go. `null` = conditions weren't checked.
+ */
+export function conditionsCheck(advisories: Advisory[] | null): GoNoGoCheck {
+  if (!advisories) return { key: 'conditions', label: 'Conditions', level: 'amber', detail: 'Not checked. Check weather, airspace and TFRs at the launch point before flight.' };
+  const counted = advisories.filter((a) => a.source !== 'Reminder');
+  const level = worstLevel(counted.map((a) => a.level));
+  const worst = counted.filter((a) => a.level === level).map((a) => a.title);
+  return { key: 'conditions', label: 'Conditions', level, detail: level === 'green' ? 'Weather, airspace and TFRs clear at this point' : worst.join(' · ') };
+}
+
+/** `result` with `check` added (replacing any check with the same key) and the decision recomputed. */
+export function withCheck(result: GoNoGoResult, check: GoNoGoCheck): GoNoGoResult {
+  const checks = [...result.checks.filter((c) => c.key !== check.key), check];
   const worst = worstLevel(checks.map((c) => c.level));
   return { decision: worst === 'red' ? 'no_go' : worst === 'amber' ? 'caution' : 'go', checks };
 }

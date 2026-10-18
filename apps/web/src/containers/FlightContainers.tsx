@@ -6,7 +6,9 @@ import {
   buildLogFlight,
   displayInstant,
   fleetNames,
+  conditionsCheck,
   goNoGo,
+  withCheck,
   metresTo,
   toMetres,
   type Flight,
@@ -216,8 +218,14 @@ export function LogFlightContainer({ flightId, missionId }: { flightId?: string;
 
   const preflight = useMemo(() => {
     if (!f.bi || !selection?.pilotId || !selection.aircraftId) return null;
-    return goNoGo(f.bi.snapshot, { pilotId: selection.pilotId, aircraftId: selection.aircraftId, batteryIds: selection.batteryIds }, f.mapCtx);
-  }, [f.bi, f.mapCtx, selection]);
+    const records = goNoGo(f.bi.snapshot, { pilotId: selection.pilotId, aircraftId: selection.aircraftId, batteryIds: selection.batteryIds }, f.mapCtx);
+    // Editing an old flight: today's conditions say nothing about it.
+    if (flightId) return records;
+    // Conditions count in the verdict: checked (worst advisory) or not checked (caution).
+    if (conditions.status === 'ready' && conditions.data) return withCheck(records, conditionsCheck(conditions.data.advisories));
+    if (conditions.status === 'idle' || conditions.status === 'error') return withCheck(records, conditionsCheck(null));
+    return records;
+  }, [f.bi, f.mapCtx, selection, flightId, conditions.status, conditions.data]);
 
   if (!f.bi || (flightId && existing.isLoading)) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
   if (savedOffline)

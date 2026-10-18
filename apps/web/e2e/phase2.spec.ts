@@ -73,7 +73,10 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   await page.getByLabel('Location').fill('Henderson Solar Farm');
   await page.getByLabel('Max altitude').fill('220');
   const check = page.getByRole('region', { name: 'Pre-flight check', exact: true });
-  await expect(check).toContainText('Go');
+  // Records are all current, but this browser can't share a location, so conditions weren't
+  // checked: that's a Caution, not a Go.
+  await expect(check).toContainText('Caution');
+  await expect(check).toContainText('ConditionsNot checked');
   await expect(check).toContainText('Battery · M30 #1');
   // Tick the standard pre-flight checklist; it's signed into the flight record.
   const list = page.getByRole('region', { name: 'Standard pre-flight' });
@@ -85,7 +88,8 @@ test('fleet loop: pilot, credentials, aircraft, battery, flight with pre-flight 
   await expect(page.getByText('Henderson Solar Farm').first()).toBeVisible();
   await expect(page.getByText('220 ft')).toBeVisible();
   await expect(page.getByRole('region', { name: 'Pre-flight checklist' })).toContainText('Complete');
-  await expect(page.getByRole('region', { name: 'Pre-flight check', exact: true })).toContainText('Go');
+  await expect(page.getByRole('region', { name: 'Pre-flight check', exact: true })).toContainText('Caution');
+  await expect(page.getByRole('region', { name: 'Pre-flight check', exact: true })).toContainText('Conditions (checked on device)');
 
   // Totals and battery cycles are derived server-side.
   await go(page, 'Batteries');

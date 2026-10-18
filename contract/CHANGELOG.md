@@ -12,8 +12,10 @@ Argus mission flights count toward Certa flight time.
 - **Added** `POST /orgs/{orgId}/external-flights/{id}/convert { aircraftId }` → `{ flightId }` (a regular flight, source `import`, parser `argus`) and `DELETE /orgs/{orgId}/external-flights/{id}` (dismiss; a resend won't bring it back). Pilots may do this for their own flights.
 - **Changed** **Pilot detail**: new `pilot.argus`, `argusFlights: ArgusFlightViewModel[]`, `aircraftOptions`, `canConvertArgus`, `onConvertArgusFlight`, `onDismissArgusFlight`.
 - **Changed** Discord bot `flight-totals` (every window) and the leaderboard include Argus flights waiting for the drone.
+- **Changed** **Log flight / Flight detail** go / no-go: new `conditions` check (worst weather, airspace, TFR and daylight advisory; standing reminders like "Check NOTAMs" don't count; "Not checked" is Caution), so a red advisory makes the verdict No-go. New `conditionsCheck()` and `withCheck()`. The server keeps the device's conditions row as "Conditions (checked on device)".
+- **Changed** Expiry reminders cover waivers, airspace authorizations, COAs and LAANC approvals with an end date (managers, plus the pilot it belongs to).
 
-Screens affected: **Pilot detail**.
+Screens affected: **Pilot detail**, **Log flight**, **Flight detail**.
 
 ## 0.12.0 — 2026-10-18
 

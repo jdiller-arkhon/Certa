@@ -169,6 +169,27 @@ describe('flights', () => {
     expect(fleet.recentLocations).toContain('Cherry Creek Bridge');
   });
 
+  it('stores a red conditions row from the device as No-go, labelled as checked on the device', async () => {
+    const t0 = new Date(Date.now() - 2 * 3600_000);
+    const f = await ok(
+      call(owner, 'POST', '/flights', {
+        pilotInCommandId: pilotId,
+        aircraftId,
+        takeoffAt: t0.toISOString(),
+        landingAt: new Date(t0.getTime() + 600_000).toISOString(),
+        localTimeZone: 'America/Denver',
+        goNoGo: { decision: 'go', checks: [{ key: 'conditions', label: 'Conditions', level: 'red', detail: 'Inside a TFR: Stadium' }] },
+      }),
+      201,
+    );
+    expect(f.goNoGo.decision).toBe('no_go');
+    expect(f.goNoGo.checks).toContainEqual({ key: 'conditions', label: 'Conditions (checked on device)', level: 'red', detail: 'Inside a TFR: Stadium' });
+    // Records are still the server's own.
+    expect(f.goNoGo.checks.find((c: { key: string }) => c.key === 'pilot')).toBeTruthy();
+    // Leave the counts later tests rely on as they were.
+    await ok(call(owner, 'DELETE', `/flights/${f.id}`), 204);
+  });
+
   it('is idempotent for a client-supplied id (offline retries)', async () => {
     const again = await call(owner, 'POST', '/flights', { id: flightId, pilotInCommandId: pilotId, aircraftId, takeoffAt: takeoff, landingAt: landing, localTimeZone: 'America/Denver' });
     expect(again.statusCode).toBe(200);

@@ -1,4 +1,4 @@
-import { api, checklistComplete, goNoGo, Id, newId, type GeoPoint } from '@certa/core';
+import { api, checklistComplete, goNoGo, Id, newId, withCheck, type GeoPoint } from '@certa/core';
 import {
   aircraft,
   and,
@@ -184,7 +184,11 @@ export const flightRoutes =
           }
           await checkReferences(db, b);
           // The stored pre-flight check is the server's, from records on file now; a client can't supply its own.
-          const check = goNoGo(await loadFleet(db, oc.orgId), { pilotId: b.pilotInCommandId, aircraftId: b.aircraftId, batteryIds: b.batteries.map((x) => x.batteryId) }, await orgMapContext(db, oc.orgId));
+          const records = goNoGo(await loadFleet(db, oc.orgId), { pilotId: b.pilotInCommandId, aircraftId: b.aircraftId, batteryIds: b.batteries.map((x) => x.batteryId) }, await orgMapContext(db, oc.orgId));
+          // Records are recomputed here; conditions at the launch point can't be, so keep the
+          // conditions row the pilot saw, labelled as checked on the device.
+          const seen = b.goNoGo?.checks.find((c) => c.key === 'conditions');
+          const check = seen ? withCheck(records, { key: 'conditions', label: 'Conditions (checked on device)', level: seen.level, detail: seen.detail.slice(0, 500) }) : records;
           const id = b.id ?? newId();
           try {
             await db.insert(flights).values({

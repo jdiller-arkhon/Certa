@@ -85,6 +85,22 @@ describe('daily expiry alerts', () => {
     expect(ownerLater.text).not.toContain('Falcon 1');
   });
 
+  it('reminds managers before a waiver or authorization ends', async () => {
+    const w = await signUp('Wes Waiver', 'wes@example.com', 'Waiver Co');
+    const ends = new Date(Date.now() + 6 * 86400_000).toISOString();
+    await w.call('POST', '/authorizations', { kind: 'waiver', reference: '107W-2026-01234', title: 'Night ops over people', validTo: ends });
+    await w.call('POST', '/authorizations', { kind: 'coa', reference: 'COA-OPEN', title: 'No end date' });
+    const m = new MemoryMailer();
+    await runExpiryAlerts({ pool, mailer: m, publicUrl: 'https://example.com/certa' });
+    const mail = m.sent.find((x) => x.to === 'wes@example.com')!;
+    expect(mail.text).toMatch(/Part 107 waiver 107W-2026-01234 \(Night ops over people\): due in [56] days/);
+    expect(mail.text).not.toMatch(/No end date/);
+    // Once per threshold.
+    const again = new MemoryMailer();
+    await runExpiryAlerts({ pool, mailer: again, publicUrl: 'https://example.com/certa' });
+    expect(again.sent.find((x) => x.to === 'wes@example.com')).toBeUndefined();
+  });
+
   it('does not record a delivery when the email fails, so it retries next run', async () => {
     const c = await signUp('Cara Chief', 'cara@example.com', 'Retry Co');
     await c.call('POST', '/aircraft', { make: 'Autel', model: 'EVO', serialNumber: 'S3', registrationNumber: 'FA3Z', registrationExpiresOn: days(3) });

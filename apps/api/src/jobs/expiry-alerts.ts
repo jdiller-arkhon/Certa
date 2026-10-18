@@ -7,8 +7,8 @@
  * (and per due date, so renewing a credential re-arms its alerts). If several thresholds were
  * crossed since the last run, only the tightest one is sent.
  */
-import { DEFAULT_READINESS_POLICY, fleetReadiness, newId, type EvaluatedItem, type ReadinessPolicy } from '@certa/core';
-import { alertDeliveries, and, authUsers, eq, inArray, isNull, memberships, pushSubscriptions, sql, withTenant, type Db } from '@certa/db';
+import { AUTHORIZATION_KIND_LABEL, dateInZone, DEFAULT_READINESS_POLICY, evaluateItem, fleetReadiness, newId, type EvaluatedItem, type ReadinessPolicy } from '@certa/core';
+import { alertDeliveries, and, authorizations, authUsers, eq, inArray, isNull, memberships, pushSubscriptions, sql, withTenant, type Db } from '@certa/db';
 import type pg from 'pg';
 import { loadFleet, orgMapContext } from '../lib/fleet.js';
 import type { Mailer } from '../lib/mailer.js';
@@ -89,6 +89,35 @@ async function orgIds(pool: pg.Pool): Promise<string[]> {
   return res.rows.map((r) => r.id);
 }
 
+/**
+ * Waivers, airspace authorizations, COAs and LAANC approvals with an end date: last valid day is
+ * the end date in the org's time zone. Managers hear about all of them; a pilot about their own.
+ */
+async function authorizationItems(db: Db, timeZone: string, today: string, policy: ReadinessPolicy) {
+  const rows = await db
+    .select({ id: authorizations.id, kind: authorizations.kind, reference: authorizations.reference, title: authorizations.title, validTo: authorizations.validTo, pilotId: authorizations.pilotId })
+    .from(authorizations)
+    .where(and(isNull(authorizations.deletedAt), sql`${authorizations.validTo} is not null`));
+  return rows.map((a) => ({
+    pilotId: a.pilotId,
+    item: evaluateItem(
+      {
+        kind: 'authorization',
+        subjectType: a.pilotId ? 'pilot' : 'organization',
+        subjectId: a.pilotId ?? a.id,
+        key: `authorization:${a.id}`,
+        label: `${AUTHORIZATION_KIND_LABEL[a.kind]} ${a.reference}${a.title ? ` (${a.title})` : ''}`,
+        dueOn: dateInZone(a.validTo!, timeZone),
+        usageFraction: null,
+        blocking: false,
+        ruleId: null,
+      },
+      today,
+      policy,
+    ),
+  }));
+}
+
 async function planOrg(db: Db, orgId: string, now: Date) {
   const ctx = await orgMapContext(db, orgId, now);
   const policy: ReadinessPolicy = (ctx.org.alertPolicy as ReadinessPolicy | null) ?? DEFAULT_READINESS_POLICY;
@@ -99,6 +128,7 @@ async function planOrg(db: Db, orgId: string, now: Date) {
   const evaluated = [
     ...[...r.pilots].flatMap(([id, sum]) => sum.items.map((item) => ({ item, subject: pilotName.get(id) ?? 'Pilot', href: `/pilots/${id}`, pilotId: id, aircraft: false }))),
     ...[...r.aircraft].flatMap(([id, sum]) => sum.items.map((item) => ({ item, subject: acName.get(id) ?? 'Aircraft', href: `/aircraft/${id}`, pilotId: null, aircraft: true }))),
+    ...(await authorizationItems(db, ctx.org.timezone, ctx.today, policy)).map(({ item, pilotId }) => ({ item, subject: pilotId ? (pilotName.get(pilotId) ?? 'Pilot') : ctx.org.name, href: '/authorizations', pilotId, aircraft: false })),
   ];
   const items = alertItems(evaluated, policy.alertThresholdsDays);
   if (!items.length) return { org: ctx.org, recipients: [] as Recipient[] };
