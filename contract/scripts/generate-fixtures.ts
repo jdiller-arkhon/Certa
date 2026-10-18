@@ -619,7 +619,7 @@ function toScenario(w: World): FixtureScenario {
         members: w.members.map((m) => toMemberRow(m, w.currentUser.id, ctx)),
         roleOptions: ROLES.map((r) => ({ value: r, label: ROLE_LABELS[r], description: ROLE_DESCRIPTIONS[r] })),
         canManage: canDo('members.manage'),
-        empty: empty('Just you so far', 'Invite pilots, maintenance techs, or an auditor. Each person gets a sign-in link by email.', 'Invite someone'),
+        empty: empty('Just you so far', 'Invite pilots, maintenance techs, or an auditor. Each person gets an email telling them how to sign in.', 'Invite someone'),
       },
       orgSettings: {
         ...ok,

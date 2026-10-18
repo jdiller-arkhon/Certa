@@ -83,7 +83,9 @@ export type Config = z.infer<typeof Env> & {
 };
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
-  const parsed = Env.safeParse(env);
+  // Blank counts as unset (e.g. `DISCORD_BOT_API_TOKEN=` copied from .env.example), so optional
+  // settings stay off and defaults apply instead of failing validation.
+  const parsed = Env.safeParse(Object.fromEntries(Object.entries(env).filter(([, v]) => v !== undefined && v.trim() !== '')));
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `  ${i.path.join('.')}: ${i.message}`).join('\n');
     throw new Error(`Invalid environment configuration:\n${issues}`);

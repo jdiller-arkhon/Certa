@@ -14,6 +14,7 @@ let tdb: TestDatabase;
 let pool: pg.Pool;
 let local: App; // Certa's own sign-up on, to create an existing account and Arkhon's org
 let sso: App; // Arkhon sign-in only
+const ssoMailer = new MemoryMailer();
 let arkhon: Server;
 let seen: IncomingHttpHeaders[] = [];
 
@@ -25,6 +26,7 @@ const USERS: Record<string, unknown> = {
   suspended: { id: 'ark-s', name: 'Sus', email: 'sus@example.com', emailVerified: true, role: 'pilot', status: 'suspended_temporary' },
   unverified: { id: 'ark-u', name: 'Unv', email: 'unv@example.com', emailVerified: false, role: 'pilot', status: 'active' },
   thief: { id: 'ark-thief', name: 'Not Paula', email: 'paula@example.com', emailVerified: true, role: 'pilot', status: 'active' },
+  invitee: { id: 'ark-ivan', name: 'Ivan Invitee', email: 'ivan@example.com', emailVerified: true, role: 'pilot', status: 'active' },
 };
 
 const cookieFrom = (res: { headers: Record<string, unknown> }) => {
@@ -73,7 +75,7 @@ beforeAll(async () => {
   const res = await local.inject({ method: 'POST', url: '/api/v1/signup', headers: { origin: ORIGIN }, payload: { name: 'Olivia Owner', email: 'olivia@example.com', password: 'correct-horse-battery', organizationName: 'Arkhon Industries', timezone: 'America/Denver' } });
   expect(res.statusCode, res.body).toBe(201);
   arkhonOrgId = res.json().memberships[0].orgId;
-  sso = await buildApp({ config: configFor({ ARKHON_AUTH_ORIGIN: arkhonOrigin, ARKHON_ORG_ID: arkhonOrgId, LOCAL_AUTH: 'off' }), pool, mailer: new MemoryMailer() }, { logger: false });
+  sso = await buildApp({ config: configFor({ ARKHON_AUTH_ORIGIN: arkhonOrigin, ARKHON_ORG_ID: arkhonOrgId, LOCAL_AUTH: 'off' }), pool, mailer: ssoMailer }, { logger: false });
 });
 
 afterAll(async () => {
@@ -135,6 +137,21 @@ describe('Arkhon sign-in', () => {
     const m = await me(sso, cookieFrom(res));
     expect(m.arkhon).toEqual({ role: 'client', platformAdmin: false });
     expect(m.memberships).toEqual([]);
+  });
+
+  it('invites people to sign in with Arkhon, and links the invite on their first sign-in', async () => {
+    const admin = cookieFrom(await exchange(sso, 'admin'));
+    const res = await sso.inject({ method: 'POST', url: `/api/v1/orgs/${arkhonOrgId}/members`, headers: { origin: ORIGIN, cookie: admin }, payload: { email: 'ivan@example.com', name: 'Ivan', role: 'pilot' } });
+    expect(res.statusCode, res.body).toBe(201);
+    const mail = ssoMailer.sent.find((m) => m.to === 'ivan@example.com')!;
+    expect(mail.subject).toBe('You’ve been added to Arkhon Industries on Certa'.replace('’', "'"));
+    expect(mail.text).toContain(`${ORIGIN}/sign-in`);
+    expect(mail.text).not.toMatch(/magic-link|token=/);
+
+    const ivan = await exchange(sso, 'invitee');
+    expect(ivan.statusCode, ivan.body).toBe(200);
+    // The invite, not a logbook of their own.
+    expect((await me(sso, cookieFrom(ivan))).memberships).toEqual([expect.objectContaining({ orgId: arkhonOrgId, role: 'pilot' })]);
   });
 
   it('never hands one person’s account to another Arkhon account with the same email', async () => {

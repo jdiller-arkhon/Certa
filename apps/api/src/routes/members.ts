@@ -1,5 +1,5 @@
 import { api, Id, newId } from '@certa/core';
-import { and, asc, authUsers, eq, globalDb, isNull, memberships, pilots, sql } from '@certa/db';
+import { and, asc, authUsers, eq, globalDb, isNull, memberships, organizations, pilots, sql } from '@certa/db';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import type { AppContext } from '../app.js';
@@ -74,7 +74,7 @@ export const memberRoutes =
           [user] = await gdb.insert(authUsers).values({ id: newId(), name: req.body.name, email }).returning();
         }
         const membershipId = newId();
-        await inOrg(ctx.pool, req, oc, async (db) => {
+        const orgName = await inOrg(ctx.pool, req, oc, async (db) => {
           const existing = await db
             .select({ id: memberships.id })
             .from(memberships)
@@ -89,10 +89,24 @@ export const memberRoutes =
           if (['owner', 'admin', 'chief_pilot', 'pilot'].includes(req.body.role)) {
             await db.insert(pilots).values({ id: newId(), membershipId, displayName: user!.name, email });
           }
+          const [org] = await db.select({ name: organizations.name }).from(organizations).where(eq(organizations.id, oc.orgId));
+          return org?.name ?? 'an organization';
         });
-        await ctx.auth.api
-          .signInMagicLink({ body: { email, callbackURL: `${ctx.config.basePath}/` }, headers: new Headers() })
-          .catch((err: unknown) => req.log.warn({ err }, 'invite email failed'));
+        if (ctx.config.LOCAL_AUTH === 'off') {
+          // No Certa sign-in links: they sign in with their Arkhon account, which links to this
+          // invite by its verified email on first sign-in.
+          await ctx.mailer
+            .send({
+              to: email,
+              subject: `You've been added to ${orgName} on Certa`,
+              text: `You've been added to ${orgName} on Certa, the drone logbook.\n\nSign in with your Arkhon account (using this email address):\n\n${ctx.config.PUBLIC_URL}/sign-in\n\nNo Arkhon account yet? Create one from that page with this email address.`,
+            })
+            .catch((err: unknown) => req.log.warn({ err }, 'invite email failed'));
+        } else {
+          await ctx.auth.api
+            .signInMagicLink({ body: { email, callbackURL: `${ctx.config.basePath}/` }, headers: new Headers() })
+            .catch((err: unknown) => req.log.warn({ err }, 'invite email failed'));
+        }
         const row = (await listMembers(oc, req)).find((m) => m.membershipId === membershipId)!;
         return reply.status(201).send(row);
       },

@@ -5468,7 +5468,7 @@ export const expired = {
       "canManage": true,
       "empty": {
         "title": "Just you so far",
-        "body": "Invite pilots, maintenance techs, or an auditor. Each person gets a sign-in link by email.",
+        "body": "Invite pilots, maintenance techs, or an auditor. Each person gets an email telling them how to sign in.",
         "actionLabel": "Invite someone"
       }
     },

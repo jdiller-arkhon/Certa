@@ -17,7 +17,7 @@ async function postAuth(path: string, body: object): Promise<{ ok: boolean; mess
 }
 
 /** Public: which sign-in methods this deployment offers. */
-function useAuthConfig() {
+export function useAuthConfig() {
   return useQuery({
     queryKey: ['auth-config'],
     queryFn: async () => (await api.GET('/api/v1/auth/config')).data ?? { local: true, arkhon: null },
@@ -50,10 +50,11 @@ function Inner() {
     setState({ loading: false, error: data.message ?? 'Couldn’t sign you in. Try again in a moment.', sentTo: null });
   };
 
-  // Already signed in to Arkhon (or just back from its sign-in page): sign straight in.
+  // Already signed in to Arkhon (or just back from its sign-in page): sign straight in. Not right
+  // after signing out of Certa, or the Arkhon session would sign them straight back in.
   const tried = useRef(false);
   useEffect(() => {
-    if (!arkhon || tried.current) return;
+    if (!arkhon || tried.current || params.get('signedOut')) return;
     tried.current = true;
     void exchange(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps

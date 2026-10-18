@@ -60,7 +60,7 @@ export function MembersAdminContainer() {
       members={(members.data?.members ?? []).map((m) => toMemberRow(m, me.user.id, mapCtx))}
       roleOptions={ROLES.filter((r) => r !== 'owner' || role === 'owner').map((r) => ({ value: r, label: ROLE_LABELS[r], description: ROLE_DESCRIPTIONS[r] }))}
       canManage={can(role, 'members.manage')}
-      empty={{ title: 'Just you so far', body: 'Invite pilots, maintenance techs, or an auditor. Each person gets a sign-in link by email.', actionLabel: 'Invite someone' }}
+      empty={{ title: 'Just you so far', body: 'Invite pilots, maintenance techs, or an auditor. Each person gets an email telling them how to sign in.', actionLabel: 'Invite someone' }}
       onInvite={(v) => invite.mutate(v)}
       onChangeRole={(v) => update.mutate(v)}
       onSetExpiry={(v) => update.mutate(v)}

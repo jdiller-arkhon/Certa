@@ -3,10 +3,11 @@
 import { CertaApiError, unwrap } from '@certa/sdk';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
 import { keys } from '@/data/session';
 import { SignUpScreen } from '@/screens';
+import { useAuthConfig } from './SignInContainer';
 
 const COMMON_ZONES = ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Phoenix', 'America/Los_Angeles', 'America/Anchorage', 'Pacific/Honolulu', 'UTC'];
 
@@ -16,6 +17,15 @@ export function SignUpContainer() {
   const [state, setState] = useState<{ loading: boolean; error: string | null }>({ loading: false, error: null });
   const browserZone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC', []);
   const zones = [browserZone, ...COMMON_ZONES.filter((z) => z !== browserZone)];
+  // Accounts come from Arkhon when Certa's own sign-up is off: send people there instead.
+  const config = useAuthConfig();
+  const arkhonOnly = config.data?.local === false;
+  useEffect(() => {
+    if (!arkhonOnly) return;
+    if (config.data?.arkhon) window.location.assign(config.data.arkhon.signupUrl);
+    else router.replace('/sign-in');
+  }, [arkhonOnly, config.data, router]);
+  if (arkhonOnly) return null;
   return (
     <SignUpScreen
       {...state}

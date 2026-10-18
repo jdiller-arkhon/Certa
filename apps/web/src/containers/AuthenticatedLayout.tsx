@@ -73,7 +73,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   if (me.isLoading || (orgId && org.isLoading)) return <p role="status">Loading…</p>;
   if (me.error || org.error) return <p role="alert">We couldn’t load your account. Refresh to try again.</p>;
   if (!me.data) return null;
-  if (!current && !orgId && me.data.arkhon?.role === 'client') return <ClientHomeContainer me={me.data} onSignedOut={() => router.replace('/sign-in')} />;
+  if (!current && !orgId && me.data.arkhon?.role === 'client') return <ClientHomeContainer me={me.data} onSignedOut={() => router.replace('/sign-in?signedOut=1')} />;
   if (!current) return <p role="alert">Your account isn’t a member of any organization.</p>;
 
   const pending = outbox.items.filter((i) => i.status === 'pending').length;
@@ -126,7 +126,8 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
         onSwitchOrg={current.switchOrg}
         onSignOut={async () => {
           await signOut.mutateAsync();
-          router.replace('/sign-in');
+          // Stay signed out: the sign-in page won't reuse the Arkhon session on its own.
+          router.replace('/sign-in?signedOut=1');
         }}
         onNavigate={(href) => router.push(href)}
         onThemeChange={(t) => {

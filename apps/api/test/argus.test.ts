@@ -11,6 +11,7 @@ const TOKEN = 'argus-ingest-token-argus-ingest-token-0123';
 let tdb: TestDatabase;
 let pool: pg.Pool;
 let app: App;
+const mailer = new MemoryMailer();
 
 interface Session {
   cookie: string;
@@ -72,7 +73,7 @@ let pilotId: string;
 beforeAll(async () => {
   tdb = await createTestDatabase('argus');
   pool = createPool(tdb.appUrl);
-  app = await buildApp({ config: configFor(), pool, mailer: new MemoryMailer() }, { logger: false });
+  app = await buildApp({ config: configFor(), pool, mailer }, { logger: false });
   owner = await signUp('Olivia Owner', 'olivia@example.com', 'Skyline Aerial');
   other = await signUp('Oscar Other', 'oscar@example.com', 'Other Co');
   pilotId = (await ok(call(owner, 'GET', '/fleet'))).pilots[0].id;
@@ -85,11 +86,15 @@ afterAll(async () => {
 });
 
 describe('Argus mission flights', () => {
-  it('needs the Argus token, and is off without one', async () => {
+  it('needs the Argus token, and is off without one (blank counts as unset)', async () => {
     expect((await ingest(job('J0', 2, 10), 'wrong-token')).statusCode).toBe(401);
-    const off = await buildApp({ config: configFor({ ARGUS_INGEST_TOKEN: undefined }), pool, mailer: new MemoryMailer() }, { logger: false });
-    expect((await ingest(job('J0', 2, 10), TOKEN, off)).statusCode).toBe(503);
-    await off.close();
+    expect((await ingest(job('J0', 2, 10), '')).statusCode).toBe(401);
+    for (const token of [undefined, '', '  ']) {
+      const off = await buildApp({ config: configFor({ ARGUS_INGEST_TOKEN: token }), pool, mailer: new MemoryMailer() }, { logger: false });
+      expect((await ingest(job('J0', 2, 10), TOKEN, off)).statusCode).toBe(503);
+      await off.close();
+    }
+    expect(() => configFor({ ARGUS_INGEST_TOKEN: 'too-short' })).toThrow(/at least 32/);
   });
 
   it('rejects impossible times', async () => {
@@ -144,6 +149,23 @@ describe('Argus mission flights', () => {
     // A resend leaves the converted flight alone.
     expect((await ingest(job('J1', 2, 55))).json().status).toBe('unchanged');
     await ok(call(owner, 'POST', `/external-flights/${ext.id}/convert`, { aircraftId: ac.id }), 404);
+  });
+
+  it('only the pilot (or those who manage flights) can pick the drone or dismiss it', async () => {
+    const { externalFlightId } = (await ingest(job('J3', 6, 9))).json();
+    const ac = (await ok(call(owner, 'GET', '/fleet'))).aircraft[0];
+    for (const role of ['pilot', 'viewer'] as const) {
+      const email = `${role}-member@example.com`;
+      await ok(call(owner, 'POST', '/members', { email, name: `A ${role}`, role }), 201);
+      const link = /(https?:\/\/\S+)/.exec(mailer.sent.find((m) => m.to === email)!.text)![1]!;
+      const url = new URL(link);
+      const verify = await app.inject({ method: 'GET', url: url.pathname + url.search, headers: { origin: ORIGIN } });
+      const member = { cookie: cookieFrom(verify), orgId: owner.orgId };
+      await ok(call(member, 'POST', `/external-flights/${externalFlightId}/convert`, { aircraftId: ac.id }), 403);
+      await ok(call(member, 'DELETE', `/external-flights/${externalFlightId}`), 403);
+    }
+    expect((await ok(call(owner, 'GET', '/fleet'))).externalFlights.map((x: { id: string }) => x.id)).toContain(externalFlightId);
+    await ok(call(owner, 'DELETE', `/external-flights/${externalFlightId}`), 204);
   });
 
   it('can be dismissed, and a resend doesn’t bring it back', async () => {

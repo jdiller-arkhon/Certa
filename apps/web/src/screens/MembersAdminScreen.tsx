@@ -103,7 +103,7 @@ export function MembersAdminScreen(props: MembersAdminScreenProps) {
         open={open}
         onClose={() => setOpen(false)}
         title="Invite someone"
-        description="They’ll get an email with a sign-in link. No password needed to start."
+        description="They’ll get an email telling them how to sign in. No new password needed."
         footer={
           <>
             <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
