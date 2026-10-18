@@ -15,3 +15,6 @@ __pycache__/
 *.pyc
 data/
 .wrangler
+
+# Generated per deploy (pins pushed registry images)
+infra/cloudflare/wrangler.deploy.jsonc
