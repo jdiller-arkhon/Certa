@@ -61,16 +61,19 @@ postgresql://certa_api:<that password>@ep-dark-pond-b8trl4sg.c-14.us-east-1.aws.
 
 Use this direct host, not the `-pooler` one.
 
-### 4. Pick a mail relay
+### 4. Set up email (Resend)
 
-Certa sends sign-in links and expiry reminders over SMTP. With Microsoft 365, for example:
+Certa sends sign-in links and expiry reminders over SMTP. Arkhon uses [Resend](https://resend.com):
+add and verify `arkhonindustries.com` under **Domains** (its DNS records don't affect Microsoft 365
+mail), then create an API key with **Sending access** for that domain. The SMTP URL is:
 
 ```
-smtp://certa%40arkhonindustries.com:<password>@smtp.office365.com:587
+smtps://resend:<API key>@smtp.resend.com:465
 ```
 
-The sending address must match `MAIL_FROM` in `wrangler.jsonc`
-(`certa@arkhonindustries.com`). Change it there if you use a different address.
+The sending address must be on the verified domain and match `MAIL_FROM` in `wrangler.jsonc`
+(`certa@arkhonindustries.com`). Microsoft 365 password SMTP isn't used: Microsoft is turning it
+off by default at the end of 2026.
 
 ### 5. Deploy
 
@@ -82,7 +85,7 @@ npx wrangler login
 # Secrets: you're prompted for each value. Nothing is stored in the repo.
 npx wrangler secret put DATABASE_URL           # from step 3
 npx wrangler secret put AUTH_SECRET            # output of: openssl rand -hex 32
-npx wrangler secret put SMTP_URL               # from step 4
+npx wrangler secret put SMTP_URL               # from step 4 (Resend)
 npx wrangler secret put S3_ENDPOINT            # https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 npx wrangler secret put S3_ACCESS_KEY_ID       # from step 2
 npx wrangler secret put S3_SECRET_ACCESS_KEY   # from step 2
