@@ -1406,6 +1406,28 @@ export interface paths {
                                 notes: string | null;
                                 documentIds: string[];
                             }[];
+                            /** @default [] */
+                            priorExperience: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                /** Format: uuid */
+                                pilotId: string;
+                                source: string;
+                                flights: number;
+                                missions: number;
+                                flightSeconds: number;
+                                /** Format: date */
+                                asOf: string;
+                                notes: string | null;
+                            }[];
                             aircraft: {
                                 /** Format: uuid */
                                 id: string;
@@ -1519,6 +1541,8 @@ export interface paths {
                                     flightSeconds: number;
                                     lastFlightAt: string | null;
                                     last90DaysFlights: number;
+                                    /** @default 0 */
+                                    missions: number;
                                 };
                             };
                             batteryLastUsed: {
@@ -2090,6 +2114,167 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/pilots/{pilotId}/prior-experience": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add flights, missions and flight time logged in another app */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        source: string;
+                        flights: number;
+                        missions: number;
+                        flightSeconds: number;
+                        /** Format: date */
+                        asOf: string;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotId: string;
+                            source: string;
+                            flights: number;
+                            missions: number;
+                            flightSeconds: number;
+                            /** Format: date */
+                            asOf: string;
+                            notes: string | null;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/prior-experience/{priorId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    priorId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    priorId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        source?: string;
+                        flights?: number;
+                        missions?: number;
+                        flightSeconds?: number;
+                        /** Format: date */
+                        asOf?: string;
+                        notes?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: date-time */
+                            createdAt: string;
+                            /** Format: date-time */
+                            updatedAt: string;
+                            createdBy: string | null;
+                            deletedAt: string | null;
+                            /** Format: uuid */
+                            pilotId: string;
+                            source: string;
+                            flights: number;
+                            missions: number;
+                            flightSeconds: number;
+                            /** Format: date */
+                            asOf: string;
+                            notes: string | null;
+                        };
+                    };
+                };
+            };
+        };
         trace?: never;
     };
     "/api/v1/orgs/{orgId}/aircraft": {

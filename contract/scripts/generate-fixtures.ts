@@ -509,6 +509,7 @@ function toScenario(w: World): FixtureScenario {
     overrides: w.overrides.map((o) => ({ ruleId: o.ruleId, value: o.value, reason: o.reason })),
     pilots: w.pilots,
     credentials: w.credentials,
+    priorExperience: [],
     aircraft: w.aircraft,
     batteries: w.batteries,
     insurancePolicies: insuranceFor(w),
@@ -517,7 +518,8 @@ function toScenario(w: World): FixtureScenario {
       w.pilots.map((p) => {
         const t = flightTotals((f) => f.pilotInCommandId === p.id);
         const last90 = w.flights.filter((f) => f.pilotInCommandId === p.id && f.takeoffAt >= `${addDaysIso(TODAY, -90)}T00:00:00Z`).length;
-        return [p.id, { flights: t.count, flightSeconds: t.seconds, lastFlightAt: t.last, last90DaysFlights: last90 }];
+        const missions = new Set(w.flights.filter((f) => f.pilotInCommandId === p.id && f.missionId).map((f) => f.missionId)).size;
+        return [p.id, { flights: t.count, flightSeconds: t.seconds, lastFlightAt: t.last, last90DaysFlights: last90, missions }];
       }),
     ),
     batteryLastUsed: Object.fromEntries(w.batteries.map((b) => [b.id, lastFlightOf(b.id)])),

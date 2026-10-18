@@ -771,6 +771,7 @@ export const empty = {
       "error": null,
       "pilot": null,
       "credentials": [],
+      "priorExperience": [],
       "recentFlights": [],
       "credentialTypeOptions": [
         {

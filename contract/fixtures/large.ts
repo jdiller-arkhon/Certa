@@ -1139,13 +1139,24 @@ export const large = {
         "reasons": [],
         "totals": {
           "flights": 124,
+          "missions": 0,
           "flightTime": {
             "value": 125841,
             "unit": "s",
             "display": "34h 57m"
           },
           "last90DaysFlights": 23
-        }
+        },
+        "logged": {
+          "flights": 124,
+          "missions": 0,
+          "flightTime": {
+            "value": 125841,
+            "unit": "s",
+            "display": "34h 57m"
+          }
+        },
+        "prior": null
       },
       "credentials": [
         {
@@ -1212,6 +1223,7 @@ export const large = {
           "documentCount": 0
         }
       ],
+      "priorExperience": [],
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000005b8db1",

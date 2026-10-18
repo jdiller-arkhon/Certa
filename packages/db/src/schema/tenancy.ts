@@ -4,6 +4,7 @@ import {
   boolean,
   date,
   index,
+  integer,
   jsonb,
   numeric,
   pgTable,
@@ -104,6 +105,27 @@ export const trainingRecords = pgTable('training_records', {
   completedOn: date('completed_on', { mode: 'string' }).notNull(),
   hours: numeric('hours', { precision: 8, scale: 2, mode: 'number' }),
 });
+
+/**
+ * Flights, missions and flight time a pilot logged before Certa, in another app, as totals per
+ * source. Counted in all-time totals only (they carry no dates).
+ */
+export const priorExperience = pgTable(
+  'prior_experience',
+  {
+    ...entityColumns(),
+    pilotId: uuid('pilot_id')
+      .notNull()
+      .references(() => pilots.id),
+    source: text('source').notNull(),
+    flights: integer('flights').notNull().default(0),
+    missions: integer('missions').notNull().default(0),
+    flightSeconds: bigint('flight_seconds', { mode: 'number' }).notNull().default(0),
+    asOf: date('as_of', { mode: 'string' }).notNull(),
+    notes: text('notes'),
+  },
+  (t) => [index('prior_experience_pilot_idx').on(t.pilotId).where(sql`deleted_at is null`)],
+);
 
 // ---------------------------------------------------------------- rule packs (global)
 

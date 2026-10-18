@@ -151,6 +151,17 @@ describe('Discord link for the community bot', () => {
     await ok(call(owner, 'PUT', '/discord/settings', { leaderboardEnabled: true }));
   });
 
+  it('counts prior experience from other apps in all-time totals only', async () => {
+    const pilotId = (await ok(call(owner, 'GET', '/fleet'))).pilots.find((p: { displayName: string }) => p.displayName === 'Olivia Owner').id;
+    const prior = await ok(call(owner, 'POST', `/pilots/${pilotId}/prior-experience`, { source: 'AirData', flights: 40, missions: 5, flightSeconds: 10 * 3600, asOf: '2026-01-01' }), 201);
+    const totals = await botOk(bot('GET', `/users/${certaUserId}/flight-totals`));
+    expect(totals).toMatchObject({ totalFlights: 41, totalMinutes: 625, last30Days: { flights: 1, minutes: 25 }, last365Days: { flights: 1, minutes: 25 } });
+    expect((await botOk(bot('GET', '/leaderboard?period=all'))).entries).toEqual([{ rank: 1, certaUserId, displayName: 'Olivia Owner', totalMinutes: 625, flightCount: 41 }]);
+    expect((await botOk(bot('GET', '/leaderboard?period=month&month=2001-01'))).entries).toEqual([]);
+    await ok(call(owner, 'DELETE', `/prior-experience/${prior.id}`), 204);
+    expect(await botOk(bot('GET', `/users/${certaUserId}/flight-totals`))).toMatchObject({ totalFlights: 1, totalMinutes: 25 });
+  });
+
   it('keeps orgs apart, moves a Discord account between pilots, and cuts access on unlink', async () => {
     // Another org's pilot links the same Discord account: the first link ends.
     const { code } = await ok(call(other, 'POST', '/discord/link-code'), 201);

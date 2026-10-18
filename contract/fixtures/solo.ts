@@ -901,13 +901,24 @@ export const solo = {
         "reasons": [],
         "totals": {
           "flights": 38,
+          "missions": 0,
           "flightTime": {
             "value": 43751,
             "unit": "s",
             "display": "12h 09m"
           },
           "last90DaysFlights": 7
-        }
+        },
+        "logged": {
+          "flights": 38,
+          "missions": 0,
+          "flightTime": {
+            "value": 43751,
+            "unit": "s",
+            "display": "12h 09m"
+          }
+        },
+        "prior": null
       },
       "credentials": [
         {
@@ -974,6 +985,7 @@ export const solo = {
           "documentCount": 0
         }
       ],
+      "priorExperience": [],
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000000f4251",

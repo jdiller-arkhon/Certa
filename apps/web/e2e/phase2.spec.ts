@@ -324,3 +324,35 @@ test('missions: plan one, check readiness, log a flight from it, and see it unde
   await expect(page.getByText('Henderson substation').first()).toBeVisible();
   await expect(page.getByRole('main').getByText('20m 00s').first()).toBeVisible();
 });
+
+test('prior experience: a pilot adds totals from another app and they count toward all-time totals', async ({ page }) => {
+  await signUp(page, 'Ridge Line Aerial');
+  await go(page, 'Pilots');
+  await page.getByRole('button', { name: 'Open Maya Thornton' }).click();
+  await expect(page.getByRole('heading', { name: 'Maya Thornton' })).toBeVisible();
+
+  await page.getByRole('tab', { name: /Prior experience/ }).click();
+  await expect(page.getByText(/Flying before Certa\?/)).toBeVisible();
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+  await page.getByLabel('App or logbook').fill('DJI Fly');
+  await page.getByLabel('Flights', { exact: true }).fill('142');
+  await page.getByLabel('Missions').fill('18');
+  await page.getByLabel('Flight time · hours').fill('37');
+  await page.getByLabel('Minutes').fill('45');
+  await page.getByRole('button', { name: 'Add', exact: true }).last().click();
+  await expect(page.getByRole('button', { name: 'Edit DJI Fly' })).toContainText('142 flights · 18 missions · 37h 45m');
+
+  // Edit it, then check the overview totals include it.
+  await page.getByRole('button', { name: 'Edit DJI Fly' }).click();
+  await page.getByLabel('Flights', { exact: true }).fill('150');
+  await page.getByRole('button', { name: 'Save' }).click();
+  await expect(page.getByRole('button', { name: 'Edit DJI Fly' })).toContainText('150 flights');
+  await page.getByRole('tab', { name: 'Overview' }).click();
+  await expect(page.getByText('Includes 150 flights, 18 missions and 37h 45m from other apps.')).toBeVisible();
+
+  // Removing it takes the totals back to Certa-logged flights only.
+  await page.getByRole('tab', { name: /Prior experience/ }).click();
+  await page.getByRole('button', { name: 'Edit DJI Fly' }).click();
+  await page.getByRole('button', { name: 'Remove' }).click();
+  await expect(page.getByText(/Flying before Certa\?/)).toBeVisible();
+});

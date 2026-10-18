@@ -1,7 +1,7 @@
 'use client';
 
 import type { PilotDetailScreenProps } from '@certa/contract';
-import { BadgeCheck, FileDown, Pencil, Plus, Route } from 'lucide-react';
+import { BadgeCheck, FileDown, History, Pencil, Plus, Route } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -13,10 +13,11 @@ import { Panel, PanelRow, StatStrip } from '@/components/ui/panel';
 import { LEVEL_COLOR, StatusBadge } from '@/components/ui/status';
 import { TabPanel, Tabs, useHashTab } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/ui/text';
+import { PriorExperienceDialog } from './_prior';
 import { ShareButton, ShareDialog } from './_share';
 import { FlightRows, ListCard, Reasons, RowButton, RowTitle, When } from './_parts';
 
-const TABS = ['overview', 'credentials', 'flights'] as const;
+const TABS = ['overview', 'credentials', 'experience', 'flights'] as const;
 
 const initials = (name: string) =>
   name
@@ -30,6 +31,8 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
   const [tab, setTab] = useHashTab(TABS);
   const [adding, setAdding] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [prior, setPrior] = useState<'new' | string | null>(null);
+  const priorEntry = props.priorExperience.find((x) => x.id === prior);
   const [editing, setEditing] = useState<{ id: string; identifier: string; issuedOn: string; expiresOn: string } | null>(null);
   const editingCred = props.credentials.find((c) => c.id === editing?.id);
   const openEdit = (id: string) => {
@@ -66,7 +69,7 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
       />
       <Banners>{props.error && <Banner key="e" tone="error">{props.error}</Banner>}</Banners>
 
-      <Tabs label="Pilot sections" tabs={[{ id: 'overview', label: 'Overview' }, { id: 'credentials', label: 'Credentials', count: props.credentials.length }, { id: 'flights', label: 'Flights', count: p.totals.flights }]} value={tab} onChange={setTab} />
+      <Tabs label="Pilot sections" tabs={[{ id: 'overview', label: 'Overview' }, { id: 'credentials', label: 'Credentials', count: props.credentials.length }, { id: 'experience', label: 'Prior experience', count: props.priorExperience.length }, { id: 'flights', label: 'Flights', count: p.logged.flights }]} value={tab} onChange={setTab} />
 
       {tab === 'overview' && (
         <TabPanel key="overview" label="Overview" className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -74,10 +77,17 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
             <StatStrip
               items={[
                 { label: 'Flights', value: p.totals.flights },
+                { label: 'Missions', value: p.totals.missions },
                 { label: 'Flight time', value: p.totals.flightTime.display },
                 { label: 'Last 90 days', value: p.totals.last90DaysFlights },
               ]}
             />
+            {p.prior && (
+              <p className="border-b border-[var(--certa-border)] px-5 py-2.5 text-[13px] text-[var(--certa-muted)]">
+                Includes {p.prior.flights} flights, {p.prior.missions} missions and {p.prior.flightTime.display} from other apps.{' '}
+                <button type="button" onClick={() => setTab('experience')} className="underline underline-offset-2 hover:text-[var(--certa-text)]">Details</button>
+              </p>
+            )}
             <div className="px-5 py-4">
               {p.reasons.length ? <Reasons reasons={p.reasons} onOpen={props.canEdit ? () => setTab('credentials') : undefined} /> : <p className="text-[15px] text-[var(--certa-muted)]">Certificate and recurrent training are current. Legal to fly under the active rule pack.</p>}
             </div>
@@ -129,6 +139,42 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
               <li className="px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]">No credentials on file. Add the Part 107 certificate and recurrent training to compute currency.</li>
             )}
           </ListCard>
+        </TabPanel>
+      )}
+
+      {tab === 'experience' && (
+        <TabPanel key="experience" label="Prior experience">
+          <ListCard
+            title="From other apps"
+            count={props.priorExperience.length}
+            aside={props.canEdit && <Button size="sm" variant="secondary" icon={<Plus className="size-4" aria-hidden />} onClick={() => setPrior('new')}>Add</Button>}
+          >
+            {props.priorExperience.length ? (
+              props.priorExperience.map((x) => (
+                <RowButton key={x.id} onClick={props.canEdit ? () => setPrior(x.id) : undefined} label={`Edit ${x.source}`}>
+                  <RowTitle
+                    title={x.source}
+                    sub={
+                      <>
+                        <span className="tabular">{x.flights} flights · {x.missions} missions · {x.flightTime.display}</span> · as of <When d={x.asOf} />
+                        {x.notes && <> · {x.notes}</>}
+                      </>
+                    }
+                  />
+                </RowButton>
+              ))
+            ) : (
+              <li className="flex flex-col items-center gap-2 px-5 py-8 text-center text-[14px] text-[var(--certa-muted)]">
+                <History className="size-5" aria-hidden />
+                Flying before Certa? Add the flights, missions and flight time from each app you used (DJI Fly, AirData, DroneLogbook…). They count toward all-time totals.
+              </li>
+            )}
+          </ListCard>
+          {p.prior && (
+            <p className="mt-3 px-1 text-[13px] text-[var(--certa-muted)]">
+              All time: <span className="tabular">{p.totals.flights}</span> flights and {p.totals.flightTime.display} — {p.logged.flights} flights ({p.logged.flightTime.display}) logged in Certa plus {p.prior.flights} ({p.prior.flightTime.display}) from other apps.
+            </p>
+          )}
         </TabPanel>
       )}
 
@@ -215,6 +261,17 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
           </form>
         )}
       </Dialog>
+      <PriorExperienceDialog
+        open={prior !== null}
+        entry={priorEntry}
+        onClose={() => setPrior(null)}
+        onSave={(v) => {
+          if (priorEntry) props.onUpdatePriorExperience({ ...v, priorId: priorEntry.id });
+          else props.onAddPriorExperience(v);
+          setPrior(null);
+        }}
+        onRemove={priorEntry ? () => (props.onRemovePriorExperience(priorEntry.id), setPrior(null)) : undefined}
+      />
       <ShareDialog open={sharing} onClose={() => setSharing(false)} subject={p.name} share={props.share} onCreate={props.onCreateShareLink} onRevoke={props.onRevokeShareLink} />
     </div>
   );

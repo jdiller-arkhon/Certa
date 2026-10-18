@@ -1,6 +1,6 @@
 'use client';
 
-import { buildPilotDetail, buildPilotList, can, toCredentialViewModel, type Flight } from '@certa/core';
+import { buildPilotDetail, buildPilotList, can, toCredentialViewModel, type Flight, type PriorExperienceInput } from '@certa/core';
 import { unwrap } from '@certa/sdk';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -55,13 +55,23 @@ export function PilotDetailContainer({ pilotId }: { pilotId: string }) {
   const removeCred = useFleetMutation(f.orgId, async (credentialId: string) =>
     ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/credentials/{credentialId}', { params: { path: { orgId: f.orgId, credentialId } } })),
   );
+  const addPrior = useFleetMutation(f.orgId, async (body: PriorExperienceInput) =>
+    unwrap(await api.POST('/api/v1/orgs/{orgId}/pilots/{pilotId}/prior-experience', { params: { path: { orgId: f.orgId, pilotId } }, body })),
+  );
+  const updatePrior = useFleetMutation(f.orgId, async ({ priorId, ...body }: PriorExperienceInput & { priorId: string }) =>
+    unwrap(await api.PATCH('/api/v1/orgs/{orgId}/prior-experience/{priorId}', { params: { path: { orgId: f.orgId, priorId } }, body })),
+  );
+  const removePrior = useFleetMutation(f.orgId, async (priorId: string) =>
+    ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/prior-experience/{priorId}', { params: { path: { orgId: f.orgId, priorId } } })),
+  );
   if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
   const data = buildPilotDetail(f.bi, pilotId, recent.flights as Flight[]);
+  const mutations = [addCred, updateCred, removeCred, addPrior, updatePrior, removePrior];
   return (
     <PilotDetailScreen
       {...data}
-      loading={addCred.isPending || updateCred.isPending || removeCred.isPending}
-      error={addCred.error ?? updateCred.error ?? removeCred.error ?? sharing.error ?? f.loadError}
+      loading={mutations.some((m) => m.isPending)}
+      error={mutations.find((m) => m.error)?.error ?? sharing.error ?? f.loadError}
       share={sharing.share}
       onCreateShareLink={sharing.onCreateShareLink}
       onRevokeShareLink={sharing.onRevokeShareLink}
@@ -70,6 +80,9 @@ export function PilotDetailContainer({ pilotId }: { pilotId: string }) {
       onEditCredential={() => {}}
       onUpdateCredential={(v) => updateCred.mutate(v)}
       onRemoveCredential={(id) => removeCred.mutate(id)}
+      onAddPriorExperience={(v) => addPrior.mutate(v)}
+      onUpdatePriorExperience={(v) => updatePrior.mutate(v)}
+      onRemovePriorExperience={(id) => removePrior.mutate(id)}
       onExportLogbook={() => exportLogbook(f.orgId, f.bi!, { pilotId }, data.pilot?.name ?? 'pilot')}
       onOpenFlight={(id) => router.push(`/flights/${id}`)}
     />

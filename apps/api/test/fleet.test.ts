@@ -85,6 +85,31 @@ describe('pilots and credentials', () => {
   });
 });
 
+describe('prior experience', () => {
+  it('adds totals from other apps to the snapshot, validates them, and keeps them per org', async () => {
+    const made = await ok(call(owner, 'POST', `/pilots/${pilotId}/prior-experience`, { source: 'DJI Fly', flights: 120, missions: 14, flightSeconds: 30 * 3600 + 15 * 60, asOf: today, notes: 'From the DJI Fly flight record' }), 201);
+    expect(made).toMatchObject({ pilotId, source: 'DJI Fly', flights: 120, missions: 14, flightSeconds: 108900, asOf: today });
+
+    const fleet = await ok(call(owner, 'GET', '/fleet'));
+    expect(fleet.priorExperience).toEqual([expect.objectContaining({ id: made.id, source: 'DJI Fly' })]);
+    expect(fleet.pilotTotals[pilotId] ?? { missions: 0 }).toHaveProperty('missions');
+
+    await ok(call(owner, 'POST', `/pilots/${pilotId}/prior-experience`, { source: 'AirData', flights: 1, missions: 0, flightSeconds: 60, asOf: daysFromNow(2) }), 400);
+    await ok(call(owner, 'POST', `/pilots/${pilotId}/prior-experience`, { source: '', flights: 1, missions: 0, flightSeconds: 60, asOf: today }), 400);
+    await ok(call(owner, 'POST', `/pilots/${pilotId}/prior-experience`, { source: 'AirData', flights: -1, missions: 0, flightSeconds: 60, asOf: today }), 400);
+
+    expect(await ok(call(owner, 'PATCH', `/prior-experience/${made.id}`, { flights: 125 }))).toMatchObject({ flights: 125, missions: 14 });
+    // Another org can neither see nor change it.
+    expect((await ok(call(other, 'GET', '/fleet'))).priorExperience).toEqual([]);
+    await ok(call(other, 'PATCH', `/prior-experience/${made.id}`, { flights: 1 }), 404);
+    await ok(call(other, 'DELETE', `/prior-experience/${made.id}`), 404);
+
+    await ok(call(owner, 'DELETE', `/prior-experience/${made.id}`), 204);
+    expect((await ok(call(owner, 'GET', '/fleet'))).priorExperience).toEqual([]);
+    await ok(call(owner, 'PATCH', `/prior-experience/${made.id}`, { flights: 1 }), 404);
+  });
+});
+
 describe('aircraft, batteries, grounding', () => {
   it('creates aircraft and rejects a duplicate serial', async () => {
     const a = await ok(call(owner, 'POST', '/aircraft', { make: 'DJI', model: 'Matrice 30T', serialNumber: 'SN-1', registrationNumber: 'FA3TEST001', registrationExpiresOn: daysFromNow(400), takeoffMassKg: 3.77 }), 201);

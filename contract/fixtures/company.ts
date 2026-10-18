@@ -1992,13 +1992,24 @@ export const company = {
         "reasons": [],
         "totals": {
           "flights": 21,
+          "missions": 0,
           "flightTime": {
             "value": 22994,
             "unit": "s",
             "display": "6h 23m"
           },
           "last90DaysFlights": 4
-        }
+        },
+        "logged": {
+          "flights": 21,
+          "missions": 0,
+          "flightTime": {
+            "value": 22994,
+            "unit": "s",
+            "display": "6h 23m"
+          }
+        },
+        "prior": null
       },
       "credentials": [
         {
@@ -2065,6 +2076,7 @@ export const company = {
           "documentCount": 0
         }
       ],
+      "priorExperience": [],
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84fb",

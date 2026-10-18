@@ -1105,13 +1105,24 @@ export const longNames = {
         "reasons": [],
         "totals": {
           "flights": 5,
+          "missions": 0,
           "flightTime": {
             "value": 3226,
             "unit": "s",
             "display": "53m 46s"
           },
           "last90DaysFlights": 1
-        }
+        },
+        "logged": {
+          "flights": 5,
+          "missions": 0,
+          "flightTime": {
+            "value": 3226,
+            "unit": "s",
+            "display": "53m 46s"
+          }
+        },
+        "prior": null
       },
       "credentials": [
         {
@@ -1178,6 +1189,7 @@ export const longNames = {
           "documentCount": 0
         }
       ],
+      "priorExperience": [],
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000004c4b5e",

@@ -12,6 +12,7 @@ import {
   maintenanceSchedules,
   components,
   pilots,
+  priorExperience,
   sql,
   trainingRecords,
   desc,
@@ -31,6 +32,7 @@ import {
   toInsurancePolicy,
   toMaintenanceSchedule,
   toPilot,
+  toPriorExperience,
   toTrainingRecord,
 } from '../lib/fleet.js';
 import { iso } from '../lib/mappers.js';
@@ -38,6 +40,7 @@ import { OrgParams } from './orgs.js';
 
 const PilotParams = OrgParams.extend({ pilotId: Id });
 const CredentialParams = OrgParams.extend({ credentialId: Id });
+const PriorParams = OrgParams.extend({ priorId: Id });
 const AircraftParams = OrgParams.extend({ aircraftId: Id });
 const BatteryParams = OrgParams.extend({ batteryId: Id });
 const PolicyParams = OrgParams.extend({ policyId: Id });
@@ -249,6 +252,74 @@ export const fleetRoutes =
           return r!;
         });
         return reply.status(201).send(toTrainingRecord(row));
+      },
+    );
+
+    // ---------------------------------------------------------------- prior experience
+    // Totals a pilot carried over from other apps. Same rights as credentials: a pilot manages
+    // their own, admins and fleet managers anyone's.
+    const assertNotFuture = async (db: Db, oc: OrgContext, asOf: string) => {
+      const mctx = await orgMapContext(db, oc.orgId);
+      if (asOf > mctx.today) throw badRequest('The “as of” date can’t be in the future');
+    };
+
+    app.post(
+      '/orgs/:orgId/pilots/:pilotId/prior-experience',
+      { schema: { tags: ['pilots'], summary: 'Add flights, missions and flight time logged in another app', params: PilotParams, body: api.CreatePriorExperienceRequest, response: { 201: api.PriorExperienceResponse } } },
+      async (req, reply) => {
+        const oc = await org(req, req.params.orgId);
+        authorize(oc, 'credentials.manage', req.params.pilotId);
+        const b = req.body;
+        const row = await run(req, oc, async (db) => {
+          await assertPilot(db, req.params.pilotId);
+          await assertNotFuture(db, oc, b.asOf);
+          const [r] = await db
+            .insert(priorExperience)
+            .values({ id: newId(), pilotId: req.params.pilotId, source: b.source, flights: b.flights, missions: b.missions, flightSeconds: b.flightSeconds, asOf: b.asOf, notes: b.notes ?? null })
+            .returning();
+          return r!;
+        });
+        return reply.status(201).send(toPriorExperience(row));
+      },
+    );
+
+    const priorFor = async (db: Db, id: string) => {
+      const [r] = await db.select().from(priorExperience).where(and(eq(priorExperience.id, id), isNull(priorExperience.deletedAt)));
+      if (!r) throw notFound('Prior experience');
+      return r;
+    };
+
+    app.patch(
+      '/orgs/:orgId/prior-experience/:priorId',
+      { schema: { tags: ['pilots'], params: PriorParams, body: api.UpdatePriorExperienceRequest, response: { 200: api.PriorExperienceResponse } } },
+      async (req) => {
+        const oc = await org(req, req.params.orgId);
+        const b = req.body;
+        return run(req, oc, async (db) => {
+          const x = await priorFor(db, req.params.priorId);
+          authorize(oc, 'credentials.manage', x.pilotId);
+          if (b.asOf) await assertNotFuture(db, oc, b.asOf);
+          const [r] = await db
+            .update(priorExperience)
+            .set({ source: b.source, flights: b.flights, missions: b.missions, flightSeconds: b.flightSeconds, asOf: b.asOf, notes: nn(b.notes) })
+            .where(eq(priorExperience.id, x.id))
+            .returning();
+          return toPriorExperience(r!);
+        });
+      },
+    );
+
+    app.delete(
+      '/orgs/:orgId/prior-experience/:priorId',
+      { schema: { tags: ['pilots'], params: PriorParams, response: { 204: z.null() } } },
+      async (req, reply) => {
+        const oc = await org(req, req.params.orgId);
+        await run(req, oc, async (db) => {
+          const x = await priorFor(db, req.params.priorId);
+          authorize(oc, 'credentials.manage', x.pilotId);
+          await db.update(priorExperience).set({ deletedAt: sql`now()` }).where(eq(priorExperience.id, x.id));
+        });
+        return reply.status(204).send(null);
       },
     );
 

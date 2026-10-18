@@ -3,7 +3,7 @@
  * OpenAPI document in contract/openapi.yaml is generated from exactly this code.
  */
 import { z } from 'zod';
-import { Aircraft, AuditEvent, Authorization, Mission, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
+import { Aircraft, AuditEvent, Authorization, Mission, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, PriorExperience, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
 import { AirspaceClass, AuthorizationKind, MissionStatus, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
 import { FleetSnapshot, GoNoGoResult } from '../fleet/fleet.js';
 import { InspectorPacket } from '../fleet/packet.js';
@@ -225,6 +225,18 @@ export type CreateCredentialRequest = z.infer<typeof CreateCredentialRequest>;
 export const UpdateCredentialRequest = CreateCredentialRequest.partial();
 export type UpdateCredentialRequest = z.infer<typeof UpdateCredentialRequest>;
 
+export const CreatePriorExperienceRequest = z.object({
+  source: z.string().trim().min(1).max(100),
+  flights: z.number().int().nonnegative().max(1_000_000),
+  missions: z.number().int().nonnegative().max(1_000_000),
+  flightSeconds: z.number().int().nonnegative().max(100_000 * 3600),
+  asOf: IsoDate,
+  notes: opt(z.string().max(2000)),
+});
+export type CreatePriorExperienceRequest = z.infer<typeof CreatePriorExperienceRequest>;
+export const UpdatePriorExperienceRequest = CreatePriorExperienceRequest.partial();
+export type UpdatePriorExperienceRequest = z.infer<typeof UpdatePriorExperienceRequest>;
+
 export const CreateTrainingRecordRequest = z.object({
   course: z.string().min(1).max(200),
   provider: opt(z.string().max(200)),
@@ -395,7 +407,7 @@ export const LogMaintenanceRequest = z.object({
 export type LogMaintenanceRequest = z.infer<typeof LogMaintenanceRequest>;
 export const MaintenanceEventListResponse = z.object({ events: z.array(MaintenanceEvent) });
 
-export { Aircraft as AircraftResponse, Battery as BatteryResponse, Credential as CredentialResponse, Pilot as PilotResponse };
+export { Aircraft as AircraftResponse, Battery as BatteryResponse, Credential as CredentialResponse, Pilot as PilotResponse, PriorExperience as PriorExperienceResponse };
 
 // ---------- Inspector packet share links ----------
 

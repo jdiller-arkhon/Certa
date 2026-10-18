@@ -1485,13 +1485,24 @@ export const expired = {
         ],
         "totals": {
           "flights": 8,
+          "missions": 0,
           "flightTime": {
             "value": 7675,
             "unit": "s",
             "display": "2h 07m"
           },
           "last90DaysFlights": 0
-        }
+        },
+        "logged": {
+          "flights": 8,
+          "missions": 0,
+          "flightTime": {
+            "value": 7675,
+            "unit": "s",
+            "display": "2h 07m"
+          }
+        },
+        "prior": null
       },
       "credentials": [
         {
@@ -1558,6 +1569,7 @@ export const expired = {
           "documentCount": 0
         }
       ],
+      "priorExperience": [],
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000002dc6e4",

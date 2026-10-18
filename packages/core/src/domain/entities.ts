@@ -122,6 +122,23 @@ export const TrainingRecord = EntityBase.extend({
 });
 export type TrainingRecord = z.infer<typeof TrainingRecord>;
 
+/**
+ * Flights, missions and flight time a pilot logged before Certa, in another app, entered as
+ * totals for one source. Counts toward all-time totals only: it has no per-flight dates.
+ */
+export const PriorExperience = EntityBase.extend({
+  pilotId: Id,
+  /** Where the numbers come from, e.g. "DJI Fly" or "AirData". */
+  source: z.string().min(1).max(100),
+  flights: z.number().int().nonnegative().max(1_000_000),
+  missions: z.number().int().nonnegative().max(1_000_000),
+  flightSeconds: z.number().int().nonnegative().max(100_000 * 3600),
+  /** The date the totals were read from the other app. */
+  asOf: IsoDate,
+  notes: z.string().max(2000).nullable(),
+});
+export type PriorExperience = z.infer<typeof PriorExperience>;
+
 export const Aircraft = EntityBase.extend({
   nickname: z.string().max(100).nullable(),
   make: z.string().min(1).max(100),

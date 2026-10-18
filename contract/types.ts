@@ -56,6 +56,8 @@ export type {
   PilotListScreenProps,
   CredentialViewModel,
   PilotDetailScreenProps,
+  PriorExperienceViewModel,
+  PriorExperienceInput,
   SharePacketViewModel,
   SharedPacketScreenProps,
   IntegrationsScreenProps,

@@ -1,6 +1,6 @@
 import { createHash, randomInt, timingSafeEqual } from 'node:crypto';
 import { aircraftName, api, can, fleetReadiness, goNoGo, newId, type OperationType } from '@certa/core';
-import { aircraft, and, discordLinkCodes, discordLinks, eq, flights, gt, isNull, memberships, organizations, pilots, sql, withTenant, type Db } from '@certa/db';
+import { aircraft, and, discordLinkCodes, discordLinks, eq, flights, gt, isNull, memberships, organizations, pilots, priorExperience, sql, withTenant, type Db } from '@certa/db';
 import type { FastifyRequest } from 'fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { z } from 'zod';
@@ -241,7 +241,18 @@ export const discordRoutes =
                 .where(and(eq(flights.pilotInCommandId, link.pilotId), isNull(flights.deletedAt), days ? gt(flights.takeoffAt, since(days)) : undefined))
                 .then((r) => ({ flights: Number(r[0]!.flights), minutes: Math.round(Number(r[0]!.seconds) / 60) }));
             const [all, d30, d90, d365] = await Promise.all([agg(), agg(30), agg(90), agg(365)]);
-            return { totalFlights: all.flights, totalMinutes: all.minutes, last30Days: d30, last90Days: d90, last365Days: d365 };
+            // Totals carried over from other apps count toward all time only (they carry no dates).
+            const [prior] = await db
+              .select({ flights: sql<number>`coalesce(sum(${priorExperience.flights}), 0)::int`, seconds: sql<number>`coalesce(sum(${priorExperience.flightSeconds}), 0)::bigint` })
+              .from(priorExperience)
+              .where(and(eq(priorExperience.pilotId, link.pilotId), isNull(priorExperience.deletedAt)));
+            return {
+              totalFlights: all.flights + Number(prior!.flights),
+              totalMinutes: Math.round((all.minutes * 60 + Number(prior!.seconds)) / 60),
+              last30Days: d30,
+              last90Days: d90,
+              last365Days: d365,
+            };
           });
         },
       );

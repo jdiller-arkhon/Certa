@@ -5,7 +5,7 @@
  * readiness from it with these same pure functions.
  */
 import { z } from 'zod';
-import { Aircraft, Battery, Credential, Flight, Id, IsoDateTime, InsurancePolicy, MaintenanceSchedule, Pilot } from '../domain/entities.js';
+import { Aircraft, Battery, Credential, Flight, Id, IsoDateTime, InsurancePolicy, MaintenanceSchedule, Pilot, PriorExperience } from '../domain/entities.js';
 import { JurisdictionId, UnitsPreference, type ReadinessLevel } from '../domain/enums.js';
 import { addDays, daysBetween } from '../format/dates.js';
 import { DEFAULT_READINESS_POLICY, pilotCredentialItems, summarize, worstLevel, type ExpiringItem, type ReadinessSummary } from '../readiness/readiness.js';
@@ -18,6 +18,8 @@ export const PilotTotals = z.object({
   flightSeconds: z.number().int().nonnegative(),
   lastFlightAt: IsoDateTime.nullable(),
   last90DaysFlights: z.number().int().nonnegative(),
+  /** Distinct missions with a flight this pilot commanded. */
+  missions: z.number().int().nonnegative().default(0),
 });
 export type PilotTotals = z.infer<typeof PilotTotals>;
 
@@ -33,6 +35,8 @@ export const FleetSnapshot = z.object({
   overrides: z.array(RuleOverride),
   pilots: z.array(Pilot),
   credentials: z.array(Credential),
+  /** Totals pilots carried over from other apps; added to all-time totals. */
+  priorExperience: z.array(PriorExperience).default([]),
   aircraft: z.array(Aircraft),
   batteries: z.array(Battery),
   insurancePolicies: z.array(InsurancePolicy),

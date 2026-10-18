@@ -346,9 +346,16 @@ export interface PilotDetailScreenProps extends AsyncState {
     certificateNumber: string | null;
     status: StatusBadge;
     reasons: ReadinessReason[];
-    totals: { flights: number; flightTime: Quantity; last90DaysFlights: number };
+    /** All-time totals: flights logged in Certa plus prior experience from other apps. */
+    totals: { flights: number; missions: number; flightTime: Quantity; last90DaysFlights: number };
+    /** Logged in Certa only. */
+    logged: { flights: number; missions: number; flightTime: Quantity };
+    /** Sum of the prior-experience entries; null when there are none. */
+    prior: { flights: number; missions: number; flightTime: Quantity } | null;
   } | null;
   credentials: CredentialViewModel[];
+  /** Totals carried over from other apps, newest first. */
+  priorExperience: PriorExperienceViewModel[];
   recentFlights: FlightRowViewModel[];
   credentialTypeOptions: { value: string; label: string; expires: boolean }[];
   canEdit: boolean;
@@ -364,11 +371,37 @@ export interface PilotDetailScreenProps extends AsyncState {
   onEditCredential: (credentialId: string) => void;
   onUpdateCredential: (input: { credentialId: string; identifier: string | null; issuedOn: string | null; expiresOn: string | null }) => void;
   onRemoveCredential: (credentialId: string) => void;
+  onAddPriorExperience: (input: PriorExperienceInput) => void;
+  onUpdatePriorExperience: (input: PriorExperienceInput & { priorId: string }) => void;
+  onRemovePriorExperience: (priorId: string) => void;
   onExportLogbook: () => void;
   onOpenFlight: (flightId: string) => void;
   share: SharePacketViewModel;
   onCreateShareLink: (input: { expiresInDays: number }) => void;
   onRevokeShareLink: (linkId: string) => void;
+}
+
+/** Flights, missions and flight time a pilot logged in another app, entered as totals. */
+export interface PriorExperienceViewModel {
+  id: string;
+  /** App the numbers came from, e.g. "DJI Fly". */
+  source: string;
+  flights: number;
+  missions: number;
+  flightTime: Quantity;
+  flightSeconds: number;
+  asOf: DateDisplay;
+  notes: string | null;
+}
+
+export interface PriorExperienceInput {
+  source: string;
+  flights: number;
+  missions: number;
+  flightSeconds: number;
+  /** YYYY-MM-DD, not in the future. */
+  asOf: string;
+  notes: string | null;
 }
 
 /** @status beta — route: /pilots/new, /pilots/[pilotId]/edit */

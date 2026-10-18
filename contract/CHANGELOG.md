@@ -3,6 +3,17 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.11.0 — 2026-10-18
+
+Prior experience from other apps.
+
+- **Added** `PriorExperience` (pilot, source app, flights, missions, flight seconds, as-of date, notes) and `FleetSnapshot.priorExperience`; `PilotTotals.missions` (distinct missions with a flight the pilot commanded).
+- **Added** `POST /orgs/{orgId}/pilots/{pilotId}/prior-experience`, `PATCH|DELETE /orgs/{orgId}/prior-experience/{priorId}` (same rights as credentials: own record for pilots).
+- **Changed** **Pilot detail**: `pilot.totals` is now all-time including prior experience and adds `missions`; new `pilot.logged`, `pilot.prior`, `priorExperience: PriorExperienceViewModel[]`, and `onAddPriorExperience`, `onUpdatePriorExperience`, `onRemovePriorExperience`. **Pilots** list flight time includes prior experience.
+- **Changed** Discord bot `flight-totals` all-time figures and the all-time leaderboard include prior experience; date windows and monthly boards don't. The inspector packet lists it as a separate self-reported fact.
+
+Screens affected: **Pilot detail**, **Pilots**.
+
 ## 0.10.0 — 2026-10-11
 
 Conditions, push, and customer 3D models.

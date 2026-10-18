@@ -109,6 +109,15 @@ export function buildInspectorPacket(
     level = summary.level;
     const t = s.pilotTotals[p.id];
     totals = { flights: t?.flights ?? mine.length, seconds: t?.flightSeconds ?? sum(mine) };
+    // Totals carried over from other apps are self-reported, so they're listed apart from the
+    // flights logged in Certa rather than added to them.
+    const prior = (s.priorExperience ?? []).filter((x) => x.pilotId === p.id && !x.deletedAt);
+    if (prior.length) {
+      const pf = prior.reduce((n, x) => n + x.flights, 0);
+      const ps = prior.reduce((n, x) => n + x.flightSeconds, 0);
+      const sources = [...new Set(prior.map((x) => x.source))].join(', ');
+      facts.push(['Prior experience (self-reported)', `${pf} flights · ${formatDuration(ps).display} · from ${sources}`]);
+    }
   } else {
     const a = s.aircraft.find((x) => x.id === subject.id && !x.deletedAt);
     if (!a) return null;

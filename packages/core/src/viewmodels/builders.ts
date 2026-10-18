@@ -136,7 +136,18 @@ const matches = (q: string, ...fields: (string | null | undefined)[]) => {
 };
 
 const totalsOf = (s: FleetSnapshot, pilotId: string) =>
-  s.pilotTotals[pilotId] ?? { flights: 0, flightSeconds: 0, lastFlightAt: null, last90DaysFlights: 0 };
+  s.pilotTotals[pilotId] ?? { flights: 0, flightSeconds: 0, lastFlightAt: null, last90DaysFlights: 0, missions: 0 };
+
+/** Prior-experience entries for a pilot (newest first) and their sums. */
+const priorOf = (s: FleetSnapshot, pilotId: string) => {
+  const entries = (s.priorExperience ?? []).filter((x) => x.pilotId === pilotId && !x.deletedAt).sort((a, b) => b.asOf.localeCompare(a.asOf));
+  return {
+    entries,
+    flights: entries.reduce((n, x) => n + x.flights, 0),
+    missions: entries.reduce((n, x) => n + x.missions, 0),
+    seconds: entries.reduce((n, x) => n + x.flightSeconds, 0),
+  };
+};
 
 export function buildPilotList(i: BuildInput, search = ''): ScreenData<PilotListScreenProps> {
   const r = readinessOf(i);
@@ -147,7 +158,7 @@ export function buildPilotList(i: BuildInput, search = ''): ScreenData<PilotList
       .filter((p) => r.pilots.has(p.id) && matches(search, p.displayName, p.certificateNumber, p.email))
       .map((p) => {
         const t = totalsOf(s, p.id);
-        return toPilotRow(p, r.pilots.get(p.id)!, { flightSeconds: t.flightSeconds, lastFlightAt: t.lastFlightAt }, ctx);
+        return toPilotRow(p, r.pilots.get(p.id)!, { flightSeconds: t.flightSeconds + priorOf(s, p.id).seconds, lastFlightAt: t.lastFlightAt }, ctx);
       }),
     search,
     canManage: can(i.role, 'pilots.manage'),
@@ -161,6 +172,7 @@ export function buildPilotDetail(i: BuildInput, pilotId: string, recentFlights: 
   const p = s.pilots.find((x) => x.id === pilotId && !x.deletedAt);
   const summary = p ? r.pilots.get(p.id) : undefined;
   const t = totalsOf(s, pilotId);
+  const prior = priorOf(s, pilotId);
   return {
     ...OK,
     pilot:
@@ -173,10 +185,27 @@ export function buildPilotDetail(i: BuildInput, pilotId: string, recentFlights: 
             certificateNumber: p.certificateNumber,
             status: badgeFromSummary(summary),
             reasons: summary.reasons.map((x) => reasonFromItem(x, ctx.today, `/pilots/${p.id}`)),
-            totals: { flights: t.flights, flightTime: formatDuration(t.flightSeconds), last90DaysFlights: t.last90DaysFlights },
+            totals: {
+              flights: t.flights + prior.flights,
+              missions: t.missions + prior.missions,
+              flightTime: formatDuration(t.flightSeconds + prior.seconds),
+              last90DaysFlights: t.last90DaysFlights,
+            },
+            logged: { flights: t.flights, missions: t.missions, flightTime: formatDuration(t.flightSeconds) },
+            prior: prior.entries.length ? { flights: prior.flights, missions: prior.missions, flightTime: formatDuration(prior.seconds) } : null,
           }
         : null,
     credentials: s.credentials.filter((c) => c.pilotId === pilotId && !c.deletedAt).map((c) => toCredentialViewModel(c, r.rules, ctx)),
+    priorExperience: prior.entries.map((x) => ({
+      id: x.id,
+      source: x.source,
+      flights: x.flights,
+      missions: x.missions,
+      flightTime: formatDuration(x.flightSeconds),
+      flightSeconds: x.flightSeconds,
+      asOf: displayDate(x.asOf, ctx.today),
+      notes: x.notes,
+    })),
     recentFlights: flightRows(i, recentFlights.filter((f) => f.pilotInCommandId === pilotId).slice(0, 10)),
     credentialTypeOptions: r.rules.pack.credentialTypes.map((ct) => ({ value: ct.id, label: ct.label, expires: ct.validityRuleId !== null })),
     canEdit: can(i.role, 'credentials.manage'),

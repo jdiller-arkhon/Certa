@@ -11,6 +11,7 @@ import {
   type MaintenanceSchedule,
   type MapContext,
   type Pilot,
+  type PriorExperience,
   type TrainingRecord,
   type UnitsPreference,
   type WeatherSnapshot,
@@ -33,6 +34,7 @@ import {
   maintenanceSchedules,
   organizations,
   pilots,
+  priorExperience,
   sql,
   trainingRecords,
   type Db,
@@ -81,6 +83,17 @@ export const toTrainingRecord = (r: Row<typeof trainingRecords>): TrainingRecord
   provider: r.provider,
   completedOn: r.completedOn,
   hours: r.hours,
+});
+
+export const toPriorExperience = (r: Row<typeof priorExperience>): PriorExperience => ({
+  ...base(r),
+  pilotId: r.pilotId,
+  source: r.source,
+  flights: r.flights,
+  missions: r.missions,
+  flightSeconds: r.flightSeconds,
+  asOf: r.asOf,
+  notes: r.notes,
 });
 
 export const toAircraft = (r: Row<typeof aircraft>): Aircraft => ({
@@ -255,6 +268,7 @@ export async function loadFleet(db: Db, orgId: string, now = new Date()): Promis
         s: sql<number>`coalesce(sum(${flights.durationSeconds}), 0)::bigint`,
         last: sql<string | null>`max(${flights.takeoffAt})`,
         n90: sql<number>`(count(*) filter (where ${flights.takeoffAt} >= ${since90}))::int`,
+        missions: sql<number>`count(distinct ${flights.missionId})::int`,
       })
       .from(flights)
       .where(isNull(flights.deletedAt))
@@ -279,10 +293,11 @@ export async function loadFleet(db: Db, orgId: string, now = new Date()): Promis
       })
       .from(flights)
       .where(isNull(flights.deletedAt)),
+    db.select().from(priorExperience).where(isNull(priorExperience.deletedAt)).orderBy(desc(priorExperience.asOf)),
   ] as const;
   const results: unknown[] = [];
   for (const query of q) results.push(await query);
-  const [pilotRows, credRows, docRows, acRows, batRows, polRows, coverRows, schedRows, totals, lastUsed, lastFlightRows, locations, recentCounts] = results as unknown as { [K in keyof typeof q]: Awaited<(typeof q)[K]> };
+  const [pilotRows, credRows, docRows, acRows, batRows, polRows, coverRows, schedRows, totals, lastUsed, lastFlightRows, locations, recentCounts, priorRows] = results as unknown as { [K in keyof typeof q]: Awaited<(typeof q)[K]> };
 
   const docsOf = (type: string, id: string) => docRows.filter((d) => d.ownerType === type && d.ownerId === id).map((d) => d.id);
   const [lastFlight] = await toFlights(db, lastFlightRows as FlightSelectRow[]);
@@ -293,11 +308,12 @@ export async function loadFleet(db: Db, orgId: string, now = new Date()): Promis
     overrides: rules.overrides,
     pilots: pilotRows.map(toPilot),
     credentials: credRows.map((c) => toCredential(c, docsOf('credential', c.id))),
+    priorExperience: priorRows.map(toPriorExperience),
     aircraft: acRows.map(toAircraft),
     batteries: batRows.map(toBattery),
     insurancePolicies: polRows.map((p) => toInsurancePolicy(p, coverRows.filter((c) => c.policyId === p.id).map((c) => c.aircraftId), docsOf('insurance_policy', p.id))),
     maintenanceSchedules: schedRows.map(toMaintenanceSchedule),
-    pilotTotals: Object.fromEntries(totals.map((t) => [t.pilotId, { flights: t.n, flightSeconds: Number(t.s), lastFlightAt: iso(t.last), last90DaysFlights: t.n90 }])),
+    pilotTotals: Object.fromEntries(totals.map((t) => [t.pilotId, { flights: t.n, flightSeconds: Number(t.s), lastFlightAt: iso(t.last), last90DaysFlights: t.n90, missions: t.missions }])),
     batteryLastUsed: Object.fromEntries(lastUsed.map((b) => [b.batteryId, iso(b.last)])),
     lastFlight: lastFlight ? (({ goNoGo: _g, ...f }) => f)(lastFlight) : null,
     recentLocations: locations.map((l) => l.name!).filter(Boolean),
