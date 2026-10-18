@@ -147,6 +147,12 @@ describe('missions', () => {
     await ok(call(other, 'PATCH', `/missions/${missionId}`, { name: 'HIJACK' }), 404);
   });
 
+  it('rejects text containing a null character with a 400, not a server error', async () => {
+    const res = await ok(call(owner, 'POST', '/missions', { name: 'Bad\u0000name' }), 400);
+    expect(res.message).toBe('Text can’t contain null characters');
+    await ok(call(owner, 'GET', '/flights?missionId=%00'), 400);
+  });
+
   it('deletes a mission and keeps its flights', async () => {
     await ok(call(owner, 'DELETE', `/missions/${missionId}`), 204);
     await ok(call(owner, 'GET', `/missions/${missionId}`), 404);

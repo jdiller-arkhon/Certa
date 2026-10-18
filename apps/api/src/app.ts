@@ -15,7 +15,7 @@ import type pg from 'pg';
 import { VERSION, type Config } from './config.js';
 import { createAuth, type Auth } from './lib/auth.js';
 import type { SessionUser } from './lib/context.js';
-import { ApiError } from './lib/errors.js';
+import { ApiError, badRequest } from './lib/errors.js';
 import type { Mailer } from './lib/mailer.js';
 import { createPusher, type Pusher } from './lib/push.js';
 import { createBlobStore, type BlobStore } from './lib/blobs.js';
@@ -141,6 +141,11 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
       : null;
   });
 
+  // Postgres can't store U+0000 in text. Reject it up front instead of failing the query with a 500.
+  app.addHook('preValidation', async (req) => {
+    if (hasNul(req.body) || hasNul(req.query) || hasNul(req.params)) throw badRequest('Text can’t contain null characters');
+  });
+
   app.setErrorHandler((err, req, reply) => {
     if (hasZodFastifySchemaValidationErrors(err)) {
       return reply.status(400).send({
@@ -188,4 +193,12 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(modelRoutes(ctx), { prefix: v1 });
 
   return app;
+}
+
+/** True if any string in a parsed body, query or params object contains U+0000. */
+function hasNul(v: unknown, depth = 0): boolean {
+  if (typeof v === 'string') return v.includes('\u0000');
+  if (depth > 20 || v === null || typeof v !== 'object' || Buffer.isBuffer(v)) return false;
+  if (Array.isArray(v)) return v.some((x) => hasNul(x, depth + 1));
+  return Object.entries(v).some(([k, x]) => k.includes('\u0000') || hasNul(x, depth + 1));
 }
