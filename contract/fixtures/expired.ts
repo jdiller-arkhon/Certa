@@ -1502,7 +1502,8 @@ export const expired = {
             "display": "2h 07m"
           }
         },
-        "prior": null
+        "prior": null,
+        "argus": null
       },
       "credentials": [
         {
@@ -1570,6 +1571,22 @@ export const expired = {
         }
       ],
       "priorExperience": [],
+      "argusFlights": [],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000002dc6d5",
+          "label": "Falcon 1"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000002dc6d8",
+          "label": "DJI Matrice 30T"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000002dc6db",
+          "label": "Osprey 3"
+        }
+      ],
+      "canConvertArgus": true,
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000002dc6e4",

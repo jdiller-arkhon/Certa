@@ -57,6 +57,7 @@ export type {
   CredentialViewModel,
   PilotDetailScreenProps,
   PriorExperienceViewModel,
+  ArgusFlightViewModel,
   PriorExperienceInput,
   SharePacketViewModel,
   SharedPacketScreenProps,

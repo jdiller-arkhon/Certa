@@ -510,6 +510,7 @@ function toScenario(w: World): FixtureScenario {
     pilots: w.pilots,
     credentials: w.credentials,
     priorExperience: [],
+    externalFlights: [],
     aircraft: w.aircraft,
     batteries: w.batteries,
     insurancePolicies: insuranceFor(w),

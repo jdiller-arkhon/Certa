@@ -1156,7 +1156,8 @@ export const large = {
             "display": "34h 57m"
           }
         },
-        "prior": null
+        "prior": null,
+        "argus": null
       },
       "credentials": [
         {
@@ -1224,6 +1225,26 @@ export const large = {
         }
       ],
       "priorExperience": [],
+      "argusFlights": [],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000005b8d9c",
+          "label": "Falcon 1"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000005b8da1",
+          "label": "DJI Matrice 30T"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000005b8da6",
+          "label": "Osprey 3"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000005b8dab",
+          "label": "Skydio X10"
+        }
+      ],
+      "canConvertArgus": true,
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000005b8db1",

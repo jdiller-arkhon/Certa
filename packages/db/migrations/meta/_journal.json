@@ -71,6 +71,13 @@
       "when": 1791810000000,
       "tag": "0009_arkhon_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791820000000,
+      "tag": "0010_external_flights",
+      "breakpoints": true
     }
   ]
 }

@@ -3,7 +3,7 @@
  * OpenAPI document in contract/openapi.yaml is generated from exactly this code.
  */
 import { z } from 'zod';
-import { Aircraft, AuditEvent, Authorization, Mission, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, PriorExperience, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
+import { Aircraft, AuditEvent, Authorization, Mission, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, PriorExperience, ExternalFlight, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
 import { AirspaceClass, AuthorizationKind, MissionStatus, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
 import { FleetSnapshot, GoNoGoResult } from '../fleet/fleet.js';
 import { InspectorPacket } from '../fleet/packet.js';
@@ -248,6 +248,24 @@ export type CreatePriorExperienceRequest = z.infer<typeof CreatePriorExperienceR
 export const UpdatePriorExperienceRequest = CreatePriorExperienceRequest.partial();
 export type UpdatePriorExperienceRequest = z.infer<typeof UpdatePriorExperienceRequest>;
 
+/** Argus → Certa: a flight from an Argus job the pilot marked landed. Idempotent per jobId. */
+export const ArgusFlightIngestRequest = z.object({
+  /** The pilot's Arkhon user id, name and verified email (Certa links or creates the account). */
+  pilot: z.object({ arkhonUserId: z.string().min(1).max(200), name: z.string().min(1).max(200), email: z.email() }),
+  jobId: z.string().min(1).max(100),
+  reference: z.string().max(200).nullable().optional(),
+  takeoffAt: IsoDateTime,
+  landingAt: IsoDateTime,
+  locationName: z.string().max(300).nullable().optional(),
+  lat: z.number().min(-90).max(90).nullable().optional(),
+  lng: z.number().min(-180).max(180).nullable().optional(),
+});
+export type ArgusFlightIngestRequest = z.infer<typeof ArgusFlightIngestRequest>;
+export const ArgusFlightIngestResponse = z.object({ status: z.enum(['created', 'updated', 'unchanged']), externalFlightId: Id });
+
+export const ConvertExternalFlightRequest = z.object({ aircraftId: Id });
+export const ConvertExternalFlightResponse = z.object({ flightId: Id });
+
 export const CreateTrainingRecordRequest = z.object({
   course: z.string().min(1).max(200),
   provider: opt(z.string().max(200)),
@@ -418,7 +436,7 @@ export const LogMaintenanceRequest = z.object({
 export type LogMaintenanceRequest = z.infer<typeof LogMaintenanceRequest>;
 export const MaintenanceEventListResponse = z.object({ events: z.array(MaintenanceEvent) });
 
-export { Aircraft as AircraftResponse, Battery as BatteryResponse, Credential as CredentialResponse, Pilot as PilotResponse, PriorExperience as PriorExperienceResponse };
+export { Aircraft as AircraftResponse, Battery as BatteryResponse, Credential as CredentialResponse, Pilot as PilotResponse, PriorExperience as PriorExperienceResponse, ExternalFlight as ExternalFlightResponse };
 
 // ---------- Inspector packet share links ----------
 

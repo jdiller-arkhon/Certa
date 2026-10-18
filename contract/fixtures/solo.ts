@@ -918,7 +918,8 @@ export const solo = {
             "display": "12h 09m"
           }
         },
-        "prior": null
+        "prior": null,
+        "argus": null
       },
       "credentials": [
         {
@@ -986,6 +987,18 @@ export const solo = {
         }
       ],
       "priorExperience": [],
+      "argusFlights": [],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000000f4249",
+          "label": "Falcon 1"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000000f424d",
+          "label": "DJI Matrice 30T"
+        }
+      ],
+      "canConvertArgus": true,
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000000f4251",

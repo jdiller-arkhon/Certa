@@ -67,6 +67,12 @@ const Env = z.object({
    * in with Arkhon, so nobody ends up with two accounts.
    */
   LOCAL_AUTH: z.enum(['on', 'off']).default('on'),
+  /**
+   * Bearer token Argus uses to send flights from jobs pilots mark landed
+   * (POST /api/v1/integrations/argus/flights). Unset disables that endpoint.
+   * Generate with `openssl rand -base64 48`.
+   */
+  ARGUS_INGEST_TOKEN: z.string().min(32, 'ARGUS_INGEST_TOKEN must be at least 32 characters').optional(),
 });
 
 export type Config = z.infer<typeof Env> & {

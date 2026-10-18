@@ -91,6 +91,7 @@ npx wrangler secret put S3_ACCESS_KEY_ID       # from step 2
 npx wrangler secret put S3_SECRET_ACCESS_KEY   # from step 2
 # Optional:
 npx wrangler secret put DISCORD_BOT_API_TOKEN  # 32+ chars; also give it to the Certa bot
+npx wrangler secret put ARGUS_INGEST_TOKEN     # 32+ chars; also set it as CERTA_INGEST_TOKEN in Argus
 npx wrangler secret put VAPID_PUBLIC_KEY       # push notifications: npx web-push generate-vapid-keys
 npx wrangler secret put VAPID_PRIVATE_KEY
 npx wrangler secret put VAPID_SUBJECT          # mailto:jdiller@arkhonindustries.com

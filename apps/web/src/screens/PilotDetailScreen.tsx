@@ -1,7 +1,7 @@
 'use client';
 
 import type { PilotDetailScreenProps } from '@certa/contract';
-import { BadgeCheck, FileDown, History, Pencil, Plus, Route } from 'lucide-react';
+import { BadgeCheck, FileDown, History, Pencil, Plus, Route, Send } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -13,6 +13,7 @@ import { Panel, PanelRow, StatStrip } from '@/components/ui/panel';
 import { LEVEL_COLOR, StatusBadge } from '@/components/ui/status';
 import { TabPanel, Tabs, useHashTab } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/ui/text';
+import { ArgusFlightDialog } from './_argus';
 import { PriorExperienceDialog } from './_prior';
 import { ShareButton, ShareDialog } from './_share';
 import { FlightRows, ListCard, Reasons, RowButton, RowTitle, When } from './_parts';
@@ -33,6 +34,8 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
   const [sharing, setSharing] = useState(false);
   const [prior, setPrior] = useState<'new' | string | null>(null);
   const priorEntry = props.priorExperience.find((x) => x.id === prior);
+  const [argusId, setArgusId] = useState<string | null>(null);
+  const argusFlight = props.argusFlights.find((x) => x.id === argusId);
   const [editing, setEditing] = useState<{ id: string; identifier: string; issuedOn: string; expiresOn: string } | null>(null);
   const editingCred = props.credentials.find((c) => c.id === editing?.id);
   const openEdit = (id: string) => {
@@ -86,6 +89,12 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
               <p className="border-b border-[var(--certa-border)] px-5 py-2.5 text-[13px] text-[var(--certa-muted)]">
                 Includes {p.prior.flights} flights, {p.prior.missions} missions and {p.prior.flightTime.display} from other apps.{' '}
                 <button type="button" onClick={() => setTab('experience')} className="underline underline-offset-2 hover:text-[var(--certa-text)]">Details</button>
+              </p>
+            )}
+            {p.argus && (
+              <p className="border-b border-[var(--certa-border)] px-5 py-2.5 text-[13px] text-[var(--certa-muted)]">
+                Includes {p.argus.flights} Argus mission {p.argus.flights === 1 ? 'flight' : 'flights'} ({p.argus.flightTime.display}) waiting for the drone.{' '}
+                <button type="button" onClick={() => setTab('flights')} className="underline underline-offset-2 hover:text-[var(--certa-text)]">Pick drones</button>
               </p>
             )}
             <div className="px-5 py-4">
@@ -179,7 +188,29 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
       )}
 
       {tab === 'flights' && (
-        <TabPanel key="flights" label="Flights">
+        <TabPanel key="flights" label="Flights" className="space-y-6">
+          {props.argusFlights.length > 0 && (
+            <ListCard title="From Argus missions" count={props.argusFlights.length}>
+              {props.argusFlights.map((x) => (
+                <RowButton key={x.id} onClick={props.canConvertArgus ? () => setArgusId(x.id) : undefined} label={`Pick the drone for ${x.reference}`}>
+                  <RowTitle
+                    title={x.reference}
+                    sub={
+                      <>
+                        <When d={x.date} /> · <span className="tabular">{x.flightTime.display}</span>
+                        {x.location && <> · {x.location}</>}
+                      </>
+                    }
+                  />
+                  {props.canConvertArgus && (
+                    <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-[var(--certa-muted)]">
+                      <Send className="size-3.5" aria-hidden /> Pick drone
+                    </span>
+                  )}
+                </RowButton>
+              ))}
+            </ListCard>
+          )}
           <ListCard title="Recent flights" count={props.recentFlights.length}>
             {props.recentFlights.length ? (
               <FlightRows flights={props.recentFlights} onOpen={props.onOpenFlight} showPilot={false} />
@@ -271,6 +302,13 @@ export function PilotDetailScreen(props: PilotDetailScreenProps) {
           setPrior(null);
         }}
         onRemove={priorEntry ? () => (props.onRemovePriorExperience(priorEntry.id), setPrior(null)) : undefined}
+      />
+      <ArgusFlightDialog
+        flight={argusFlight}
+        aircraftOptions={props.aircraftOptions}
+        onClose={() => setArgusId(null)}
+        onConvert={(aircraftId) => argusFlight && props.onConvertArgusFlight({ externalFlightId: argusFlight.id, aircraftId })}
+        onDismiss={() => argusFlight && props.onDismissArgusFlight(argusFlight.id)}
       />
       <ShareDialog open={sharing} onClose={() => setSharing(false)} subject={p.name} share={props.share} onCreate={props.onCreateShareLink} onRevoke={props.onRevokeShareLink} />
     </div>

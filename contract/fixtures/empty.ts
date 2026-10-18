@@ -772,6 +772,9 @@ export const empty = {
       "pilot": null,
       "credentials": [],
       "priorExperience": [],
+      "argusFlights": [],
+      "aircraftOptions": [],
+      "canConvertArgus": true,
       "recentFlights": [],
       "credentialTypeOptions": [
         {

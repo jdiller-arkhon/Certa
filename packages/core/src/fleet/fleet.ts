@@ -5,7 +5,7 @@
  * readiness from it with these same pure functions.
  */
 import { z } from 'zod';
-import { Aircraft, Battery, Credential, Flight, Id, IsoDateTime, InsurancePolicy, MaintenanceSchedule, Pilot, PriorExperience } from '../domain/entities.js';
+import { Aircraft, Battery, Credential, Flight, Id, IsoDateTime, InsurancePolicy, MaintenanceSchedule, Pilot, PriorExperience, ExternalFlight } from '../domain/entities.js';
 import { JurisdictionId, UnitsPreference, type ReadinessLevel } from '../domain/enums.js';
 import { addDays, daysBetween } from '../format/dates.js';
 import { DEFAULT_READINESS_POLICY, pilotCredentialItems, summarize, worstLevel, type ExpiringItem, type ReadinessSummary } from '../readiness/readiness.js';
@@ -37,6 +37,8 @@ export const FleetSnapshot = z.object({
   credentials: z.array(Credential),
   /** Totals pilots carried over from other apps; added to all-time totals. */
   priorExperience: z.array(PriorExperience).default([]),
+  /** Argus mission flights still waiting for the pilot to pick an aircraft (newest first). */
+  externalFlights: z.array(ExternalFlight).default([]),
   aircraft: z.array(Aircraft),
   batteries: z.array(Battery),
   insurancePolicies: z.array(InsurancePolicy),

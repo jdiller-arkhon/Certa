@@ -88,11 +88,15 @@ export async function fetchArkhonUser(config: Config, cookieHeader: string | und
 /**
  * The Certa user id for an Arkhon user, creating or linking the Certa account and the
  * organization access their Arkhon role gives them. Idempotent: safe on every sign-in.
+ *
+ * `fromSignIn: false` is for Argus telling Certa about a pilot (a flight from a job): the role
+ * there is inferred, so an existing account keeps the role its last sign-in recorded.
  */
-export async function provisionArkhonUser(config: Config, pool: pg.Pool, au: ArkhonUser, requestId: string): Promise<string> {
+export async function provisionArkhonUser(config: Config, pool: pg.Pool, au: ArkhonUser, requestId: string, opts: { fromSignIn?: boolean } = {}): Promise<string> {
   const db = globalDb(pool);
   const now = new Date().toISOString();
-  const synced = { name: au.name, arkhonRole: au.role, arkhonAdminLevel: au.adminLevel, arkhonSyncedAt: now, updatedAt: now };
+  const fromSignIn = opts.fromSignIn ?? true;
+  const synced = fromSignIn ? { name: au.name, arkhonRole: au.role, arkhonAdminLevel: au.adminLevel, arkhonSyncedAt: now, updatedAt: now } : { updatedAt: now };
 
   let [user] = await db.select().from(authUsers).where(eq(authUsers.arkhonUserId, au.id));
   if (user) {
@@ -118,7 +122,7 @@ export async function provisionArkhonUser(config: Config, pool: pg.Pool, au: Ark
   }
   const userId = user!.id;
 
-  if (au.role === 'admin' && config.ARKHON_ORG_ID) {
+  if (fromSignIn && au.role === 'admin' && config.ARKHON_ORG_ID) {
     await withTenant(pool, { orgId: config.ARKHON_ORG_ID, userId, requestId }, async (t) => {
       const [org] = await t.select({ id: organizations.id }).from(organizations).where(eq(organizations.id, config.ARKHON_ORG_ID!));
       if (!org) return;

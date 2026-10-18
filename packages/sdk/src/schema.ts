@@ -1482,6 +1482,31 @@ export interface paths {
                                 asOf: string;
                                 notes: string | null;
                             }[];
+                            /** @default [] */
+                            externalFlights: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: date-time */
+                                createdAt: string;
+                                /** Format: date-time */
+                                updatedAt: string;
+                                createdBy: string | null;
+                                deletedAt: string | null;
+                                /** Format: uuid */
+                                pilotId: string;
+                                /** @enum {string} */
+                                source: "argus";
+                                externalId: string;
+                                reference: string | null;
+                                /** Format: date-time */
+                                takeoffAt: string;
+                                /** Format: date-time */
+                                landingAt: string;
+                                durationSeconds: number;
+                                locationName: string | null;
+                            }[];
                             aircraft: {
                                 /** Format: uuid */
                                 id: string;
@@ -6055,6 +6080,218 @@ export interface paths {
             };
         };
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/argus/flights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Argus: a flight from a job the pilot marked landed. Idempotent per jobId; links or creates the pilot’s Certa account. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        pilot: {
+                            arkhonUserId: string;
+                            name: string;
+                            /** Format: email */
+                            email: string;
+                        };
+                        jobId: string;
+                        reference?: string | null;
+                        /** Format: date-time */
+                        takeoffAt: string;
+                        /** Format: date-time */
+                        landingAt: string;
+                        locationName?: string | null;
+                        lat?: number | null;
+                        lng?: number | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status: "created" | "updated" | "unchanged";
+                            /** Format: uuid */
+                            externalFlightId: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @enum {string} */
+                            status: "created" | "updated" | "unchanged";
+                            /** Format: uuid */
+                            externalFlightId: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+                /** @description Default Response */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/external-flights/{externalFlightId}/convert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Pick the drone flown on an Argus mission flight, turning it into a regular Certa flight */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    externalFlightId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        aircraftId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            flightId: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/external-flights/{externalFlightId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Dismiss an Argus mission flight (e.g. the job had no flight); a resend won’t bring it back */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    externalFlightId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;

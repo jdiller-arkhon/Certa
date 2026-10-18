@@ -64,9 +64,18 @@ export function PilotDetailContainer({ pilotId }: { pilotId: string }) {
   const removePrior = useFleetMutation(f.orgId, async (priorId: string) =>
     ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/prior-experience/{priorId}', { params: { path: { orgId: f.orgId, priorId } } })),
   );
+  const convertArgus = useFleetMutation(
+    f.orgId,
+    async ({ externalFlightId, aircraftId }: { externalFlightId: string; aircraftId: string }) =>
+      unwrap(await api.POST('/api/v1/orgs/{orgId}/external-flights/{externalFlightId}/convert', { params: { path: { orgId: f.orgId, externalFlightId } }, body: { aircraftId } })),
+    { flights: true },
+  );
+  const dismissArgus = useFleetMutation(f.orgId, async (externalFlightId: string) =>
+    ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/external-flights/{externalFlightId}', { params: { path: { orgId: f.orgId, externalFlightId } } })),
+  );
   if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
-  const data = buildPilotDetail(f.bi, pilotId, recent.flights as Flight[]);
-  const mutations = [addCred, updateCred, removeCred, addPrior, updatePrior, removePrior];
+  const data = buildPilotDetail(f.bi, pilotId, recent.flights as Flight[], { ownPilotId: f.myPilotId });
+  const mutations = [addCred, updateCred, removeCred, addPrior, updatePrior, removePrior, convertArgus, dismissArgus];
   return (
     <PilotDetailScreen
       {...data}
@@ -83,6 +92,8 @@ export function PilotDetailContainer({ pilotId }: { pilotId: string }) {
       onAddPriorExperience={(v) => addPrior.mutate(v)}
       onUpdatePriorExperience={(v) => updatePrior.mutate(v)}
       onRemovePriorExperience={(id) => removePrior.mutate(id)}
+      onConvertArgusFlight={(v) => convertArgus.mutate(v)}
+      onDismissArgusFlight={(id) => dismissArgus.mutate(id)}
       onExportLogbook={() => exportLogbook(f.orgId, f.bi!, { pilotId }, data.pilot?.name ?? 'pilot')}
       onOpenFlight={(id) => router.push(`/flights/${id}`)}
     />

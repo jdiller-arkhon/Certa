@@ -30,6 +30,7 @@ import { missionRoutes } from './routes/missions.js';
 import { discordRoutes } from './routes/discord.js';
 import { shareRoutes } from './routes/share.js';
 import { integrationRoutes } from './routes/integrations.js';
+import { argusRoutes } from './routes/argus.js';
 import { conditionsRoutes } from './routes/conditions.js';
 import { pushRoutes } from './routes/push.js';
 import { modelRoutes } from './routes/models.js';
@@ -188,6 +189,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(discordRoutes(ctx), { prefix: v1 });
   await app.register(shareRoutes(ctx), { prefix: v1 });
   await app.register(integrationRoutes(ctx), { prefix: v1 });
+  await app.register(argusRoutes(ctx), { prefix: v1 });
   await app.register(conditionsRoutes(ctx), { prefix: v1 });
   await app.register(pushRoutes(ctx), { prefix: v1 });
   await app.register(modelRoutes(ctx), { prefix: v1 });

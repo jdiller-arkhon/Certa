@@ -129,8 +129,8 @@ export const SCREENS: PreviewScreen[] = [
     route: '/pilots',
     shell: true,
     render: ({ scenario, state }) => {
-      const d = withState(scenarios[scenario]!.screens.pilotDetail, state, (x) => ({ ...x, pilot: null, credentials: [], priorExperience: [], recentFlights: [] }));
-      return <PilotDetailScreen {...d} onEditPilot={noop} onAddCredential={noop} onEditCredential={noop} onUpdateCredential={noop} onRemoveCredential={noop} onAddPriorExperience={noop} onUpdatePriorExperience={noop} onRemovePriorExperience={noop} onExportLogbook={noop} onOpenFlight={noop} onCreateShareLink={noop} onRevokeShareLink={noop} />;
+      const d = withState(scenarios[scenario]!.screens.pilotDetail, state, (x) => ({ ...x, pilot: null, credentials: [], priorExperience: [], argusFlights: [], recentFlights: [] }));
+      return <PilotDetailScreen {...d} onEditPilot={noop} onAddCredential={noop} onEditCredential={noop} onUpdateCredential={noop} onRemoveCredential={noop} onAddPriorExperience={noop} onUpdatePriorExperience={noop} onRemovePriorExperience={noop} onConvertArgusFlight={noop} onDismissArgusFlight={noop} onExportLogbook={noop} onOpenFlight={noop} onCreateShareLink={noop} onRevokeShareLink={noop} />;
     },
   },
   {

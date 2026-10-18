@@ -1122,7 +1122,8 @@ export const longNames = {
             "display": "53m 46s"
           }
         },
-        "prior": null
+        "prior": null,
+        "argus": null
       },
       "credentials": [
         {
@@ -1190,6 +1191,22 @@ export const longNames = {
         }
       ],
       "priorExperience": [],
+      "argusFlights": [],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b55",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 1 — Thermal & LiDAR Configuration"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b58",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 2 — Thermal & LiDAR Configuration"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000004c4b5b",
+          "label": "Northern Colorado Regional Infrastructure Inspection Unit 3 — Thermal & LiDAR Configuration"
+        }
+      ],
+      "canConvertArgus": true,
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000004c4b5e",

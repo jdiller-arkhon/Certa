@@ -352,16 +352,24 @@ export interface PilotDetailScreenProps extends AsyncState {
     certificateNumber: string | null;
     status: StatusBadge;
     reasons: ReadinessReason[];
-    /** All-time totals: flights logged in Certa plus prior experience from other apps. */
+    /** All-time totals: flights logged in Certa (Argus mission flights included) plus prior experience from other apps. */
     totals: { flights: number; missions: number; flightTime: Quantity; last90DaysFlights: number };
-    /** Logged in Certa only. */
+    /** Logged in Certa, including Argus mission flights still waiting for the drone. */
     logged: { flights: number; missions: number; flightTime: Quantity };
     /** Sum of the prior-experience entries; null when there are none. */
     prior: { flights: number; missions: number; flightTime: Quantity } | null;
+    /** Argus mission flights still waiting for the drone (part of `logged`); null when none. */
+    argus: { flights: number; flightTime: Quantity } | null;
   } | null;
   credentials: CredentialViewModel[];
   /** Totals carried over from other apps, newest first. */
   priorExperience: PriorExperienceViewModel[];
+  /** Flights from Argus missions the pilot hasn't picked the drone for yet, newest first. */
+  argusFlights: ArgusFlightViewModel[];
+  /** Drones that can be picked for an Argus flight. */
+  aircraftOptions: { value: string; label: string }[];
+  /** Whether the viewer may pick the drone for (or dismiss) this pilot's Argus flights. */
+  canConvertArgus: boolean;
   recentFlights: FlightRowViewModel[];
   credentialTypeOptions: { value: string; label: string; expires: boolean }[];
   canEdit: boolean;
@@ -380,11 +388,23 @@ export interface PilotDetailScreenProps extends AsyncState {
   onAddPriorExperience: (input: PriorExperienceInput) => void;
   onUpdatePriorExperience: (input: PriorExperienceInput & { priorId: string }) => void;
   onRemovePriorExperience: (priorId: string) => void;
+  onConvertArgusFlight: (input: { externalFlightId: string; aircraftId: string }) => void;
+  onDismissArgusFlight: (externalFlightId: string) => void;
   onExportLogbook: () => void;
   onOpenFlight: (flightId: string) => void;
   share: SharePacketViewModel;
   onCreateShareLink: (input: { expiresInDays: number }) => void;
   onRevokeShareLink: (linkId: string) => void;
+}
+
+/** A flight from an Argus mission (sent when the pilot marked the job landed). */
+export interface ArgusFlightViewModel {
+  id: string;
+  /** e.g. "Argus job #1042". */
+  reference: string;
+  date: DateDisplay;
+  flightTime: Quantity;
+  location: string | null;
 }
 
 /** Flights, missions and flight time a pilot logged in another app, entered as totals. */

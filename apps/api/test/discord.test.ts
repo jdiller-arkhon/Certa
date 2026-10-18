@@ -45,6 +45,7 @@ const ok = async (p: ReturnType<typeof call>, status = 200) => {
 
 let owner: Session;
 let other: Session;
+const ARGUS_TOKEN = 'argus-ingest-token-argus-ingest-token-0123';
 
 beforeAll(async () => {
   tdb = await createTestDatabase('discord');
@@ -57,6 +58,7 @@ beforeAll(async () => {
     LOG_LEVEL: 'error',
     RATE_LIMIT_AUTH_PER_MINUTE: '1000',
     DISCORD_BOT_API_TOKEN: BOT_TOKEN,
+    ARGUS_INGEST_TOKEN: ARGUS_TOKEN,
   });
   app = await buildApp({ config, pool, mailer: new MemoryMailer() });
   owner = await signUp('Olivia Owner', 'olivia@example.com', 'Skyline Aerial');
@@ -159,6 +161,21 @@ describe('Discord link for the community bot', () => {
     expect((await botOk(bot('GET', '/leaderboard?period=all'))).entries).toEqual([{ rank: 1, certaUserId, displayName: 'Olivia Owner', totalMinutes: 625, flightCount: 41 }]);
     expect((await botOk(bot('GET', '/leaderboard?period=month&month=2001-01'))).entries).toEqual([]);
     await ok(call(owner, 'DELETE', `/prior-experience/${prior.id}`), 204);
+    expect(await botOk(bot('GET', `/users/${certaUserId}/flight-totals`))).toMatchObject({ totalFlights: 1, totalMinutes: 25 });
+  });
+
+  it('counts Argus mission flights in every window and on the leaderboard', async () => {
+    const takeoff = new Date(Date.now() - 3 * 86400_000);
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/v1/integrations/argus/flights',
+      headers: { authorization: `Bearer ${ARGUS_TOKEN}` },
+      payload: { pilot: { arkhonUserId: 'ark-olivia', name: 'Olivia Owner', email: 'olivia@example.com' }, jobId: 'J1', takeoffAt: takeoff.toISOString(), landingAt: new Date(takeoff.getTime() + 20 * 60_000).toISOString() },
+    });
+    expect(res.statusCode, res.body).toBe(201);
+    expect(await botOk(bot('GET', `/users/${certaUserId}/flight-totals`))).toMatchObject({ totalFlights: 2, totalMinutes: 45, last30Days: { flights: 2, minutes: 45 } });
+    expect((await botOk(bot('GET', '/leaderboard?period=all'))).entries).toEqual([{ rank: 1, certaUserId, displayName: 'Olivia Owner', totalMinutes: 45, flightCount: 2 }]);
+    await ok(call(owner, 'DELETE', `/external-flights/${res.json().externalFlightId}`), 204);
     expect(await botOk(bot('GET', `/users/${certaUserId}/flight-totals`))).toMatchObject({ totalFlights: 1, totalMinutes: 25 });
   });
 

@@ -139,6 +139,24 @@ export const PriorExperience = EntityBase.extend({
 });
 export type PriorExperience = z.infer<typeof PriorExperience>;
 
+/**
+ * A flight flown on an Argus mission (Arkhon job), sent by Argus when the pilot marks the job
+ * landed. Counts toward the pilot's totals until the pilot picks the aircraft, which turns it
+ * into a regular flight.
+ */
+export const ExternalFlight = EntityBase.extend({
+  pilotId: Id,
+  source: z.enum(['argus']),
+  externalId: z.string().min(1).max(200),
+  /** Shown to the pilot, e.g. "Argus job #1042". */
+  reference: z.string().max(200).nullable(),
+  takeoffAt: IsoDateTime,
+  landingAt: IsoDateTime,
+  durationSeconds: z.number().int().nonnegative(),
+  locationName: z.string().max(300).nullable(),
+});
+export type ExternalFlight = z.infer<typeof ExternalFlight>;
+
 export const Aircraft = EntityBase.extend({
   nickname: z.string().max(100).nullable(),
   make: z.string().min(1).max(100),

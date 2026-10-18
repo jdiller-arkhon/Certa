@@ -166,13 +166,16 @@ export function buildPilotList(i: BuildInput, search = ''): ScreenData<PilotList
   };
 }
 
-export function buildPilotDetail(i: BuildInput, pilotId: string, recentFlights: Flight[]): ScreenData<PilotDetailScreenProps> {
+export function buildPilotDetail(i: BuildInput, pilotId: string, recentFlights: Flight[], opts: { ownPilotId?: string | null } = {}): ScreenData<PilotDetailScreenProps> {
   const r = readinessOf(i);
   const { snapshot: s, ctx } = i;
   const p = s.pilots.find((x) => x.id === pilotId && !x.deletedAt);
   const summary = p ? r.pilots.get(p.id) : undefined;
   const t = totalsOf(s, pilotId);
   const prior = priorOf(s, pilotId);
+  // Argus mission flights still waiting for the drone; already counted in the pilot's totals.
+  const argus = (s.externalFlights ?? []).filter((x) => x.pilotId === pilotId && !x.deletedAt).sort((a, b) => b.takeoffAt.localeCompare(a.takeoffAt));
+  const argusSeconds = argus.reduce((n, x) => n + x.durationSeconds, 0);
   return {
     ...OK,
     pilot:
@@ -193,6 +196,7 @@ export function buildPilotDetail(i: BuildInput, pilotId: string, recentFlights: 
             },
             logged: { flights: t.flights, missions: t.missions, flightTime: formatDuration(t.flightSeconds) },
             prior: prior.entries.length ? { flights: prior.flights, missions: prior.missions, flightTime: formatDuration(prior.seconds) } : null,
+            argus: argus.length ? { flights: argus.length, flightTime: formatDuration(argusSeconds) } : null,
           }
         : null,
     credentials: s.credentials.filter((c) => c.pilotId === pilotId && !c.deletedAt).map((c) => toCredentialViewModel(c, r.rules, ctx)),
@@ -206,6 +210,15 @@ export function buildPilotDetail(i: BuildInput, pilotId: string, recentFlights: 
       asOf: displayDate(x.asOf, ctx.today),
       notes: x.notes,
     })),
+    argusFlights: argus.map((x) => ({
+      id: x.id,
+      reference: x.reference ?? 'Argus mission',
+      date: displayDate(x.takeoffAt.slice(0, 10), ctx.today),
+      flightTime: formatDuration(x.durationSeconds),
+      location: x.locationName,
+    })),
+    aircraftOptions: s.aircraft.filter((a) => !a.deletedAt && a.status !== 'retired').map((a) => ({ value: a.id, label: aircraftName(a) })),
+    canConvertArgus: can(i.role, 'flights.log', { actorPilotId: opts.ownPilotId ?? null, resourcePilotId: pilotId }),
     recentFlights: flightRows(i, recentFlights.filter((f) => f.pilotInCommandId === pilotId).slice(0, 10)),
     credentialTypeOptions: r.rules.pack.credentialTypes.map((ct) => ({ value: ct.id, label: ct.label, expires: ct.validityRuleId !== null })),
     canEdit: can(i.role, 'credentials.manage'),

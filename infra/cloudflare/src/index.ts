@@ -31,6 +31,7 @@ interface Env {
   VAPID_PRIVATE_KEY?: string;
   VAPID_SUBJECT?: string;
   DISCORD_BOT_API_TOKEN?: string;
+  ARGUS_INGEST_TOKEN?: string;
 }
 
 /** Environment for the API and jobs containers; unset optional secrets are left out. */
@@ -61,6 +62,7 @@ function apiEnv(env: Env): Record<string, string> {
     ARKHON_AUTH_ORIGIN: env.ARKHON_AUTH_ORIGIN,
     ARKHON_ORG_ID: env.ARKHON_ORG_ID,
     LOCAL_AUTH: env.LOCAL_AUTH,
+    ARGUS_INGEST_TOKEN: env.ARGUS_INGEST_TOKEN,
   };
   return Object.fromEntries(Object.entries(vars).filter((e): e is [string, string] => !!e[1]));
 }

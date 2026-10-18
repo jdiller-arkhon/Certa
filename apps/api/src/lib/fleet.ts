@@ -4,6 +4,7 @@ import {
   type Aircraft,
   type Battery,
   type Credential,
+  type ExternalFlight,
   type FleetSnapshot,
   type Flight,
   type GoNoGoResult,
@@ -24,6 +25,7 @@ import {
   desc,
   documents,
   eq,
+  externalFlights,
   flightBatteries,
   flightObservers,
   flights,
@@ -94,6 +96,18 @@ export const toPriorExperience = (r: Row<typeof priorExperience>): PriorExperien
   flightSeconds: r.flightSeconds,
   asOf: r.asOf,
   notes: r.notes,
+});
+
+export const toExternalFlight = (r: Row<typeof externalFlights>): ExternalFlight => ({
+  ...base(r),
+  pilotId: r.pilotId,
+  source: r.source,
+  externalId: r.externalId,
+  reference: r.reference,
+  takeoffAt: iso(r.takeoffAt)!,
+  landingAt: iso(r.landingAt)!,
+  durationSeconds: r.durationSeconds,
+  locationName: r.locationName,
 });
 
 export const toAircraft = (r: Row<typeof aircraft>): Aircraft => ({
@@ -244,6 +258,30 @@ export async function orgMapContext(db: Db, orgId: string, now = new Date()): Pr
   return { org, today: dateInZone(now, org.timezone), now, units: org.units as UnitsPreference, orgTimeZone: org.timezone };
 }
 
+/**
+ * Per-pilot totals: Certa flights plus Argus mission flights not yet turned into Certa flights
+ * (each Argus job also counts as a mission).
+ */
+function pilotTotalsWithExternal(
+  totals: { pilotId: string; n: number; s: number | string; last: string | null; n90: number; missions: number }[],
+  external: Row<typeof externalFlights>[],
+  since90: string,
+): FleetSnapshot['pilotTotals'] {
+  const out: FleetSnapshot['pilotTotals'] = {};
+  for (const t of totals) out[t.pilotId] = { flights: t.n, flightSeconds: Number(t.s), lastFlightAt: iso(t.last), last90DaysFlights: t.n90, missions: t.missions };
+  const since = new Date(since90).getTime();
+  for (const e of external) {
+    const t = (out[e.pilotId] ??= { flights: 0, flightSeconds: 0, lastFlightAt: null, last90DaysFlights: 0, missions: 0 });
+    const at = iso(e.takeoffAt)!;
+    t.flights += 1;
+    t.missions += 1;
+    t.flightSeconds += e.durationSeconds;
+    if (new Date(at).getTime() >= since) t.last90DaysFlights += 1;
+    if (!t.lastFlightAt || at > t.lastFlightAt) t.lastFlightAt = at;
+  }
+  return out;
+}
+
 export async function loadFleet(db: Db, orgId: string, now = new Date()): Promise<FleetSnapshot> {
   const ctx = await orgMapContext(db, orgId, now);
   const org = ctx.org;
@@ -294,10 +332,11 @@ export async function loadFleet(db: Db, orgId: string, now = new Date()): Promis
       .from(flights)
       .where(isNull(flights.deletedAt)),
     db.select().from(priorExperience).where(isNull(priorExperience.deletedAt)).orderBy(desc(priorExperience.asOf)),
+    db.select().from(externalFlights).where(and(isNull(externalFlights.deletedAt), isNull(externalFlights.convertedFlightId))).orderBy(desc(externalFlights.takeoffAt)),
   ] as const;
   const results: unknown[] = [];
   for (const query of q) results.push(await query);
-  const [pilotRows, credRows, docRows, acRows, batRows, polRows, coverRows, schedRows, totals, lastUsed, lastFlightRows, locations, recentCounts, priorRows] = results as unknown as { [K in keyof typeof q]: Awaited<(typeof q)[K]> };
+  const [pilotRows, credRows, docRows, acRows, batRows, polRows, coverRows, schedRows, totals, lastUsed, lastFlightRows, locations, recentCounts, priorRows, externalRows] = results as unknown as { [K in keyof typeof q]: Awaited<(typeof q)[K]> };
 
   const docsOf = (type: string, id: string) => docRows.filter((d) => d.ownerType === type && d.ownerId === id).map((d) => d.id);
   const [lastFlight] = await toFlights(db, lastFlightRows as FlightSelectRow[]);
@@ -313,7 +352,8 @@ export async function loadFleet(db: Db, orgId: string, now = new Date()): Promis
     batteries: batRows.map(toBattery),
     insurancePolicies: polRows.map((p) => toInsurancePolicy(p, coverRows.filter((c) => c.policyId === p.id).map((c) => c.aircraftId), docsOf('insurance_policy', p.id))),
     maintenanceSchedules: schedRows.map(toMaintenanceSchedule),
-    pilotTotals: Object.fromEntries(totals.map((t) => [t.pilotId, { flights: t.n, flightSeconds: Number(t.s), lastFlightAt: iso(t.last), last90DaysFlights: t.n90, missions: t.missions }])),
+    pilotTotals: pilotTotalsWithExternal(totals, externalRows, since90),
+    externalFlights: externalRows.map(toExternalFlight),
     batteryLastUsed: Object.fromEntries(lastUsed.map((b) => [b.batteryId, iso(b.last)])),
     lastFlight: lastFlight ? (({ goNoGo: _g, ...f }) => f)(lastFlight) : null,
     recentLocations: locations.map((l) => l.name!).filter(Boolean),

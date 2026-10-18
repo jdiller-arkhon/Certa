@@ -9,4 +9,5 @@ process.env.PORT = '4100';
 process.env.LOG_LEVEL = 'warn';
 process.env.SMTP_URL = 'smtp://localhost:1025';
 process.env.DISCORD_BOT_API_TOKEN ??= 'e2e-discord-bot-token-e2e-discord-bot-token';
+process.env.ARGUS_INGEST_TOKEN ??= 'e2e-argus-ingest-token-e2e-argus-ingest-token';
 await import('../src/server.js');

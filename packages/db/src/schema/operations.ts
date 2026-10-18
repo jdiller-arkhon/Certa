@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import {
   bigint,
   boolean,
@@ -9,6 +10,7 @@ import {
   pgTable,
   primaryKey,
   text,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
 import type { ChecklistRun, ChecklistTemplate, IncidentFacts, WeatherSnapshot } from '@certa/core';
@@ -241,4 +243,33 @@ export const insuranceCoveredAircraft = pgTable(
     aircraftId: uuid('aircraft_id').notNull().references(() => aircraft.id),
   },
   (t) => [primaryKey({ columns: [t.policyId, t.aircraftId] })],
+);
+
+/**
+ * Flights flown on Argus missions, sent by Argus when the pilot marks the job landed. Counted in
+ * the pilot's totals until the pilot picks the aircraft, which turns the entry into a regular
+ * flight (convertedFlightId).
+ */
+export const externalFlights = pgTable(
+  'external_flights',
+  {
+    ...entityColumns(),
+    pilotId: uuid('pilot_id')
+      .notNull()
+      .references(() => pilots.id),
+    source: text('source', { enum: ['argus'] }).notNull(),
+    externalId: text('external_id').notNull(),
+    /** Human reference shown to the pilot, e.g. the Argus job number. */
+    reference: text('reference'),
+    takeoffAt: ts('takeoff_at').notNull(),
+    landingAt: ts('landing_at').notNull(),
+    durationSeconds: integer('duration_seconds').notNull(),
+    locationName: text('location_name'),
+    takeoffPoint: geography('takeoff_point', 'Point'),
+    convertedFlightId: uuid('converted_flight_id').references(() => flights.id),
+  },
+  (t) => [
+    uniqueIndex('external_flights_source_uq').on(t.orgId, t.source, t.externalId),
+    index('external_flights_pilot_idx').on(t.pilotId, t.takeoffAt).where(sql`deleted_at is null and converted_flight_id is null`),
+  ],
 );

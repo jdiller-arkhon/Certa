@@ -3,6 +3,18 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.13.0 — 2026-10-18
+
+Argus mission flights count toward Certa flight time.
+
+- **Added** `ExternalFlight` (pilot, source `argus`, Argus job id and reference, takeoff/landing, duration, location) and `FleetSnapshot.externalFlights` (those still waiting for the drone). They count in `pilotTotals` (flights, missions, flight time, last 90 days, last flight).
+- **Added** `POST /integrations/argus/flights` for Argus (bearer `ARGUS_INGEST_TOKEN`): idempotent per `jobId`, links or creates the pilot's Certa account like Arkhon sign-in. A resend updates changed times; a converted or dismissed flight is left alone.
+- **Added** `POST /orgs/{orgId}/external-flights/{id}/convert { aircraftId }` → `{ flightId }` (a regular flight, source `import`, parser `argus`) and `DELETE /orgs/{orgId}/external-flights/{id}` (dismiss; a resend won't bring it back). Pilots may do this for their own flights.
+- **Changed** **Pilot detail**: new `pilot.argus`, `argusFlights: ArgusFlightViewModel[]`, `aircraftOptions`, `canConvertArgus`, `onConvertArgusFlight`, `onDismissArgusFlight`.
+- **Changed** Discord bot `flight-totals` (every window) and the leaderboard include Argus flights waiting for the drone.
+
+Screens affected: **Pilot detail**.
+
 ## 0.12.0 — 2026-10-18
 
 One account across Arkhon.

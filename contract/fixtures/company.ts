@@ -2009,7 +2009,8 @@ export const company = {
             "display": "6h 23m"
           }
         },
-        "prior": null
+        "prior": null,
+        "argus": null
       },
       "credentials": [
         {
@@ -2077,6 +2078,46 @@ export const company = {
         }
       ],
       "priorExperience": [],
+      "argusFlights": [],
+      "aircraftOptions": [
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84cd",
+          "label": "Falcon 1"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84d2",
+          "label": "DJI Matrice 30T"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84d7",
+          "label": "Osprey 3"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84dc",
+          "label": "Skydio X10"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84e1",
+          "label": "Merlin 5"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84e6",
+          "label": "Freefly Astro"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84eb",
+          "label": "Raven 7"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84f0",
+          "label": "DJI Matrice 600 Pro"
+        },
+        {
+          "value": "0199c4a0-0000-7000-8000-0000001e84f5",
+          "label": "Heron 9"
+        }
+      ],
+      "canConvertArgus": true,
       "recentFlights": [
         {
           "id": "0199c4a0-0000-7000-8000-0000001e84fb",

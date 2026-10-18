@@ -356,3 +356,41 @@ test('prior experience: a pilot adds totals from another app and they count towa
   await page.getByRole('button', { name: 'Remove' }).click();
   await expect(page.getByText(/Flying before Certa\?/)).toBeVisible();
 });
+
+test('Argus mission flights count toward flight time, then become flights when the pilot picks the drone', async ({ page, playwright }) => {
+  const email = `argus-${Date.now()}@example.com`;
+  await page.goto('sign-up');
+  await page.waitForLoadState('networkidle');
+  await page.getByLabel('Your name').fill('Maya Thornton');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password').fill('correct-horse-battery');
+  await page.getByLabel('Organization name').fill('Mesa Survey');
+  await page.getByRole('button', { name: 'Create account' }).click();
+  await expect(page.getByTestId('org-name')).toHaveText('Mesa Survey');
+
+  const origin = new URL(page.url()).origin;
+  const me = await (await page.request.get(`${origin}/certa/api/v1/me`)).json();
+  await page.request.post(`${origin}/certa/api/v1/orgs/${me.memberships[0].orgId}/aircraft`, { data: { nickname: 'Kestrel', make: 'DJI', model: 'Mavic 3E', serialNumber: 'M3E-ARG' }, headers: { origin } });
+
+  // Argus reports a job the pilot marked landed.
+  const argus = await playwright.request.newContext({ extraHTTPHeaders: { authorization: `Bearer ${process.env.E2E_ARGUS_INGEST_TOKEN ?? 'e2e-argus-ingest-token-e2e-argus-ingest-token'}` } });
+  const takeoff = new Date(Date.now() - 2 * 3600_000);
+  const res = await argus.post(`${origin}/certa/api/v1/integrations/argus/flights`, {
+    data: { pilot: { arkhonUserId: `ark-${Date.now()}`, name: 'Maya Thornton', email }, jobId: `job-${Date.now()}`, reference: 'Argus job #1042', takeoffAt: takeoff.toISOString(), landingAt: new Date(takeoff.getTime() + 25 * 60_000).toISOString(), locationName: 'Grand Junction, CO' },
+  });
+  expect(res.status(), await res.text()).toBe(201);
+  await argus.dispose();
+
+  // Argus pushes in the background; the pilot sees it the next time Certa loads their fleet.
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+  await go(page, 'Pilots');
+  await page.getByRole('button', { name: 'Open Maya Thornton' }).click();
+  await expect(page.getByText(/^Includes 1 Argus mission flight \(25m( 00s)?\) waiting for the drone./)).toBeVisible();
+  await page.getByRole('button', { name: 'Pick drones' }).click();
+  await page.getByRole('button', { name: 'Pick the drone for Argus job #1042' }).click();
+  await page.getByLabel('Drone', { exact: true }).selectOption({ label: 'Kestrel' });
+  await page.getByRole('button', { name: 'Add to logbook' }).click();
+  await expect(page.getByRole('button', { name: 'Pick the drone for Argus job #1042' })).toHaveCount(0);
+  await expect(page.getByText('Kestrel · Grand Junction, CO')).toBeVisible();
+});
