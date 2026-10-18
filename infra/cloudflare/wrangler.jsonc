@@ -11,7 +11,12 @@
   "vars": {
     "PUBLIC_URL": "https://arkhonindustries.com/certa",
     "S3_BUCKET": "certa-files",
-    "MAIL_FROM": "Certa <certa@arkhonindustries.com>"
+    "MAIL_FROM": "Certa <certa@arkhonindustries.com>",
+    // Sign in with the Arkhon (Argus) account; Certa's own sign-up and password sign-in are off.
+    "ARKHON_AUTH_ORIGIN": "https://arkhonindustries.com",
+    // Arkhon Industries' Certa organization: Arkhon admins join it as admins.
+    "ARKHON_ORG_ID": "01a14d4c-2cb8-77aa-8af3-e34461923f37",
+    "LOCAL_AUTH": "off"
   },
   // 07:00 in Denver is 13:00 UTC in summer and 14:00 UTC in winter; the second run is a no-op.
   "triggers": { "crons": ["0 13 * * *", "0 14 * * *"] },

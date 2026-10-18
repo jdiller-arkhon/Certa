@@ -83,9 +83,9 @@ export const SCREENS: PreviewScreen[] = [
     group: 'Auth',
     route: '/sign-in',
     shell: false,
-    variants: ['default', 'error', 'magic-link-sent', 'loading'],
+    variants: ['default', 'arkhon', 'error', 'magic-link-sent', 'loading'],
     render: ({ variant }) => {
-      const d = variant === 'error' ? auth.signInError : variant === 'magic-link-sent' ? auth.signInMagicLinkSent : auth.signIn;
+      const d = variant === 'arkhon' ? auth.signInArkhon : variant === 'error' ? auth.signInError : variant === 'magic-link-sent' ? auth.signInMagicLinkSent : auth.signIn;
       return <SignInScreen {...d} loading={variant === 'loading'} onSubmitPassword={noop} onRequestMagicLink={noop} onSignInWithSso={noop} onGoToSignUp={noop} />;
     },
   },

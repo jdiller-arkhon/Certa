@@ -1,4 +1,5 @@
 import { api, DEFAULT_UNITS_US, newId } from '@certa/core';
+import { z } from 'zod';
 import { authUsers, eq, globalDb, memberships, organizations, pilots, withTenant } from '@certa/db';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
@@ -65,6 +66,7 @@ export const authRoutes =
         },
       },
       async (req, reply) => {
+        if (ctx.config.LOCAL_AUTH === 'off') throw new ApiError(403, 'local_auth_disabled', 'Sign in with your Arkhon account');
         const body = req.body;
         const existing = await globalDb(ctx.pool).select({ id: authUsers.id }).from(authUsers).where(eq(authUsers.email, body.email.toLowerCase()));
         if (existing.length) throw conflict('An account with that email already exists');
@@ -103,7 +105,7 @@ export const authRoutes =
           emailVerified: response.user.emailVerified,
           createdAt: new Date(response.user.createdAt).toISOString(),
         };
-        return reply.status(201).send({ user, memberships: await listMemberships(ctx.pool, userId, req.id) });
+        return reply.status(201).send({ user, memberships: await listMemberships(ctx.pool, userId, req.id), arkhon: null });
       },
     );
 
@@ -112,7 +114,28 @@ export const authRoutes =
       { schema: { tags: ['auth'], summary: 'Current user and their organizations', response: { 200: api.MeResponse } } },
       async (req) => {
         const user = requireUser(req);
-        return { user, memberships: await listMemberships(ctx.pool, user.id, req.id) };
+        const [row] = await globalDb(ctx.pool).select({ role: authUsers.arkhonRole }).from(authUsers).where(eq(authUsers.id, user.id));
+        const role = z.enum(['client', 'pilot', 'admin']).safeParse(row?.role);
+        return {
+          user,
+          memberships: await listMemberships(ctx.pool, user.id, req.id),
+          // platformAdmin only decides what the app shows; admin endpoints re-check with Arkhon live.
+          arkhon: role.success ? { role: role.data, platformAdmin: role.data === 'admin' } : null,
+        };
+      },
+    );
+
+    app.get(
+      `${base}/api/v1/auth/config`,
+      { schema: { tags: ['auth'], summary: 'Sign-in methods this deployment offers', response: { 200: api.AuthConfigResponse }, security: [] } },
+      async () => {
+        const back = encodeURIComponent(`${base}/sign-in?arkhon=1`);
+        return {
+          local: ctx.config.LOCAL_AUTH === 'on',
+          arkhon: ctx.config.ARKHON_AUTH_ORIGIN
+            ? { loginUrl: new URL(`/login?next=${back}`, ctx.config.ARKHON_AUTH_ORIGIN).href, signupUrl: new URL(`/signup?next=${back}`, ctx.config.ARKHON_AUTH_ORIGIN).href }
+            : null,
+        };
       },
     );
   };

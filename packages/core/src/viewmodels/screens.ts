@@ -43,6 +43,12 @@ export interface SignInScreenProps extends AsyncState {
   magicLinkSentTo: string | null;
   /** Shown when the deployment has SSO configured (Phase 7). */
   ssoProviders: { id: string; label: string }[];
+  /**
+   * Certa's own password and email-link sign-in. False when everyone signs in through an SSO
+   * provider (Arkhon): the screen then offers only the providers, and "create an account" goes
+   * to the provider's sign-up.
+   */
+  localAuth: boolean;
   onSubmitPassword: (input: { email: string; password: string }) => void;
   onRequestMagicLink: (input: { email: string }) => void;
   onSignInWithSso: (providerId: string) => void;

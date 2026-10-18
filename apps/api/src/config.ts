@@ -54,6 +54,19 @@ const Env = z.object({
    * Unset disables those endpoints. Generate with `openssl rand -base64 48`.
    */
   DISCORD_BOT_API_TOKEN: z.string().min(32, 'DISCORD_BOT_API_TOKEN must be at least 32 characters').optional(),
+  /**
+   * Origin of the Arkhon platform (Argus), e.g. https://arkhonindustries.com. When set, people
+   * sign in to Certa with their Arkhon account: Certa checks the Arkhon session cookie the
+   * browser already sends (same site) against {origin}/api/auth/get-session.
+   */
+  ARKHON_AUTH_ORIGIN: z.url().optional(),
+  /** Certa organization that Arkhon admins join as admins (Arkhon Industries' own org). */
+  ARKHON_ORG_ID: z.uuid().optional(),
+  /**
+   * Certa's own email/password and magic-link sign-in and sign-up. "off" when everyone signs
+   * in with Arkhon, so nobody ends up with two accounts.
+   */
+  LOCAL_AUTH: z.enum(['on', 'off']).default('on'),
 });
 
 export type Config = z.infer<typeof Env> & {

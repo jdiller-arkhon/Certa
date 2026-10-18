@@ -222,9 +222,28 @@ paths:
                         - role
                         - expiresAt
                       additionalProperties: false
+                  arkhon:
+                    default: null
+                    anyOf:
+                      - type: object
+                        properties:
+                          role:
+                            type: string
+                            enum:
+                              - client
+                              - pilot
+                              - admin
+                          platformAdmin:
+                            type: boolean
+                        required:
+                          - role
+                          - platformAdmin
+                        additionalProperties: false
+                      - type: "null"
                 required:
                   - user
                   - memberships
+                  - arkhon
                 additionalProperties: false
         "409":
           description: Default Response
@@ -331,9 +350,61 @@ paths:
                         - role
                         - expiresAt
                       additionalProperties: false
+                  arkhon:
+                    default: null
+                    anyOf:
+                      - type: object
+                        properties:
+                          role:
+                            type: string
+                            enum:
+                              - client
+                              - pilot
+                              - admin
+                          platformAdmin:
+                            type: boolean
+                        required:
+                          - role
+                          - platformAdmin
+                        additionalProperties: false
+                      - type: "null"
                 required:
                   - user
                   - memberships
+                  - arkhon
+                additionalProperties: false
+  /api/v1/auth/config:
+    get:
+      summary: Sign-in methods this deployment offers
+      tags:
+        - auth
+      security: []
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  local:
+                    type: boolean
+                  arkhon:
+                    anyOf:
+                      - type: object
+                        properties:
+                          loginUrl:
+                            type: string
+                          signupUrl:
+                            type: string
+                        required:
+                          - loginUrl
+                          - signupUrl
+                        additionalProperties: false
+                      - type: "null"
+                required:
+                  - local
+                  - arkhon
                 additionalProperties: false
   /api/v1/orgs:
     post:

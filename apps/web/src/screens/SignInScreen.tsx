@@ -41,6 +41,20 @@ export function SignInScreen(props: SignInScreenProps) {
               <h1 className="headline text-[34px] leading-tight">Sign in to Certa</h1>
               <p className="mt-2 text-[15px] text-[var(--certa-muted)]">Welcome back. Your logbook is right where you left it.</p>
             </Rise>
+            {!props.localAuth ? (
+              <>
+                <Banners>{props.error && <Banner key="err" tone="error">{props.error}</Banner>}</Banners>
+                <Rise delay={0.08} className="mt-8 space-y-3">
+                  {props.ssoProviders.map((p) => (
+                    <Button key={p.id} size="lg" arrow loading={props.loading} className="w-full" icon={<KeyRound className="size-4" aria-hidden />} onClick={() => props.onSignInWithSso(p.id)}>
+                      {p.label}
+                    </Button>
+                  ))}
+                  <p className="text-[14px] leading-relaxed text-[var(--certa-muted)]">Use the same account you use for Argus on the Arkhon website. One account for everything.</p>
+                </Rise>
+              </>
+            ) : (
+            <>
             <Rise delay={0.08} className="mt-8">
               <Segmented
                 label="Sign-in method"
@@ -79,7 +93,9 @@ export function SignInScreen(props: SignInScreenProps) {
                 </Button>
               </form>
             </Rise>
-            {props.ssoProviders.length > 0 && (
+            </>
+            )}
+            {props.localAuth && props.ssoProviders.length > 0 && (
               <div className="mt-4 space-y-2">
                 {props.ssoProviders.map((p) => (
                   <Button key={p.id} variant="secondary" size="lg" className="w-full" onClick={() => props.onSignInWithSso(p.id)}>
@@ -90,9 +106,9 @@ export function SignInScreen(props: SignInScreenProps) {
             )}
             <Rise delay={0.2}>
               <p className="mt-10 text-sm text-[var(--certa-muted)]">
-                New to Certa?{' '}
+                {props.localAuth ? 'New to Certa?' : 'No Arkhon account yet?'}{' '}
                 <button type="button" onClick={props.onGoToSignUp} className="font-semibold text-[var(--certa-text)] underline-offset-4 hover:underline">
-                  Create an account
+                  {props.localAuth ? 'Create an account' : 'Create one'}
                 </button>
               </p>
               <p className="mt-3 text-sm text-[var(--certa-muted)]">

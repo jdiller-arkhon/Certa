@@ -52,10 +52,21 @@ export type MembershipSummary = z.infer<typeof MembershipSummary>;
 export const MeResponse = z.object({
   user: User,
   memberships: z.array(MembershipSummary),
+  /** Set when the account signs in with Arkhon: its Arkhon role at the last sign-in. */
+  arkhon: z.object({ role: z.enum(['client', 'pilot', 'admin']), platformAdmin: z.boolean() }).nullable().default(null),
 });
 export type MeResponse = z.infer<typeof MeResponse>;
 
 export const SignUpResponse = MeResponse;
+
+/** Which sign-in methods this deployment offers (public). */
+export const AuthConfigResponse = z.object({
+  /** Certa's own email/password and magic-link sign-in and sign-up. */
+  local: z.boolean(),
+  /** Arkhon single sign-on; `loginUrl` is the Arkhon sign-in page that returns to Certa. */
+  arkhon: z.object({ loginUrl: z.string(), signupUrl: z.string() }).nullable(),
+});
+export type AuthConfigResponse = z.infer<typeof AuthConfigResponse>;
 
 // ---------- Organizations & members ----------
 

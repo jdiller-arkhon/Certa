@@ -3,6 +3,17 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.12.0 — 2026-10-18
+
+One account across Arkhon.
+
+- **Added** Arkhon single sign-on: `POST /api/auth/arkhon/exchange` turns the Arkhon (Argus) session the browser already has into a Certa session, creating or linking the Certa account (by Arkhon id, else verified email). Arkhon pilots get their own logbook; Arkhon admins join `ARKHON_ORG_ID` as admins; clients get an account with no organization.
+- **Added** `GET /api/v1/auth/config` (public): `{ local, arkhon: { loginUrl, signupUrl } | null }`. `MeResponse.arkhon: { role, platformAdmin } | null`.
+- **Changed** `LOCAL_AUTH=off` closes Certa's own sign-up, password, magic-link, reset and change-email endpoints (403).
+- **Changed** **Sign in**: new `localAuth`; with it false the screen offers only `ssoProviders` and "create one" goes to the provider's sign-up. Fixture `auth.signInArkhon`.
+
+Screens affected: **Sign in**.
+
 ## 0.11.0 — 2026-10-18
 
 Prior experience from other apps.

@@ -724,9 +724,10 @@ const worlds: World[] = [
 ];
 
 const auth: AuthFixtures = {
-  signIn: { loading: false, error: null, initialEmail: null, magicLinkSentTo: null, ssoProviders: [] },
-  signInMagicLinkSent: { loading: false, error: null, initialEmail: 'dana.reyes@example.com', magicLinkSentTo: 'dana.reyes@example.com', ssoProviders: [] },
-  signInError: { loading: false, error: 'That email and password don’t match. Try again or use a sign-in link.', initialEmail: 'dana.reyes@example.com', magicLinkSentTo: null, ssoProviders: [] },
+  signIn: { loading: false, error: null, initialEmail: null, magicLinkSentTo: null, ssoProviders: [], localAuth: true },
+  signInArkhon: { loading: false, error: null, initialEmail: null, magicLinkSentTo: null, ssoProviders: [{ id: 'arkhon', label: 'Continue with your Arkhon account' }], localAuth: false },
+  signInMagicLinkSent: { loading: false, error: null, initialEmail: 'dana.reyes@example.com', magicLinkSentTo: 'dana.reyes@example.com', ssoProviders: [], localAuth: true },
+  signInError: { loading: false, error: 'That email and password don’t match. Try again or use a sign-in link.', initialEmail: 'dana.reyes@example.com', magicLinkSentTo: null, ssoProviders: [], localAuth: true },
   signUp: {
     loading: false,
     error: null,

@@ -162,6 +162,12 @@ export interface paths {
                                 role: "owner" | "admin" | "chief_pilot" | "pilot" | "maintenance_tech" | "viewer" | "auditor";
                                 expiresAt: string | null;
                             }[];
+                            /** @default null */
+                            arkhon: {
+                                /** @enum {string} */
+                                role: "client" | "pilot" | "admin";
+                                platformAdmin: boolean;
+                            } | null;
                         };
                     };
                 };
@@ -234,6 +240,54 @@ export interface paths {
                                 role: "owner" | "admin" | "chief_pilot" | "pilot" | "maintenance_tech" | "viewer" | "auditor";
                                 expiresAt: string | null;
                             }[];
+                            /** @default null */
+                            arkhon: {
+                                /** @enum {string} */
+                                role: "client" | "pilot" | "admin";
+                                platformAdmin: boolean;
+                            } | null;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sign-in methods this deployment offers */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            local: boolean;
+                            arkhon: {
+                                loginUrl: string;
+                                signupUrl: string;
+                            } | null;
                         };
                     };
                 };

@@ -61,6 +61,8 @@ export interface FixtureScenario {
 
 export interface AuthFixtures {
   signIn: ScreenData<SignInScreenProps>;
+  /** Arkhon single sign-on only (LOCAL_AUTH=off). */
+  signInArkhon: ScreenData<SignInScreenProps>;
   signInMagicLinkSent: ScreenData<SignInScreenProps>;
   signInError: ScreenData<SignInScreenProps>;
   signUp: ScreenData<SignUpScreenProps>;

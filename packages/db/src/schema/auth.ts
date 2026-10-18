@@ -13,6 +13,12 @@ export const authUsers = pgTable('auth_users', {
   image: text('image'),
   createdAt: ts('created_at').notNull().defaultNow(),
   updatedAt: ts('updated_at').notNull().defaultNow(),
+  /** The Arkhon (Argus) account this user signs in with; null for local-only accounts. */
+  arkhonUserId: text('arkhon_user_id'),
+  /** Arkhon role at the last sign-in: client | pilot | admin. */
+  arkhonRole: text('arkhon_role'),
+  arkhonAdminLevel: text('arkhon_admin_level'),
+  arkhonSyncedAt: ts('arkhon_synced_at'),
 });
 
 export const authSessions = pgTable(

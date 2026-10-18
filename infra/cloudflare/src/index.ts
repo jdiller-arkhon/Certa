@@ -17,6 +17,9 @@ interface Env {
   PUBLIC_URL: string;
   S3_BUCKET: string;
   MAIL_FROM: string;
+  ARKHON_AUTH_ORIGIN?: string;
+  ARKHON_ORG_ID?: string;
+  LOCAL_AUTH?: string;
   // Secrets (wrangler secret put …)
   DATABASE_URL: string;
   AUTH_SECRET: string;
@@ -54,6 +57,10 @@ function apiEnv(env: Env): Record<string, string> {
     VAPID_PRIVATE_KEY: env.VAPID_PRIVATE_KEY,
     VAPID_SUBJECT: env.VAPID_SUBJECT,
     DISCORD_BOT_API_TOKEN: env.DISCORD_BOT_API_TOKEN,
+    // One account across Arkhon: sign in with the Arkhon (Argus) account.
+    ARKHON_AUTH_ORIGIN: env.ARKHON_AUTH_ORIGIN,
+    ARKHON_ORG_ID: env.ARKHON_ORG_ID,
+    LOCAL_AUTH: env.LOCAL_AUTH,
   };
   return Object.fromEntries(Object.entries(vars).filter((e): e is [string, string] => !!e[1]));
 }

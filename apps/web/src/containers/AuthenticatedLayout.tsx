@@ -11,6 +11,7 @@ import { readTheme, writeTheme } from '@/lib/theme';
 import { BASE_PATH } from '@/lib/base-path';
 import { flushOutbox, setOutboxUser, useOutbox, useOutboxAutoFlush } from '@/lib/outbox';
 import { AppShell } from '@/screens';
+import { ClientHomeContainer } from './ClientHomeContainer';
 import { InstallNudge } from '@/components/install-nudge';
 
 export function AuthenticatedLayout({ children }: { children: ReactNode }) {
@@ -72,6 +73,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   if (me.isLoading || (orgId && org.isLoading)) return <p role="status">Loading…</p>;
   if (me.error || org.error) return <p role="alert">We couldn’t load your account. Refresh to try again.</p>;
   if (!me.data) return null;
+  if (!current && !orgId && me.data.arkhon?.role === 'client') return <ClientHomeContainer me={me.data} onSignedOut={() => router.replace('/sign-in')} />;
   if (!current) return <p role="alert">Your account isn’t a member of any organization.</p>;
 
   const pending = outbox.items.filter((i) => i.status === 'pending').length;
