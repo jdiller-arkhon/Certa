@@ -3323,6 +3323,7 @@ export const expired = {
           "altitude": 0
         }
       ],
+      "telemetry": null,
       "preflight": {
         "decision": "no_go",
         "checks": [

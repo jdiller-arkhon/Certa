@@ -4,6 +4,7 @@
  * the way it renders the fixtures. Builders return the data half of each screen's props; the
  * container adds the callbacks.
  */
+import type { TelemetryViewModel } from '../telemetry/view.js';
 import { can } from '../domain/permissions.js';
 import { buildGettingStarted } from './help.js';
 import type { ChecklistTemplate, Flight, MaintenanceEvent, WeatherSnapshot } from '../domain/entities.js';
@@ -359,7 +360,7 @@ export function weatherSummary(w: WeatherSnapshot | null, units: UnitsPreference
 export function buildFlightDetail(
   i: BuildInput,
   f: Flight | null,
-  extra: { path?: unknown | null; altitudeProfile?: { t: number; altitude: number }[]; integrity?: { contentHash: string; verified: boolean | null } | null; preflight?: GoNoGoResult | null; checklist?: FlightChecklist | null; authorization?: Pick<AuthorizationRecord, 'kind' | 'reference'> | null } = {},
+  extra: { path?: unknown | null; altitudeProfile?: { t: number; altitude: number }[]; telemetry?: TelemetryViewModel | null; integrity?: { contentHash: string; verified: boolean | null } | null; preflight?: GoNoGoResult | null; checklist?: FlightChecklist | null; authorization?: Pick<AuthorizationRecord, 'kind' | 'reference'> | null } = {},
 ): ScreenData<FlightDetailScreenProps> {
   const { snapshot: s, ctx } = i;
   const n = fleetNames(s);
@@ -389,6 +390,7 @@ export function buildFlightDetail(
       : null,
     path: extra.path ?? null,
     altitudeProfile: extra.altitudeProfile ?? [],
+    telemetry: extra.telemetry ?? null,
     preflight: extra.preflight ?? null,
     checklist: extra.checklist ? toFlightChecklist(extra.checklist, ctx) : null,
     canEdit: can(i.role, 'flights.edit'),

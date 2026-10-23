@@ -2482,6 +2482,7 @@ export const longNames = {
           "altitude": 0
         }
       ],
+      "telemetry": null,
       "preflight": {
         "decision": "caution",
         "checks": [

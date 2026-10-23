@@ -1,7 +1,7 @@
 'use client';
 
 import type { FlightDetailScreenProps } from '@certa/contract';
-import { Fingerprint, Pencil, Route, Trash2 } from 'lucide-react';
+import { Activity, Fingerprint, Pencil, Route, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { ChecklistRecord } from '@/components/checklist';
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog } from '@/components/ui/dialog';
 import { Banner, Banners, EmptyState, SkeletonRows } from '@/components/ui/feedback';
+import { LEVEL_COLOR, LevelIcon } from '@/components/ui/status';
 import { PageHeader } from '@/components/ui/text';
 import { Facts, Section, Stat, StatGrid, When } from './_parts';
 
@@ -40,6 +41,49 @@ function TrackPlot({ path }: { path: unknown }) {
       <circle cx={sx} cy={sy} r={6} fill="var(--certa-current)" stroke="var(--certa-surface)" strokeWidth={2} />
       <circle cx={ex} cy={ey} r={6} fill="var(--certa-surface)" stroke="var(--certa-text)" strokeWidth={2.5} />
     </svg>
+  );
+}
+
+/** Metrics read from the aircraft's own log. */
+function TelemetryPanel({ t }: { t: NonNullable<FlightDetailScreenProps['telemetry']> }) {
+  return (
+    <Section title="Flight data" aside={<Activity className="size-4 text-[var(--certa-muted)]" aria-hidden />}>
+      <p className="-mt-1 mb-4 text-[13px] text-[var(--certa-muted)]">
+        {t.source}
+        {t.aircraft ? ` · ${t.aircraft}` : ''}
+      </p>
+      {t.stats.length > 0 && (
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
+          {t.stats.map((s) => (
+            <div key={s.label}>
+              <dt className="text-[12px] text-[var(--certa-muted)]">{s.label}</dt>
+              <dd className="tabular text-[17px] font-semibold">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {t.battery && (
+        <div className="mt-4 flex items-start gap-2.5 rounded-xl bg-[var(--certa-inset)] px-4 py-3 text-[14px]">
+          <span className="mt-0.5" style={{ color: LEVEL_COLOR[t.battery.level] }}><LevelIcon level={t.battery.level} /></span>
+          <span>
+            <span className="font-semibold">Battery</span> {t.battery.summary}
+            {t.battery.notes.length > 0 && <span className="block text-[13px] text-[var(--certa-muted)]">{t.battery.notes.join(' · ')}. Worth checking the pack before its next flight.</span>}
+          </span>
+        </div>
+      )}
+      {t.events.length > 0 && (
+        <ul className="mt-4 space-y-1.5 text-[13.5px]" aria-label="Warnings from the aircraft">
+          {t.events.map((e, i) => (
+            <li key={i} className="flex items-start gap-2">
+              <span className="mt-0.5" style={{ color: LEVEL_COLOR[e.level === 'error' ? 'red' : 'amber'] }}><LevelIcon level={e.level === 'error' ? 'red' : 'amber'} /></span>
+              <span className="tabular w-[5.5rem] shrink-0 text-[var(--certa-muted)]">{e.time}</span>
+              <span>{e.text}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {t.warnings.length > 0 && <p className="mt-3 text-[12.5px] text-[var(--certa-muted)]">{t.warnings.join(' ')}</p>}
+    </Section>
   );
 }
 
@@ -121,6 +165,7 @@ export function FlightDetailScreen(props: FlightDetailScreenProps) {
             />
             {f.notes && <p className="mt-5 rounded-xl bg-[var(--certa-inset)] px-4 py-3 text-[14px] whitespace-pre-wrap">{f.notes}</p>}
           </Section>
+          {props.telemetry && <TelemetryPanel t={props.telemetry} />}
           {props.altitudeProfile.length > 1 && (
             <Section title="Altitude">
               <AltitudeProfile profile={props.altitudeProfile} unit={f.maxAltitude?.unit ?? 'ft'} />

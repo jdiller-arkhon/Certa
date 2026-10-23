@@ -10067,6 +10067,7 @@ export const company = {
           "altitude": 0
         }
       ],
+      "telemetry": null,
       "preflight": {
         "decision": "no_go",
         "checks": [

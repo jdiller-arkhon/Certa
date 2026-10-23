@@ -10,6 +10,7 @@
  */
 import type { Airframe, ReadinessLevel, Role } from '../domain/enums.js';
 import type { GoNoGoResult } from '../fleet/fleet.js';
+import type { TelemetryViewModel } from '../telemetry/view.js';
 import type { GettingStartedViewModel } from './help.js';
 import type { InspectorPacket } from '../fleet/packet.js';
 import type {
@@ -626,6 +627,8 @@ export interface FlightDetailScreenProps extends AsyncState {
   /** GeoJSON LineString for the map; null when no path. */
   path: unknown | null;
   altitudeProfile: { t: number; altitude: number }[];
+  /** Metrics from the aircraft's log, for imported flights. */
+  telemetry?: TelemetryViewModel | null;
   /** Pre-flight go / no-go recorded when the flight was logged; null for imports and older records. */
   preflight: GoNoGoResult | null;
   /** The pre-flight checklist signed with the flight; null when none was recorded. */

@@ -10,6 +10,7 @@ import { InspectorPacket } from '../fleet/packet.js';
 import { FlightVerificationResult, VerificationResult } from '../fleet/verify.js';
 import { ACTIONS } from '../domain/permissions.js';
 import { Rule, RuleSource } from '../rules/schema.js';
+import { MAX_TRACK_POINTS, TelemetrySummary, TrackPoint } from '../telemetry/model.js';
 
 export const ErrorResponse = z.object({
   /** Same as error.message, for clients that read only a top-level message. */
@@ -348,9 +349,16 @@ export const CreateFlightRequest = z.object({
     })
     .nullable()
     .optional(),
+  /** Track from an imported flight log: [lon, lat, height above takeoff m, epoch s]. */
+  track: z.array(TrackPoint).min(2).max(MAX_TRACK_POINTS).nullable().optional(),
+  /** Metrics read from the aircraft's log (stored with the flight, shown on its page). */
+  telemetry: TelemetrySummary.nullable().optional(),
+  totalDistanceM: opt(z.number().nonnegative()),
+  /** Set when the flight comes from a log: which reader, what it warned about, and its de-duplication key. */
+  import: z.object({ parser: z.string().min(1).max(40), dedupeKey: z.string().min(1).max(200), warnings: z.array(z.string().max(300)).max(20) }).nullable().optional(),
 });
 export type CreateFlightRequest = z.infer<typeof CreateFlightRequest>;
-export const UpdateFlightRequest = CreateFlightRequest.omit({ id: true, goNoGo: true, checklist: true }).partial();
+export const UpdateFlightRequest = CreateFlightRequest.omit({ id: true, goNoGo: true, checklist: true, track: true, telemetry: true, import: true }).partial();
 export type UpdateFlightRequest = z.infer<typeof UpdateFlightRequest>;
 
 export const FlightListQuery = z.object({
@@ -381,6 +389,13 @@ export const FlightWithGoNoGo = Flight.extend({
   authorization: z.object({ kind: AuthorizationKind, reference: z.string(), title: z.string().nullable() }).nullable().optional(),
 });
 export type FlightWithGoNoGo = z.infer<typeof FlightWithGoNoGo>;
+
+/** An imported flight's track and log metrics, fetched separately to keep flight lists light. */
+export const FlightTrack = z.object({
+  points: z.array(TrackPoint),
+  telemetry: TelemetrySummary.nullable(),
+});
+export type FlightTrack = z.infer<typeof FlightTrack>;
 
 export const FlightListResponse = z.object({
   items: z.array(Flight),

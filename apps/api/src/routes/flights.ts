@@ -1,4 +1,4 @@
-import { api, checklistComplete, goNoGo, Id, newId, withCheck, type GeoPoint } from '@certa/core';
+import { api, checklistComplete, goNoGo, Id, newId, withCheck, type GeoPoint, type TrackPoint } from '@certa/core';
 import {
   aircraft,
   and,
@@ -32,6 +32,9 @@ import { OrgParams } from './orgs.js';
 const FlightParams = OrgParams.extend({ flightId: Id });
 
 const ewkt = (p: GeoPoint | null | undefined) => (p ? sql`ST_GeogFromText(${`SRID=4326;POINT(${p.lon} ${p.lat})`})` : null);
+/** Imported track as a geography line: lon/lat, Z = height above takeoff, M = epoch seconds. Points are schema-validated numbers. */
+const lineZM = (pts: TrackPoint[] | null | undefined) =>
+  pts && pts.length >= 2 ? sql`ST_GeogFromText(${`SRID=4326;LINESTRING ZM(${pts.map(([x, y, z, m]) => `${x} ${y} ${z} ${m}`).join(',')})`})` : null;
 
 const encodeCursor = (takeoffAt: string, id: string) => Buffer.from(`${takeoffAt}|${id}`).toString('base64url');
 function decodeCursor(c: string): { takeoffAt: string; id: string } {
@@ -156,6 +159,26 @@ export const flightRoutes =
       },
     );
 
+    app.get(
+      '/orgs/:orgId/flights/:flightId/track',
+      { schema: { tags: ['flights'], summary: 'Track and log metrics of a flight imported from an aircraft log.', params: FlightParams, response: { 200: api.FlightTrack } } },
+      async (req) => {
+        const oc = await resolveOrg(ctx.pool, req, req.params.orgId);
+        authorize(oc, 'flights.read');
+        return inOrg(ctx.pool, req, oc, async (db) => {
+          const [row] = await db
+            .select({
+              telemetry: flights.telemetry,
+              points: sql<TrackPoint[] | null>`(select json_agg(json_build_array(ST_X(d.geom), ST_Y(d.geom), ST_Z(d.geom), ST_M(d.geom)::bigint) order by d.path) from ST_DumpPoints(${flights.path}::geometry) d)`,
+            })
+            .from(flights)
+            .where(and(eq(flights.id, req.params.flightId), isNull(flights.deletedAt)));
+          if (!row) throw notFound('Flight');
+          return { points: row.points ?? [], telemetry: (row.telemetry as api.FlightTrack['telemetry']) ?? null };
+        });
+      },
+    );
+
     app.post(
       '/orgs/:orgId/flights',
       {
@@ -183,6 +206,11 @@ export const flightRoutes =
             if (existing) return { status: 200 as const, flight: await loadOne(db, b.id) };
           }
           await checkReferences(db, b);
+          // The same log imported twice (or by two people) is one flight.
+          if (b.import) {
+            const [dup] = await db.select({ id: flights.id }).from(flights).where(and(eq(flights.dedupeKey, b.import.dedupeKey), isNull(flights.deletedAt))).limit(1);
+            if (dup) throw conflict('This flight log is already in the logbook');
+          }
           // The stored pre-flight check is the server's, from records on file now; a client can't supply its own.
           const records = goNoGo(await loadFleet(db, oc.orgId), { pilotId: b.pilotInCommandId, aircraftId: b.aircraftId, batteryIds: b.batteries.map((x) => x.batteryId) }, await orgMapContext(db, oc.orgId));
           // Records are recomputed here; conditions at the launch point can't be, so keep the
@@ -198,7 +226,11 @@ export const flightRoutes =
               takeoffAt: b.takeoffAt,
               landingAt: b.landingAt,
               localTimeZone: b.localTimeZone,
-              takeoffPoint: ewkt(b.takeoffPoint) as unknown as string,
+              takeoffPoint: ewkt(b.takeoffPoint ?? b.telemetry?.home) as unknown as string,
+              landingPoint: ewkt(b.telemetry?.landing) as unknown as string,
+              path: lineZM(b.track) as unknown as string,
+              telemetry: b.telemetry ?? null,
+              totalDistanceM: b.totalDistanceM ?? null,
               locationName: b.locationName ?? null,
               durationSeconds: duration,
               maxAltitudeAglM: b.maxAltitudeAglM ?? null,
@@ -209,7 +241,10 @@ export const flightRoutes =
               notes: b.notes ?? null,
               authorizationId: b.authorizationId ?? null,
               missionId: b.missionId ?? null,
-              source: 'manual',
+              source: b.import ? 'import' : 'manual',
+              importParser: b.import?.parser ?? null,
+              importWarnings: b.import?.warnings ?? null,
+              dedupeKey: b.import?.dedupeKey ?? null,
               goNoGo: check,
             });
           } catch (err) {

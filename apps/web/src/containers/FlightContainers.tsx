@@ -3,6 +3,8 @@
 import {
   buildFlightDetail,
   buildFlightList,
+  buildTelemetryView,
+  trackDisplay,
   buildLogFlight,
   displayInstant,
   fleetNames,
@@ -25,7 +27,7 @@ import { CloudUpload } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/feedback';
-import { defaultPreflight, ensureOk, fleetKeys, useAuthorizations, useChecklistTemplates, useMission, useFlight, useFleetMutation, useFlights, type FlightFilter } from '@/data/fleet';
+import { defaultPreflight, ensureOk, fleetKeys, useAuthorizations, useChecklistTemplates, useMission, useFlight, useFlightTrack, useFleetMutation, useFlights, type FlightFilter } from '@/data/fleet';
 import { api } from '@/lib/api';
 import { uuidv7 } from '@/lib/idb';
 import { discardOutboxItem, enqueueFlight, retryRejected, useOutbox, type OutboxItem } from '@/lib/outbox';
@@ -132,10 +134,22 @@ export function FlightDetailContainer({ flightId }: { flightId: string }) {
     flights: true,
     onSuccess: () => router.replace('/flights'),
   });
+  const track = useFlightTrack(f.orgId, flightId, !!q.data && (q.data.hasPath || q.data.source === 'import'));
   if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
   const flight: Flight | null = (q.data as Flight | undefined) ?? (local ? outboxFlight(local) : null);
   const preflight = (q.data?.goNoGo ?? local?.body.goNoGo ?? null) as GoNoGoResult | null;
-  const data = buildFlightDetail(f.bi, flight, { preflight, checklist: q.data?.checklist ?? null, authorization: q.data?.authorization ?? auths.data?.find((a) => a.id === flight?.authorizationId) ?? null });
+  // Imported flights: track and log metrics from the server, or from the device until it syncs.
+  const points = track.data?.points ?? local?.body.track ?? [];
+  const telemetry = track.data?.telemetry ?? local?.body.telemetry ?? null;
+  const shown = trackDisplay(points, f.mapCtx.units);
+  const data = buildFlightDetail(f.bi, flight, {
+    preflight,
+    checklist: q.data?.checklist ?? null,
+    authorization: q.data?.authorization ?? auths.data?.find((a) => a.id === flight?.authorizationId) ?? null,
+    path: shown.path,
+    altitudeProfile: shown.altitudeProfile,
+    telemetry: telemetry ? buildTelemetryView(telemetry, f.mapCtx.units, flight?.localTimeZone ?? f.mapCtx.orgTimeZone) : null,
+  });
   const notFound = q.error instanceof CertaApiError && q.error.status === 404;
   return (
     <FlightDetailScreen

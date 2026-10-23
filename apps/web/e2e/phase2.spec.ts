@@ -499,3 +499,47 @@ test('flight mode: two sorties with a battery swap and a marker become two logge
   await expect(page.getByText('Sortie 1 of 2, logged with flight mode.')).toBeVisible();
   await expect(page.getByText(/Manned aircraft/)).toBeVisible();
 });
+
+test('drone logs: a CSV log links to the aircraft by serial and the flight shows its data', async ({ page }) => {
+  await signUp(page, 'Log Ops');
+  await go(page, 'Aircraft');
+  await page.getByRole('button', { name: 'Add aircraft' }).first().click();
+  await page.waitForLoadState('networkidle');
+  await page.getByLabel('Make').fill('DJI');
+  await page.getByLabel('Model').fill('Mavic 3 Enterprise');
+  await page.getByLabel('Serial number').fill('1581F5FHD23ABC');
+  await page.getByLabel('Nickname').fill('Hawk 2');
+  await page.getByRole('button', { name: 'Add aircraft' }).click();
+  await expect(page.getByRole('heading', { name: 'Hawk 2' })).toBeVisible();
+
+  // A 9-minute flight: climb to 60 m, 400 m out and back, with a wind warning and a tired cell.
+  const t0 = Date.UTC(2026, 9, 20, 16, 0, 0);
+  const lines = ['time(millisecond),datetime(utc),latitude,longitude,height_above_takeoff(feet),speed(mph),battery_percent,voltage(v),voltageCell1,voltageCell2,voltageCell3,voltageCell4,message,aircraft_sn'];
+  for (let s = 0; s <= 600; s += 5) {
+    const h = s < 30 ? 0 : s < 90 ? ((s - 30) / 60) * 60 : s < 510 ? 60 : s < 570 ? 60 - ((s - 510) / 60) * 60 : 0;
+    const leg = s < 90 || s >= 510 ? 0 : s < 300 ? (s - 90) / 210 : 1 - (s - 300) / 210;
+    const v = 4.2 - (s / 600) * 0.6;
+    lines.push([s * 1000, new Date(t0 + s * 1000).toISOString().replace('T', ' ').slice(0, 19), (39.65 + leg * 0.0036).toFixed(7), '-104.85', (h / 0.3048).toFixed(1), (s >= 90 && s < 510 ? 4.26 : 0).toFixed(2), Math.round(98 - s / 10), (v * 4).toFixed(2), v.toFixed(3), v.toFixed(3), v.toFixed(3), (v - 0.15).toFixed(3), s === 300 ? 'Strong wind' : '', '1581F5FHD23ABC'].join(','));
+  }
+  await go(page, 'Flights');
+  await page.goto('flights/import');
+  await page.getByLabel('Flight log files').setInputFiles({ name: 'Oct-20th-2026-Airdata.csv', mimeType: 'text/csv', buffer: Buffer.from(lines.join('\n')) });
+  await expect(page.getByText('Linked by serial')).toBeVisible();
+  await expect(page.getByText('AirData CSV')).toBeVisible();
+  await expect(page.getByText('9m 00s')).toBeVisible();
+  await expect(page.getByText('197 ft', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Import 1 flight' }).click();
+  await expect(page.getByText('1 flight added to the logbook')).toBeVisible();
+
+  // Importing the same log again is caught.
+  await page.getByLabel('Flight log files').setInputFiles({ name: 'again.csv', mimeType: 'text/csv', buffer: Buffer.from(lines.join('\n')) });
+  await expect(page.getByText('This flight looks like it’s already in the logbook.')).toBeVisible();
+
+  await go(page, 'Flights');
+  await page.getByRole('cell', { name: 'Hawk 2' }).first().click();
+  await expect(page.getByRole('heading', { name: 'Flight data' })).toBeVisible();
+  await expect(page.getByText('From the aircraft’s log (AirData CSV)')).toBeVisible();
+  await expect(page.getByText(/lowest cell 3\.4\d V/)).toBeVisible();
+  await expect(page.getByText('Strong wind')).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Flight track' })).toBeVisible();
+});

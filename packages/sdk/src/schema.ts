@@ -3562,6 +3562,55 @@ export interface paths {
                                 note?: string | null;
                             }[];
                         } | null;
+                        track?: [
+                            number,
+                            number,
+                            number,
+                            number
+                        ][] | null;
+                        telemetry?: {
+                            parser: string;
+                            takeoffAt: string;
+                            landingAt: string;
+                            durationSeconds: number;
+                            maxHeightM: number | null;
+                            maxDistanceM: number | null;
+                            totalDistanceM: number | null;
+                            maxSpeedMps: number | null;
+                            home: {
+                                lat: number;
+                                lon: number;
+                            } | null;
+                            landing: {
+                                lat: number;
+                                lon: number;
+                            } | null;
+                            battery: {
+                                startPct: number | null;
+                                endPct: number | null;
+                                startVoltageV: number | null;
+                                minVoltageV: number | null;
+                                minCellV: number | null;
+                                maxCellDeltaV: number | null;
+                            };
+                            aircraftModel: string | null;
+                            aircraftSerial: string | null;
+                            batterySerials: string[];
+                            events: {
+                                at: string;
+                                /** @enum {string} */
+                                level: "warning" | "error";
+                                text: string;
+                            }[];
+                            warnings: string[];
+                            samples: number;
+                        } | null;
+                        totalDistanceM?: number | null;
+                        import?: {
+                            parser: string;
+                            dedupeKey: string;
+                            warnings: string[];
+                        } | null;
                     };
                 };
             };
@@ -4026,6 +4075,7 @@ export interface paths {
                         notes?: string | null;
                         authorizationId?: string | null;
                         missionId?: string | null;
+                        totalDistanceM?: number | null;
                     };
                 };
             };
@@ -4141,6 +4191,89 @@ export interface paths {
                 };
             };
         };
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/flights/{flightId}/track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Track and log metrics of a flight imported from an aircraft log. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    flightId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            points: [
+                                number,
+                                number,
+                                number,
+                                number
+                            ][];
+                            telemetry: {
+                                parser: string;
+                                takeoffAt: string;
+                                landingAt: string;
+                                durationSeconds: number;
+                                maxHeightM: number | null;
+                                maxDistanceM: number | null;
+                                totalDistanceM: number | null;
+                                maxSpeedMps: number | null;
+                                home: {
+                                    lat: number;
+                                    lon: number;
+                                } | null;
+                                landing: {
+                                    lat: number;
+                                    lon: number;
+                                } | null;
+                                battery: {
+                                    startPct: number | null;
+                                    endPct: number | null;
+                                    startVoltageV: number | null;
+                                    minVoltageV: number | null;
+                                    minCellV: number | null;
+                                    maxCellDeltaV: number | null;
+                                };
+                                aircraftModel: string | null;
+                                aircraftSerial: string | null;
+                                batterySerials: string[];
+                                events: {
+                                    at: string;
+                                    /** @enum {string} */
+                                    level: "warning" | "error";
+                                    text: string;
+                                }[];
+                                warnings: string[];
+                                samples: number;
+                            } | null;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/orgs/{orgId}/checklists/templates": {

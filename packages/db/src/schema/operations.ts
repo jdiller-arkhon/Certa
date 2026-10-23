@@ -114,7 +114,7 @@ export const flights = pgTable(
     localTimeZone: text('local_time_zone').notNull(),
     takeoffPoint: geography('takeoff_point', 'Point'),
     landingPoint: geography('landing_point', 'Point'),
-    /** Z = altitude (m, MSL), M = epoch seconds. */
+    /** Track: Z = height above takeoff (m), M = epoch seconds. */
     path: geography('path', 'LineStringZM'),
     locationName: text('location_name'),
     place: jsonb('place'),
@@ -138,6 +138,8 @@ export const flights = pgTable(
     dedupeKey: text('dedupe_key'),
     /** Pre-flight go/no-go result shown to the pilot when the flight was logged. */
     goNoGo: jsonb('go_no_go'),
+    /** Metrics from an imported flight log (see TelemetrySummary in @certa/core). */
+    telemetry: jsonb('telemetry'),
   },
   (t) => [
     index('flights_org_takeoff_idx').on(t.orgId, t.takeoffAt),

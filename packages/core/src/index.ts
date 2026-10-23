@@ -26,3 +26,4 @@ export * from './platform/console.js';
 export * from './viewmodels/platform.js';
 export * from './viewmodels/help.js';
 export * from './fleet/flight-mode.js';
+export * from './telemetry/index.js';

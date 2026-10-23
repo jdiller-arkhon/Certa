@@ -83,6 +83,19 @@ export function useFlight(orgId: string, flightId: string) {
   });
 }
 
+/** Track and log metrics of an imported flight (only fetched when the flight has them). */
+export function useFlightTrack(orgId: string, flightId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...fleetKeys.flight(orgId, flightId), 'track'],
+    enabled: enabled && !!flightId,
+    staleTime: Infinity,
+    queryFn: () =>
+      networkFirst(`flight-track:${orgId}:${flightId}`, async () =>
+        unwrap(await api.GET('/api/v1/orgs/{orgId}/flights/{flightId}/track', { params: { path: { orgId, flightId } } })),
+      ) as Promise<apiTypes.FlightTrack>,
+  });
+}
+
 export function useMaintenanceEvents(orgId: string) {
   return useQuery({
     queryKey: fleetKeys.maintenanceEvents(orgId),

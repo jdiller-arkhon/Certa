@@ -938,6 +938,7 @@ export const empty = {
       "flight": null,
       "path": null,
       "altitudeProfile": [],
+      "telemetry": null,
       "preflight": null,
       "checklist": null,
       "canEdit": true

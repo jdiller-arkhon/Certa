@@ -1,4 +1,4 @@
-import { ImportComingSoon } from '@/containers/ImportComingSoon';
+import { FlightImportContainer } from '@/containers/FlightImportContainer';
 export default function Page() {
-  return <ImportComingSoon />;
+  return <FlightImportContainer />;
 }

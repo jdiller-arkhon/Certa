@@ -15677,6 +15677,7 @@ export const large = {
           "altitude": 0
         }
       ],
+      "telemetry": null,
       "preflight": {
         "decision": "caution",
         "checks": [
