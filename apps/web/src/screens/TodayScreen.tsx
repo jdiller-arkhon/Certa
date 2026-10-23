@@ -14,6 +14,7 @@ import { Banner, Banners, Skeleton, SkeletonRows } from '@/components/ui/feedbac
 import { LEVEL_COLOR, LevelDot, LevelIcon, StatusBadge } from '@/components/ui/status';
 import { Eyebrow, Label } from '@/components/ui/text';
 import { Panel, PanelRow, StatStrip } from '@/components/ui/panel';
+import { GettingStarted } from '@/components/getting-started';
 import { ActionQueue } from './_actions';
 
 const LEVELS: { level: ReadinessLevel; label: string }[] = [
@@ -119,24 +120,26 @@ export function TodayScreen(props: ReadinessDashboardScreenProps) {
             <Rise delay={0.12}>
               <p className="max-w-lg text-[17px] leading-relaxed text-[var(--certa-muted)]">{props.empty.body}</p>
             </Rise>
-            <Rise delay={0.18} className="flex flex-wrap gap-3">
-              <Button size="lg" arrow onClick={props.onAddAircraft} icon={<Plane className="size-4" aria-hidden />}>
-                {props.empty.actionLabel ?? 'Add aircraft'}
-              </Button>
-              <Button size="lg" variant="secondary" onClick={props.onAddPilot} icon={<Users className="size-4" aria-hidden />}>
-                Add pilot
-              </Button>
-            </Rise>
-            <Rise delay={0.24}>
-              <ol className="mt-4 grid gap-3 sm:grid-cols-3">
-                {['Add your certificate', 'Add an aircraft', 'Log a flight'].map((t, i) => (
-                  <li key={t} className="rounded-2xl border border-[var(--certa-border)] bg-[var(--certa-surface)] p-4">
-                    <span className="tabular text-[11px] font-semibold tracking-[0.14em] text-[var(--certa-muted)]">STEP {i + 1}</span>
-                    <span className="mt-1 block text-sm font-semibold">{t}</span>
-                  </li>
-                ))}
-              </ol>
-            </Rise>
+            {props.gettingStarted ? (
+              <Rise delay={0.18}>
+                <GettingStarted model={props.gettingStarted} onOpen={props.onOpen} />
+                <p className="mt-3 text-[13.5px] text-[var(--certa-muted)]">
+                  New to drone rules?{' '}
+                  <button type="button" onClick={() => props.onOpen('/help')} className="font-semibold text-[var(--certa-text)] underline underline-offset-4">
+                    See how Certa works
+                  </button>
+                </p>
+              </Rise>
+            ) : (
+              <Rise delay={0.18} className="flex flex-wrap gap-3">
+                <Button size="lg" arrow onClick={props.onAddAircraft} icon={<Plane className="size-4" aria-hidden />}>
+                  {props.empty.actionLabel ?? 'Add aircraft'}
+                </Button>
+                <Button size="lg" variant="secondary" onClick={props.onAddPilot} icon={<Users className="size-4" aria-hidden />}>
+                  Add pilot
+                </Button>
+              </Rise>
+            )}
           </div>
           <div className="hidden md:block">
             <TriangleHero className="mx-auto w-full max-w-[440px]" />
@@ -154,6 +157,7 @@ export function TodayScreen(props: ReadinessDashboardScreenProps) {
   return (
     <div className="space-y-8">
       <Banners>{props.error && <Banner key="e" tone="error">{props.error}</Banner>}</Banners>
+      {props.gettingStarted && <GettingStarted model={props.gettingStarted} onOpen={props.onOpen} onDismiss={props.onDismissGettingStarted} compact />}
 
       <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
         <div className="space-y-6 lg:pt-4">

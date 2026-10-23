@@ -36,3 +36,4 @@ export { PlatformComplianceScreen } from './PlatformComplianceScreen';
 export { PlatformReportsScreen } from './PlatformReportsScreen';
 export { PlatformAnnouncementsScreen } from './PlatformAnnouncementsScreen';
 export { PlatformActivityScreen } from './PlatformActivityScreen';
+export { HelpScreen } from './HelpScreen';

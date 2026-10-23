@@ -540,7 +540,7 @@ function toScenario(w: World): FixtureScenario {
     shell: shellFor('/'),
     fieldShell: shellFor('/', w.fieldSync),
     screens: {
-      readinessDashboard: buildReadinessDashboard(bi),
+      readinessDashboard: buildReadinessDashboard(bi, { ownPilotId: p0?.id ?? null }),
       pilotList: buildPilotList(bi),
       pilotDetail: p0 ? buildPilotDetail(bi, p0.id, w.flights) : { ...buildPilotDetail(bi, '', []), pilot: null },
       aircraftList: buildAircraftList(bi),

@@ -12,6 +12,7 @@ import {
   BatteryListScreen,
   FlightDetailScreen,
   FlightListScreen,
+  HelpScreen,
   IntegrationsScreen,
   InsuranceScreen,
   ChecklistsAdminScreen,
@@ -56,6 +57,18 @@ function stateProps(state: State): AsyncState | null {
 }
 
 /** First-load states have no data; partial keeps the data. */
+/** A pilot who has added their certificate and nothing else yet. */
+const FIRST_RUN = {
+  doneCount: 1,
+  complete: false,
+  steps: [
+    { id: 'certificate' as const, title: 'Add your pilot certificate', body: 'Your FAA Remote Pilot Certificate (Part 107). The issue date is on the card.', done: true, href: '/pilots', action: 'Add certificate' },
+    { id: 'recurrent' as const, title: 'Add your latest training', body: 'The date you last passed the FAA knowledge test or online recurrent course. Certa works out when it’s due again.', done: false, href: '/pilots', action: 'Add training' },
+    { id: 'aircraft' as const, title: 'Add your drone', body: 'Make, model, serial number and its FAA registration number. Takes a minute.', done: false, href: '/aircraft/new', action: 'Add drone' },
+    { id: 'flight' as const, title: 'Log your first flight', body: 'Certa runs a quick go / no-go check and saves the flight to your logbook. Works offline in the field.', done: false, href: '/flights/new', action: 'Log a flight' },
+  ],
+};
+
 function withState<T extends object>(data: T, state: State, emptyFn: (d: T) => T): T {
   const s = stateProps(state);
   if (!s) return data;
@@ -106,9 +119,11 @@ export const SCREENS: PreviewScreen[] = [
     group: 'App',
     route: '/',
     shell: true,
-    render: ({ scenario, state }) => {
-      const d = withState(scenarios[scenario]!.screens.readinessDashboard, state, (x) => ({ ...x, pilots: [], aircraft: [], upcoming: [] }));
-      return <TodayScreen {...d} onAddPilot={noop} onAddAircraft={noop} onLogFlight={noop} onOpen={noop} onFix={noop} />;
+    variants: ['default', 'first-run'],
+    render: ({ scenario, state, variant }) => {
+      const base = withState(scenarios[scenario]!.screens.readinessDashboard, state, (x) => ({ ...x, pilots: [], aircraft: [], upcoming: [] }));
+      const d = variant === 'first-run' ? { ...base, gettingStarted: FIRST_RUN } : base;
+      return <TodayScreen {...d} onAddPilot={noop} onAddAircraft={noop} onLogFlight={noop} onOpen={noop} onFix={noop} onDismissGettingStarted={noop} />;
     },
   },
   {
@@ -337,8 +352,16 @@ export const SCREENS: PreviewScreen[] = [
               },
             }
           : base;
-      return <LogFlightScreen {...d} onCheckConditions={noop} onSelectionChange={noop} onSameAsLast={noop} onSubmit={noop} onCancel={noop} />;
+      return <LogFlightScreen {...d} onCheckConditions={noop} onSelectionChange={noop} onSameAsLast={noop} onSubmit={noop} onCancel={noop} onOpen={noop} />;
     },
+  },
+  {
+    id: 'help',
+    title: 'Help and guide',
+    group: 'App',
+    route: '/help',
+    shell: true,
+    render: () => <HelpScreen onOpen={noop} />,
   },
   {
     id: 'sync-conflicts',

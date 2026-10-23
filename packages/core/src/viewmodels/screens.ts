@@ -10,6 +10,7 @@
  */
 import type { Airframe, ReadinessLevel, Role } from '../domain/enums.js';
 import type { GoNoGoResult } from '../fleet/fleet.js';
+import type { GettingStartedViewModel } from './help.js';
 import type { InspectorPacket } from '../fleet/packet.js';
 import type {
   AppShellCallbacks,
@@ -292,11 +293,14 @@ export interface ReadinessDashboardScreenProps extends AsyncState {
   activity: { last7: number; last30: number; lastFlight: { label: string; when: DateDisplay; href: string } | null };
   canFix: boolean;
   empty: EmptyState;
+  /** First-run checklist for the signed-in pilot; null once done, dismissed, or for non-pilots. */
+  gettingStarted: GettingStartedViewModel | null;
   onAddPilot: () => void;
   onAddAircraft: () => void;
   onLogFlight: () => void;
   onOpen: (href: string) => void;
   onFix: (input: ActionFixInput) => void;
+  onDismissGettingStarted: () => void;
 }
 
 export interface PilotRowViewModel {
@@ -706,7 +710,8 @@ export interface LogFlightScreenProps extends AsyncState {
     /** Ticked items; an incomplete checklist is stored as incomplete, never blocks logging. */
     checklist: { templateId: string; templateVersion: number; responses: { itemId: string; checked: boolean }[] } | null;
   }) => void;
-  onCancel: () => void;
+  onCancel: () => void;  /** Opens another screen (fixing a warning, adding the first aircraft); the form's input is discarded. */
+  onOpen?: (href: string) => void;
 }
 
 export interface ChecklistViewModel {

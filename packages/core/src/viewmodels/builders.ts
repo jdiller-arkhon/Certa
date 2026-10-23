@@ -5,6 +5,7 @@
  * container adds the callbacks.
  */
 import { can } from '../domain/permissions.js';
+import { buildGettingStarted } from './help.js';
 import type { ChecklistTemplate, Flight, MaintenanceEvent, WeatherSnapshot } from '../domain/entities.js';
 import type { AuthorizationRecord, FlightChecklist, MissionRecord } from '../api/schemas.js';
 import { missionReadiness } from '../fleet/mission.js';
@@ -92,7 +93,7 @@ export const OVERALL_LABEL = {
   red: 'Some pilots or aircraft are not legal to fly',
 } as const;
 
-export function buildReadinessDashboard(i: BuildInput): ScreenData<ReadinessDashboardScreenProps> {
+export function buildReadinessDashboard(i: BuildInput, opts: { ownPilotId?: string | null } = {}): ScreenData<ReadinessDashboardScreenProps> {
   const r = readinessOf(i);
   const { snapshot: s, ctx } = i;
   const n = fleetNames(s);
@@ -126,7 +127,13 @@ export function buildReadinessDashboard(i: BuildInput): ScreenData<ReadinessDash
         : null,
     },
     canFix: canFix(i.role),
-    empty: empty('Add your first pilot and aircraft', 'Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.', 'Add aircraft'),
+    empty: opts.ownPilotId
+      ? empty('Let’s get you ready to fly', 'Certa keeps your drone records in one place and tells you, before every flight, whether you and your drone are good to go. Four quick steps to set up.', 'Add your drone')
+      : empty('Add your first pilot and aircraft', 'Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.', 'Add aircraft'),
+    gettingStarted: (() => {
+      const g = buildGettingStarted(s, opts.ownPilotId ?? null);
+      return g && !g.complete ? g : null;
+    })(),
   };
 }
 

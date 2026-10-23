@@ -485,6 +485,7 @@ export function buildCommands(role: Role, platformAdmin = false): CommandItem[] 
     ...actions.filter((a) => can(role, a.requires)).map(({ requires: _r, ...c }) => c),
     ...NAV.filter((n) => can(role, n.requires)).map((n) => ({ id: `go-${n.id}`, label: n.label, href: n.href, section: 'Go to' as const, shortcut: GOTO_KEYS[n.id] ?? null })),
     ...(platformAdmin ? PLATFORM_NAV.map((n) => ({ id: `go-${n.id}`, label: `Arkhon: ${n.label}`, href: n.href, section: 'Go to' as const, shortcut: null })) : []),
+    { id: 'go-help', label: 'Help and guide', href: '/help', section: 'Go to', shortcut: 'G H' },
   ];
 }
 

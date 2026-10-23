@@ -3,7 +3,7 @@
 import { buildReadinessDashboard, type ActionFixInput } from '@certa/core';
 import { unwrap } from '@certa/sdk';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { messageOf, useFleetMutation } from '@/data/fleet';
 import { api } from '@/lib/api';
 import { TodayScreen } from '@/screens';
@@ -14,6 +14,16 @@ export function TodayContainer() {
   const router = useRouter();
   const [fixing, setFixing] = useState<string[]>([]);
   const [fixError, setFixError] = useState<string | null>(null);
+  // Hiding the checklist is remembered per organization on this device.
+  const hideKey = `certa.gettingStarted.hidden.${f.orgId}`;
+  const [hidden, setHidden] = useState(true);
+  useEffect(() => {
+    try {
+      setHidden(localStorage.getItem(hideKey) === '1');
+    } catch {
+      setHidden(false);
+    }
+  }, [hideKey]);
   const orgId = f.orgId;
   const path = { orgId };
 
@@ -45,7 +55,7 @@ export function TodayContainer() {
   );
 
   if (!f.bi) return <FleetPending error={f.loadError} onRetry={() => f.fleet.refetch()} />;
-  const data = buildReadinessDashboard(f.bi);
+  const data = buildReadinessDashboard(f.bi, { ownPilotId: f.myPilotId });
   return (
     <TodayScreen
       {...data}
@@ -54,6 +64,14 @@ export function TodayContainer() {
       onAddPilot={() => router.push('/pilots/new')}
       onAddAircraft={() => router.push('/aircraft/new')}
       onLogFlight={() => router.push('/flights/new')}
+      // The first-run screen always shows the steps; later the card can be hidden.
+      gettingStarted={hidden && (data.pilots.length || data.aircraft.length) ? null : data.gettingStarted}
+      onDismissGettingStarted={() => {
+        setHidden(true);
+        try {
+          localStorage.setItem(hideKey, '1');
+        } catch {}
+      }}
       onOpen={(href) => router.push(href)}
       onFix={(input) => {
         if (input.fix.kind === 'open') return;

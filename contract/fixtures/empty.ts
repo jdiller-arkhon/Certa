@@ -351,6 +351,13 @@ export const empty = {
         "href": "/settings/organization",
         "section": "Go to",
         "shortcut": "G S"
+      },
+      {
+        "id": "go-help",
+        "label": "Help and guide",
+        "href": "/help",
+        "section": "Go to",
+        "shortcut": "G H"
       }
     ],
     "search": {
@@ -710,6 +717,13 @@ export const empty = {
         "href": "/settings/organization",
         "section": "Go to",
         "shortcut": "G S"
+      },
+      {
+        "id": "go-help",
+        "label": "Help and guide",
+        "href": "/help",
+        "section": "Go to",
+        "shortcut": "G H"
       }
     ],
     "search": {
@@ -752,7 +766,8 @@ export const empty = {
         "title": "Add your first pilot and aircraft",
         "body": "Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.",
         "actionLabel": "Add aircraft"
-      }
+      },
+      "gettingStarted": null
     },
     "pilotList": {
       "loading": false,

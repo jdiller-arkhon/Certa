@@ -398,3 +398,32 @@ test('Argus mission flights count toward flight time, then become flights when t
   await expect(page.getByRole('button', { name: 'Pick the drone for Argus job #1042' })).toHaveCount(0);
   await expect(page.getByText('Kestrel · Grand Junction, CO')).toBeVisible();
 });
+
+test('first run: getting started ticks off, help explains the jargon', async ({ page }) => {
+  await signUp(page, 'First Flight Co');
+
+  // A new pilot gets the checklist on Today, with the first open step highlighted.
+  const checklist = page.getByRole('region', { name: 'Getting started' });
+  await expect(checklist).toContainText('0 of 4 done');
+  await checklist.getByRole('button', { name: /Add your drone/ }).click();
+  await page.waitForLoadState('networkidle');
+  await page.getByLabel('Make').fill('DJI');
+  await page.getByLabel('Model').fill('Mini 4 Pro');
+  await page.getByLabel('Serial number').fill('1581F6Z0001');
+  await page.getByRole('button', { name: 'Add aircraft' }).click();
+  await expect(page.getByRole('heading', { name: /Mini 4 Pro/ })).toBeVisible();
+  await go(page, 'Today');
+  await expect(page.getByRole('region', { name: 'Getting started' })).toContainText('1 of 4 done');
+
+  // Jargon on Log a flight explains itself.
+  await page.goto('flights/new');
+  await page.getByRole('button', { name: 'Pilot in command' }).click();
+  await expect(page.getByRole('tooltip')).toContainText('responsible for the flight');
+
+  // Help is in the account menu, and the glossary is searchable.
+  await page.getByRole('button', { name: 'Account menu' }).click();
+  await page.getByRole('menuitem', { name: 'Help and guide' }).click();
+  await expect(page.getByRole('heading', { name: 'How Certa works' })).toBeVisible();
+  await page.getByLabel('Search the glossary').fill('laanc');
+  await expect(page.locator('dt')).toHaveText(['Controlled airspace', 'LAANC']);
+});

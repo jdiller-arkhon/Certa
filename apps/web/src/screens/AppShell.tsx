@@ -19,6 +19,7 @@ import {
   Ellipsis,
   History,
   KeyRound,
+  LifeBuoy,
   LogOut,
   MessageSquare,
   MonitorDown,
@@ -238,6 +239,15 @@ function UserMenu(props: AppShellProps & { side?: 'top' | 'bottom'; align?: 'sta
             }}
           >
             Connect Discord
+          </MenuItem>
+          <MenuItem
+            icon={<LifeBuoy aria-hidden className="size-4" />}
+            onSelect={() => {
+              close();
+              props.onNavigate('/help');
+            }}
+          >
+            Help and guide
           </MenuItem>
           <MenuItem
             icon={<MonitorDown aria-hidden className="size-4" />}

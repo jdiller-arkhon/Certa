@@ -1,13 +1,14 @@
 'use client';
 
 import type { LogFlightScreenProps } from '@certa/contract';
-import { History, MapPin } from 'lucide-react';
+import { ArrowRight, History, MapPin, Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/components/cn';
 import { ChecklistRunner } from '@/components/checklist';
 import { ConditionsPanel } from '@/components/conditions';
 import { GoNoGoPanel } from '@/components/go-no-go';
+import { Term } from '@/components/term';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Banner, Banners } from '@/components/ui/feedback';
@@ -113,7 +114,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
   const crew = (
     <>
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Pilot in command" error={props.fieldErrors.pilotId}>
+        <Field label={<Term id="pic">Pilot in command</Term>} error={props.fieldErrors.pilotId}>
           {(a) => (
             <Select {...a} required value={pilotId} onChange={(e) => setPilotId(e.target.value)}>
               {props.pilotOptions.map((o) => (
@@ -141,6 +142,14 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
           )}
         </Field>
       </div>
+      {!props.aircraftOptions.length && props.onOpen && (
+        <div className="-mt-2 flex flex-col gap-3 rounded-2xl border border-dashed border-[var(--certa-border)] p-4 sm:flex-row sm:items-center">
+          <p className="flex-1 text-[14px] text-[var(--certa-muted)]">Add your drone first: make, model and serial number. It takes a minute and Certa remembers it for every flight.</p>
+          <Button variant="secondary" size="sm" icon={<Plus className="size-4" aria-hidden />} onClick={() => props.onOpen?.('/aircraft/new')}>
+            Add your drone
+          </Button>
+        </div>
+      )}
 
       {props.batteryOptions.length > 0 && (
         <fieldset>
@@ -208,7 +217,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
   const details = (
     <>
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Operation">
+        <Field label="Type of flight">
           {(a) => (
             <Select {...a} value={operationType} onChange={(e) => setOperationType(e.target.value)}>
               {props.operationTypeOptions.map((o) => (
@@ -219,12 +228,12 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
             </Select>
           )}
         </Field>
-        <Field label="Max altitude" hint="Above ground level, optional" error={props.fieldErrors.maxAltitudeAglM}>
+        <Field label="Max altitude" hint={<>Highest point, measured from the ground below (<Term id="agl">AGL</Term>). Optional.</>} error={props.fieldErrors.maxAltitudeAglM}>
           {(a) => <Input {...a} inputMode="numeric" suffix={props.altitudeUnitLabel} value={altitude} onChange={(e) => setAltitude(e.target.value)} />}
         </Field>
       </div>
       {props.authorizationOptions.length > 0 && (
-        <Field label="Authorization" hint="LAANC approval, waiver or COA this flight operates under">
+        <Field label="Authorization" hint={<>The <Term id="laanc">LAANC</Term> approval or <Term id="waiver">waiver</Term> this flight uses, if any. Most flights need none.</>}>
           {(a) => (
             <Select {...a} value={authorizationId} onChange={(e) => setAuthorizationId(e.target.value)}>
               <option value="">None</option>
@@ -245,8 +254,35 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
       {missingRequired} required checklist {missingRequired === 1 ? 'item isn’t' : 'items aren’t'} ticked. You can still log; the flight records the checklist as incomplete.
     </p>
   );
+  const fixable = props.onOpen ? props.warnings.filter((w) => w.href && w.level !== 'green') : [];
+  const fixes = fixable.length > 0 && (
+    <Card className="p-4">
+      <Label>Fix before you fly</Label>
+      <ul className="mt-2 space-y-1">
+        {fixable.map((w) => (
+          <li key={`${w.text}:${w.href}`}>
+            <button type="button" onClick={() => props.onOpen?.(w.href!)} className="group flex w-full items-center gap-2 rounded-lg py-1 text-left text-[14px] hover:underline">
+              <span style={{ color: LEVEL_COLOR[w.level] }}>
+                <LevelIcon level={w.level} />
+              </span>
+              <span className="flex-1">{w.text}</span>
+              <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-[var(--certa-muted)] group-hover:text-[var(--certa-text)]">
+                Fix it <ArrowRight className="size-3.5" aria-hidden />
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[12.5px] text-[var(--certa-muted)]">Opens the record. Anything you’ve typed here isn’t kept.</p>
+    </Card>
+  );
   const preflight = props.preflight ? (
-    <GoNoGoPanel result={props.preflight} />
+    <>
+      <GoNoGoPanel result={props.preflight} />
+      {fixes}
+    </>
+  ) : fixes ? (
+    fixes
   ) : (
     <Card className="p-5 text-[14px] text-[var(--certa-muted)]">
       <Label>Pre-flight check</Label>
@@ -426,6 +462,7 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
               <Button type="submit" size="lg" arrow loading={props.saving} disabled={!aircraftId || !mins}>
                 Log flight
               </Button>
+              {(!aircraftId || !mins) && <p className="text-center text-[13px] text-[var(--certa-muted)]">{!aircraftId ? 'Choose an aircraft to log the flight.' : 'Enter how many minutes you flew.'}</p>}
               <Button variant="ghost" onClick={props.onCancel}>
                 Cancel
               </Button>

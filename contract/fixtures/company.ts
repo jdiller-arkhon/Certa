@@ -351,6 +351,13 @@ export const company = {
         "href": "/settings/organization",
         "section": "Go to",
         "shortcut": "G S"
+      },
+      {
+        "id": "go-help",
+        "label": "Help and guide",
+        "href": "/help",
+        "section": "Go to",
+        "shortcut": "G H"
       }
     ],
     "search": {
@@ -710,6 +717,13 @@ export const company = {
         "href": "/settings/organization",
         "section": "Go to",
         "shortcut": "G S"
+      },
+      {
+        "id": "go-help",
+        "label": "Help and guide",
+        "href": "/help",
+        "section": "Go to",
+        "shortcut": "G H"
       }
     ],
     "search": {
@@ -1706,10 +1720,11 @@ export const company = {
       },
       "canFix": true,
       "empty": {
-        "title": "Add your first pilot and aircraft",
-        "body": "Certa tracks certificates, registrations, and maintenance so you know who and what is legal to fly today.",
-        "actionLabel": "Add aircraft"
-      }
+        "title": "Let’s get you ready to fly",
+        "body": "Certa keeps your drone records in one place and tells you, before every flight, whether you and your drone are good to go. Four quick steps to set up.",
+        "actionLabel": "Add your drone"
+      },
+      "gettingStarted": null
     },
     "pilotList": {
       "loading": false,

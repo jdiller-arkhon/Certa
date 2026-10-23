@@ -100,6 +100,10 @@ export type {
   RecordsScreenProps,
   AnalyticsScreenProps,
   AssistantScreenProps,
+  // help
+  GettingStartedViewModel,
+  GettingStartedStep,
+  GlossaryEntry,
   // Arkhon platform console
   PlatformOverviewScreenProps,
   PlatformKpiVM,
