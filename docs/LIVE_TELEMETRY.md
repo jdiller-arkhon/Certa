@@ -9,6 +9,18 @@ the two external pieces listed under "What's needed to turn it on".
 
 ## How data gets in
 
+Two ways to run the message side, same API underneath:
+
+- **On Cloudflare (production):** the `LiveRelay` Durable Object in `infra/cloudflare` speaks MQTT
+  3.1.1 over WebSocket at `wss://arkhonindustries.com/certa/live/mqtt`. One object per controller
+  connection; it checks the credential (`/live/mqtt/auth`) and forwards messages in ~1 s batches
+  to `POST /api/v1/live/relay`, which returns the replies (e.g. `status_reply`). The API container
+  wakes on demand, so nothing has to stay running between flights. After a controller disconnects,
+  an alarm asks the API to close flights that went silent (`/live/relay/sweep`). No EMQX, no extra
+  server, no new DNS. The MQTT session code is `infra/cloudflare/src/mqtt-relay.ts`, tested end to
+  end in `apps/api/test/live-relay.test.ts`.
+- **Self-hosted (Docker Compose):** EMQX plus the worker's MQTT bridge, as drawn below.
+
 ```
 DJI Pilot 2 / DJI Dock ──MQTT──▶ message server (EMQX) ◀──MQTT── Certa worker (live bridge)
                                    │  auth / acl hooks                     │
@@ -65,14 +77,15 @@ Expose MQTT over TLS (8883) and/or WSS (8084) for controllers; keep 1883 private
 
 ## What's needed to turn it on
 
-1. **DJI developer registration** (developer.dji.com): a Cloud API app for Arkhon gives
-   `DJI_APP_ID`, `DJI_APP_KEY`, `DJI_APP_LICENSE`.
-2. **A message-server host** reachable by controllers over MQTT/TLS or WSS. Cloudflare Containers
-   only serve HTTP, so EMQX likely needs its own small VM (or EMQX Cloud). Set
-   `LIVE_MQTT_URL`, `LIVE_MQTT_PUBLIC_URL`, `LIVE_MQTT_PASSWORD`, `LIVE_HOOK_SECRET`.
+1. **DJI developer registration** (developer.dji.com): done, a Cloud API app "Certa" exists. Its
+   `DJI_APP_ID`, `DJI_APP_KEY`, `DJI_APP_LICENSE` go in as Worker secrets.
+2. **On Cloudflare:** secrets `LIVE_HOOK_SECRET` (`openssl rand -base64 48`) and the three DJI
+   values; `LIVE_MQTT_PUBLIC_URL` is already a var in `wrangler.jsonc`. Self-hosted instead: EMQX
+   and `LIVE_MQTT_URL`, `LIVE_MQTT_PUBLIC_URL`, `LIVE_MQTT_PASSWORD`, `LIVE_HOOK_SECRET`.
 3. **An on-device test** with a real Pilot 2 controller. The JSBridge calls and OSD field names
    follow DJI's Cloud API documentation and are covered by a simulated controller in
-   `apps/api/test/live-bridge.test.ts`, but have not yet run against real hardware.
+   `apps/api/test/live-bridge.test.ts`, but have not yet run against real hardware. Pilot 2 is reported to work over `wss://` (and to
+   have trouble with `ssl://`), which is why the Cloudflare relay uses WebSocket only.
 
 Without these, the Live page still works for API-key bridges and shows DJI linking as "not
 switched on".

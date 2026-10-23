@@ -11,6 +11,43 @@ import { LiveProcessor } from './live.js';
 
 interface Logger { info: (o: object, m?: string) => void; warn: (o: object, m?: string) => void; error: (o: object, m?: string) => void }
 
+export interface DjiReply {
+  topic: string;
+  payload: string;
+}
+
+/**
+ * One message from a DJI gateway: topology updates are answered (DJI requires it, or the
+ * controller keeps resending), health events and aircraft state go to the live processor.
+ * Returns the replies to publish. Shared by the MQTT bridge and the Cloudflare relay.
+ */
+export async function handleDjiMessage(processor: LiveProcessor, topic: string, buf: Buffer | string, now = Date.now()): Promise<DjiReply[]> {
+  const t = parseDjiTopic(topic);
+  if (!t || buf.length > 256 * 1024) return [];
+  let payload: unknown;
+  try {
+    payload = JSON.parse(buf.toString());
+  } catch {
+    return [];
+  }
+  if (t.kind === 'status') {
+    const topo = djiTopology(payload);
+    if (topo) await processor.serial(t.sn, () => processor.topology(t.sn, topo.aircraft));
+    return [{ topic: `sys/product/${t.sn}/status_reply`, payload: JSON.stringify(djiStatusReply(payload, now)) }];
+  }
+  if (t.kind === 'events') {
+    await processor.health(t.sn, djiHealthEvents(payload, now));
+    return [];
+  }
+  if (t.kind === 'osd') {
+    const frame = djiOsdToFrame(t.sn, payload, now);
+    if (!frame) return [];
+    const route = await processor.route(t.sn);
+    if (route?.kind === 'aircraft') await processor.ingest(route.orgId, frame, { gatewaySn: route.gatewaySn });
+  }
+  return [];
+}
+
 export const BRIDGE_TOPICS = ['sys/product/+/status', 'thing/product/+/osd', 'thing/product/+/events'];
 
 export function startLiveBridge(config: Config, pool: pg.Pool, log: Logger) {
@@ -33,33 +70,7 @@ export function startLiveBridge(config: Config, pool: pg.Pool, log: Logger) {
   });
 
   async function handle(topic: string, buf: Buffer) {
-    const t = parseDjiTopic(topic);
-    if (!t || buf.length > 256 * 1024) return;
-    let payload: unknown;
-    try {
-      payload = JSON.parse(buf.toString('utf8'));
-    } catch {
-      return;
-    }
-    const now = Date.now();
-    if (t.kind === 'status') {
-      // DJI expects every topology update answered, or the controller keeps resending it.
-      client.publish(`sys/product/${t.sn}/status_reply`, JSON.stringify(djiStatusReply(payload, now)), { qos: 1 });
-      const topo = djiTopology(payload);
-      if (topo) await processor.serial(t.sn, () => processor.topology(t.sn, topo.aircraft));
-      return;
-    }
-    if (t.kind === 'events') {
-      await processor.health(t.sn, djiHealthEvents(payload, now));
-      return;
-    }
-    if (t.kind === 'osd') {
-      const frame = djiOsdToFrame(t.sn, payload, now);
-      if (!frame) return;
-      const route = await processor.route(t.sn);
-      if (!route || route.kind !== 'aircraft') return;
-      await processor.ingest(route.orgId, frame, { gatewaySn: route.gatewaySn });
-    }
+    for (const r of await handleDjiMessage(processor, topic, buf)) client.publish(r.topic, r.payload, { qos: 1 });
   }
 
   const sweep = setInterval(() => void processor.sweep().catch((err) => log.error({ err }, 'live sweep failed')), 30_000);

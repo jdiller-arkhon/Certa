@@ -982,4 +982,16 @@ export const LiveFramesRequest = z.object({ model: z.string().max(120).nullable(
 
 export const MqttAuthRequest = z.object({ clientid: z.string().max(200).optional(), username: z.string().max(200), password: z.string().max(400) });
 export const MqttAclRequest = z.object({ clientid: z.string().max(200).optional(), username: z.string().max(200), topic: z.string().max(400), action: z.enum(['publish', 'subscribe', 'all']).default('all') });
+/** Messages from one controller connected to the Cloudflare relay, in the order received. */
+export const LiveRelayRequest = z.object({
+  username: z.string().max(200),
+  messages: z.array(z.object({ topic: z.string().max(400), payload: z.string().max(256 * 1024) })).max(200),
+});
+export const LiveRelayResponse = z.object({
+  /** Replies for the controller (e.g. status_reply). */
+  publish: z.array(z.object({ topic: z.string(), payload: z.string() })),
+  /** The credential no longer works (unlinked): the relay drops the connection. */
+  disconnect: z.boolean(),
+});
+export type LiveRelayResponse = z.infer<typeof LiveRelayResponse>;
 export const MqttDecision = z.object({ result: z.enum(['allow', 'deny']), is_superuser: z.boolean().optional() });

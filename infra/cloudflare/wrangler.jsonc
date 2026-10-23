@@ -16,7 +16,9 @@
     "ARKHON_AUTH_ORIGIN": "https://arkhonindustries.com",
     // Arkhon Industries' Certa organization: Arkhon admins join it as admins.
     "ARKHON_ORG_ID": "01a14d4c-2cb8-77aa-8af3-e34461923f37",
-    "LOCAL_AUTH": "off"
+    "LOCAL_AUTH": "off",
+    // DJI Pilot 2 connects here; the LiveRelay object below answers (docs/LIVE_TELEMETRY.md).
+    "LIVE_MQTT_PUBLIC_URL": "wss://arkhonindustries.com/certa/live/mqtt"
   },
   // 07:00 in Denver is 13:00 UTC in summer and 14:00 UTC in winter; the second run is a no-op.
   "triggers": { "crons": ["0 13 * * *", "0 14 * * *"] },
@@ -56,12 +58,14 @@
     "bindings": [
       { "name": "CERTA_WEB", "class_name": "CertaWeb" },
       { "name": "CERTA_API", "class_name": "CertaApi" },
-      { "name": "CERTA_JOBS", "class_name": "CertaJobs" }
+      { "name": "CERTA_JOBS", "class_name": "CertaJobs" },
+      { "name": "LIVE_RELAY", "class_name": "LiveRelay" }
     ]
   },
   "exports": {
     "CertaWeb": { "type": "durable-object", "storage": "sqlite" },
     "CertaApi": { "type": "durable-object", "storage": "sqlite" },
-    "CertaJobs": { "type": "durable-object", "storage": "sqlite" }
+    "CertaJobs": { "type": "durable-object", "storage": "sqlite" },
+    "LiveRelay": { "type": "durable-object", "storage": "sqlite" }
   }
 }

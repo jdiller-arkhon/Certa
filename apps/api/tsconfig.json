@@ -1,5 +1,6 @@
 {
   "extends": "@certa/config/tsconfig.base.json",
-  "compilerOptions": { "rootDir": ".", "noEmit": true },
+  // The relay test also checks infra/cloudflare/src/mqtt-relay.ts (the Worker's MQTT session).
+  "compilerOptions": { "rootDir": "../..", "noEmit": true },
   "include": ["src", "test", "scripts"]
 }

@@ -10,6 +10,7 @@ import type { AppContext } from '../app.js';
 import { authorize, inOrg, resolveOrg } from '../lib/context.js';
 import { ApiError, badRequest, conflict, notFound } from '../lib/errors.js';
 import { LiveProcessor } from '../lib/live.js';
+import { handleDjiMessage } from '../lib/live-bridge.js';
 import { iso } from '../lib/mappers.js';
 import { authenticateKey } from './integrations.js';
 import { OrgParams } from './orgs.js';
@@ -203,18 +204,54 @@ export const liveRoutes =
       return { result: c && ok ? ('allow' as const) : ('deny' as const), is_superuser: false };
     });
 
+    /** Whether a controller may publish to (or read) a topic: its own serial, or its aircraft's. */
+    const topicAllowed = async (c: { org_id: string; sn: string }, topic: string) => {
+      const sn = /^(?:thing|sys)\/product\/([A-Za-z0-9]{6,40})\//.exec(topic)?.[1] ?? parseDjiTopic(topic)?.sn;
+      if (!sn) return false;
+      if (sn === c.sn) return true;
+      // The aircraft connected to this controller, in the same organization.
+      const r = await ctx.pool.query<{ org_id: string; kind: string; gateway_sn: string | null }>('SELECT * FROM certa.live_device_org($1)', [sn]);
+      const d = r.rows[0];
+      return !!d && d.org_id === c.org_id && d.kind === 'aircraft' && d.gateway_sn === c.sn;
+    };
+
     app.post('/live/mqtt/acl', { schema: { hide: true, body: api.MqttAclRequest, response: { 200: api.MqttDecision } } }, async (req) => {
       if (!hookOk(req.headers['x-certa-hook-secret'])) throw new ApiError(401, 'unauthorized', 'Unknown caller');
       const { username, topic } = req.body;
       if (isBridge(username)) return { result: 'allow' as const };
       const c = await credential(username);
-      const sn = /^(?:thing|sys)\/product\/([A-Za-z0-9]{6,40})\//.exec(topic)?.[1] ?? parseDjiTopic(topic)?.sn;
-      if (!c || !sn) return { result: 'deny' as const };
-      if (sn === c.sn) return { result: 'allow' as const };
-      // The aircraft connected to this controller, in the same organization.
-      const r = await ctx.pool.query<{ org_id: string; kind: string; gateway_sn: string | null }>('SELECT * FROM certa.live_device_org($1)', [sn]);
-      const d = r.rows[0];
-      return { result: d && d.org_id === c.org_id && d.kind === 'aircraft' && d.gateway_sn === c.sn ? ('allow' as const) : ('deny' as const) };
+      return { result: c && (await topicAllowed(c, topic)) ? ('allow' as const) : ('deny' as const) };
+    });
+
+    // ------------------------------------------------------------ Cloudflare relay
+
+    /**
+     * The Cloudflare relay (a Durable Object speaking MQTT over WebSocket to DJI Pilot 2) has
+     * already checked the password through /live/mqtt/auth; it forwards each batch here.
+     */
+    app.post('/live/relay', { schema: { hide: true, body: api.LiveRelayRequest, response: { 200: api.LiveRelayResponse } } }, async (req) => {
+      if (!hookOk(req.headers['x-certa-hook-secret'])) throw new ApiError(401, 'unauthorized', 'Unknown caller');
+      const c = await credential(req.body.username);
+      if (!c) return { publish: [], disconnect: true };
+      const allowed = new Map<string, boolean>();
+      const publish: api.LiveRelayResponse['publish'] = [];
+      for (const m of req.body.messages) {
+        const sn = parseDjiTopic(m.topic)?.sn;
+        if (!sn) continue;
+        if (!allowed.has(sn)) allowed.set(sn, await topicAllowed(c, m.topic));
+        if (!allowed.get(sn)) continue;
+        // A topology update can link a new aircraft, so its permission is looked up again.
+        if (parseDjiTopic(m.topic)?.kind === 'status') allowed.clear();
+        publish.push(...(await handleDjiMessage(processor, m.topic, m.payload)));
+      }
+      return { publish, disconnect: false };
+    });
+
+    /** After a controller disconnects, the relay asks for flights that went silent to be closed. */
+    app.post('/live/relay/sweep', { schema: { hide: true } }, async (req, reply) => {
+      if (!hookOk(req.headers['x-certa-hook-secret'])) throw new ApiError(401, 'unauthorized', 'Unknown caller');
+      await processor.sweep();
+      return reply.status(204).send();
     });
   };
 

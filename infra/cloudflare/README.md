@@ -95,6 +95,11 @@ npx wrangler secret put ARGUS_INGEST_TOKEN     # 32+ chars; also set it as CERTA
 npx wrangler secret put VAPID_PUBLIC_KEY       # push notifications: npx web-push generate-vapid-keys
 npx wrangler secret put VAPID_PRIVATE_KEY
 npx wrangler secret put VAPID_SUBJECT          # mailto:jdiller@arkhonindustries.com
+# Live telemetry from DJI Pilot 2 (docs/LIVE_TELEMETRY.md):
+npx wrangler secret put LIVE_HOOK_SECRET       # output of: openssl rand -base64 48
+npx wrangler secret put DJI_APP_ID             # from developer.dji.com → Apps → Certa
+npx wrangler secret put DJI_APP_KEY
+npx wrangler secret put DJI_APP_LICENSE        # copy from the page, don't retype it
 
 npx wrangler deploy
 ```

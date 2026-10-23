@@ -39,6 +39,8 @@
     "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.15.5",
     "@types/web-push": "3.6.4",
-    "aedes": "1.1.3"
+    "@types/ws": "8.18.1",
+    "aedes": "1.1.3",
+    "ws": "8.22.0"
   }
 }
