@@ -476,6 +476,7 @@ const GOTO_KEYS: Record<string, string> = { today: 'G T', flights: 'G F', pilots
 export function buildCommands(role: Role, platformAdmin = false): CommandItem[] {
   const actions: (CommandItem & { requires: Action })[] = [
     { id: 'log-flight', label: 'Log a flight', href: '/flights/new', section: 'Actions', shortcut: 'L', requires: 'flights.log' },
+    { id: 'flight-mode', label: 'Start flight mode', href: '/flights/live', section: 'Actions', shortcut: null, requires: 'flights.log' },
     { id: 'add-pilot', label: 'Add a pilot', href: '/pilots/new', section: 'Actions', shortcut: null, requires: 'pilots.manage' },
     { id: 'add-aircraft', label: 'Add an aircraft', href: '/aircraft/new', section: 'Actions', shortcut: null, requires: 'aircraft.manage' },
     { id: 'add-battery', label: 'Add a battery', href: '/batteries?add=1', section: 'Actions', shortcut: null, requires: 'batteries.manage' },

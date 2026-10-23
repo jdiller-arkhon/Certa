@@ -333,6 +333,7 @@ export function LogFlightContainer({ flightId, missionId }: { flightId?: string;
       }}
       onCancel={() => router.back()}
       onOpen={(href) => router.push(href)}
+      onFlightMode={!ex && !base.mission ? () => router.push('/flights/live') : undefined}
       altitudeUnitLabel={lengthUnit}
     />
   );

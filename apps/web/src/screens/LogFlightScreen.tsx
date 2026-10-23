@@ -1,7 +1,7 @@
 'use client';
 
 import type { LogFlightScreenProps } from '@certa/contract';
-import { ArrowRight, History, MapPin, Plus } from 'lucide-react';
+import { ArrowRight, History, MapPin, Plus, Timer } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/components/cn';
@@ -380,10 +380,19 @@ export function LogFlightScreen(props: LogFlightScreenProps) {
         title="Log a flight"
         description={props.mission ? 'Filled in from the mission plan. Change anything that differs; the flight is added to the mission.' : 'Works offline. Flights sync when you’re back in coverage.'}
         actions={
-          props.hasLastFlight && (
-            <Button variant="secondary" icon={<History className="size-4" aria-hidden />} onClick={sameAsLast}>
-              Same as last
-            </Button>
+          (props.hasLastFlight || props.onFlightMode) && (
+            <div className="flex flex-wrap gap-2">
+              {props.onFlightMode && (
+                <Button variant="secondary" icon={<Timer className="size-4" aria-hidden />} onClick={props.onFlightMode}>
+                  Flight mode
+                </Button>
+              )}
+              {props.hasLastFlight && (
+                <Button variant="secondary" icon={<History className="size-4" aria-hidden />} onClick={sameAsLast}>
+                  Same as last
+                </Button>
+              )}
+            </div>
           )
         }
       />

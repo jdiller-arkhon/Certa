@@ -220,6 +220,13 @@ export const expired = {
         "shortcut": "L"
       },
       {
+        "id": "flight-mode",
+        "label": "Start flight mode",
+        "href": "/flights/live",
+        "section": "Actions",
+        "shortcut": null
+      },
+      {
         "id": "add-pilot",
         "label": "Add a pilot",
         "href": "/pilots/new",
@@ -584,6 +591,13 @@ export const expired = {
         "href": "/flights/new",
         "section": "Actions",
         "shortcut": "L"
+      },
+      {
+        "id": "flight-mode",
+        "label": "Start flight mode",
+        "href": "/flights/live",
+        "section": "Actions",
+        "shortcut": null
       },
       {
         "id": "add-pilot",

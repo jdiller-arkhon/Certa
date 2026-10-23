@@ -427,3 +427,75 @@ test('first run: getting started ticks off, help explains the jargon', async ({ 
   await page.getByLabel('Search the glossary').fill('laanc');
   await expect(page.locator('dt')).toHaveText(['Controlled airspace', 'LAANC']);
 });
+
+test('flight mode: two sorties with a battery swap and a marker become two logged flights', async ({ page }) => {
+  await signUp(page, 'Field Ops');
+  await go(page, 'Aircraft');
+  await page.getByRole('button', { name: 'Add aircraft' }).first().click();
+  await page.waitForLoadState('networkidle');
+  await page.getByLabel('Make').fill('DJI');
+  await page.getByLabel('Model').fill('Matrice 30T');
+  await page.getByLabel('Serial number').fill('1581F5BKD225499');
+  await page.getByLabel('Nickname').fill('Falcon 9');
+  await page.getByRole('button', { name: 'Add aircraft' }).click();
+  await expect(page.getByRole('heading', { name: 'Falcon 9' })).toBeVisible();
+  for (const label of ['M30 #1', 'M30 #2']) {
+    await go(page, 'Batteries');
+    await page.getByRole('button', { name: 'Add battery' }).first().click();
+    await page.getByLabel('Serial number').fill(`TB30-${label.slice(-1)}99`);
+    await page.getByLabel('Label').fill(label);
+    await page.getByRole('dialog').getByRole('button', { name: 'Add battery' }).click();
+    await expect(page.getByText(label, { exact: true })).toBeVisible();
+  }
+
+  // Start from Log a flight.
+  await go(page, 'Flights');
+  await page.getByRole('button', { name: 'Log a flight' }).click();
+  await page.getByRole('button', { name: 'Flight mode' }).click();
+  await expect(page.getByRole('heading', { name: 'Start on site' })).toBeVisible();
+  await page.getByLabel('Aircraft').selectOption({ index: 1 });
+  await page.getByRole('button', { name: /^M30 #1/ }).click();
+  await page.getByRole('button', { name: /^M30 #2/ }).click();
+  await page.getByLabel('Site').fill('Henderson Solar Farm');
+  await page.getByRole('button', { name: 'Start flight mode' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Henderson Solar Farm' })).toBeVisible();
+
+  // The emergency card is one tap away.
+  await page.getByRole('button', { name: 'Emergency' }).click();
+  await expect(page.getByRole('dialog', { name: 'Emergency' })).toContainText('14 CFR 107.9');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: 'Emergency' })).toBeHidden();
+
+  // A fake clock from here so sorties have real lengths; the session survives the reload.
+  await page.clock.install();
+  await page.reload();
+  await page.getByRole('button', { name: 'Take off' }).click();
+  await page.clock.fastForward('06:00');
+  await expect(page.getByTestId('fm-timer')).toHaveText('6:00');
+  await expect(page.getByText(/Land by · 14:00 left/)).toBeVisible();
+  await page.getByRole('button', { name: 'Manned aircraft' }).click();
+  await expect(page.getByText('Marked: Manned aircraft')).toBeVisible();
+  await page.clock.fastForward('09:00');
+  await page.getByRole('button', { name: 'Landed' }).click();
+  await page.getByRole('group', { name: 'Battery left after landing' }).getByRole('button', { name: '40%' }).click();
+
+  // The rested battery is picked for the next takeoff. A reload keeps the session.
+  await expect(page.getByRole('button', { name: /^M30 #2/ })).toHaveAttribute('aria-pressed', 'true');
+  await page.reload();
+  await expect(page.getByText('15:00', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Take off' }).click();
+  await page.clock.fastForward('12:00');
+  await expect(page.getByRole('button', { name: /Finish/ })).toBeDisabled();
+  await page.getByRole('button', { name: 'Landed' }).click();
+  await page.getByRole('button', { name: 'Skip' }).click();
+
+  await page.getByRole('button', { name: 'Finish and log 2 flights' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Log flights' }).click();
+  await expect(page).toHaveURL(/\/flights$/);
+  await page.clock.runFor(2000);
+  await expect(page.getByText('Henderson Solar Farm')).toHaveCount(2);
+  await page.getByText('Henderson Solar Farm').last().click();
+  await expect(page.getByText('Sortie 1 of 2, logged with flight mode.')).toBeVisible();
+  await expect(page.getByText(/Manned aircraft/)).toBeVisible();
+});

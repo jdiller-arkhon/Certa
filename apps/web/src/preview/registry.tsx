@@ -12,6 +12,7 @@ import {
   BatteryListScreen,
   FlightDetailScreen,
   FlightListScreen,
+  FlightModeScreen,
   HelpScreen,
   IntegrationsScreen,
   InsuranceScreen,
@@ -57,6 +58,62 @@ function stateProps(state: State): AsyncState | null {
 }
 
 /** First-load states have no data; partial keeps the data. */
+function FlightModePreview({ scenario, variant }: { scenario: Scenario; variant: string }) {
+  const lf = scenarios[scenario]!.screens.logFlight;
+  const ok = { level: 'green' as const, label: 'Current' };
+  const airborne = variant === 'airborne' || variant === 'emergency';
+  const live = {
+    title: 'Henderson Solar Farm',
+    subtitle: 'Merlin 5 · Maya Thornton',
+    phase: airborne ? ('airborne' as const) : ('ground' as const),
+    timer: airborne ? { label: 'This sortie', value: '17:42' } : { label: 'Since landing', value: '2:15' },
+    landBy: airborne ? { remaining: '2:18 left', fraction: 0.885, level: 'amber' as const, note: 'typical 20:00 for this aircraft' } : null,
+    batteries: [
+      { value: 'b1', label: 'Merlin #1', status: ok, flown: 1 },
+      { value: 'b2', label: 'Merlin #2', status: ok, flown: 1 },
+      { value: 'b3', label: 'Merlin #3', status: ok, flown: 0 },
+    ],
+    nextBatteryIds: ['b3'],
+    inAir: airborne ? 'On Merlin #2' : null,
+    askCharge: variant === 'ground',
+    sorties: [
+      { id: 's1', n: 1, when: '9:02–9:21 AM', duration: '19:04', batteries: 'Merlin #1', charge: '30% left', airborne: false },
+      { id: 's2', n: 2, when: airborne ? '9:28 AM–now' : '9:28–9:47 AM', duration: airborne ? '17:42' : '19:10', batteries: 'Merlin #2', charge: null, airborne },
+    ],
+    totalAir: '36:46',
+    landedCount: airborne ? 1 : 2,
+    markers: [{ id: 'm1', time: '9:11 AM', label: 'Manned aircraft' }],
+    conditions: { status: 'ready' as const, summary: 'Clear, 57°F, wind 9 mph gusting 14', level: 'green' as const, checked: 'Checked 4 min ago', daylight: 'Civil dusk in 7 h 52 min', error: null },
+    changes: variant === 'airborne' ? [{ key: 'wind', level: 'amber' as const, title: 'Gusts above 20 mph', detail: '', source: 'NWS' }] : [],
+    emergency: { decimal: '39.65012, -104.84987', dms: '39°39′00.4″N 104°50′59.5″W', site: 'Henderson Solar Farm', aircraft: 'Merlin 5', pilot: 'Maya Thornton' },
+    wakeLock: true,
+  };
+  const [emergencyOpened] = useState(variant === 'emergency');
+  return (
+    <div data-emergency={emergencyOpened ? 'open' : undefined}>
+      <FlightModeScreen
+        setup={{ pilotOptions: lf.pilotOptions, aircraftOptions: lf.aircraftOptions, batteryOptions: lf.batteryOptions, siteOptions: lf.siteOptions, defaults: { pilotId: lf.defaults.pilotId, aircraftId: lf.defaults.aircraftId, locationName: lf.defaults.locationName }, preflight: lf.preflight }}
+        live={variant === 'setup' ? null : live}
+        conditionsSetup={{ status: 'idle', error: null }}
+        saving={false}
+        error={null}
+        onSelection={noop}
+        onStart={noop}
+        onCheckConditions={noop}
+        onTakeOff={noop}
+        onLand={noop}
+        onCharge={noop}
+        onMark={noop}
+        onDiscardSortie={noop}
+        onDismissChanges={noop}
+        onFinish={noop}
+        onDiscardSession={noop}
+        onCancel={noop}
+      />
+    </div>
+  );
+}
+
 /** A pilot who has added their certificate and nothing else yet. */
 const FIRST_RUN = {
   doneCount: 1,
@@ -354,6 +411,15 @@ export const SCREENS: PreviewScreen[] = [
           : base;
       return <LogFlightScreen {...d} onCheckConditions={noop} onSelectionChange={noop} onSameAsLast={noop} onSubmit={noop} onCancel={noop} onOpen={noop} />;
     },
+  },
+  {
+    id: 'flight-mode',
+    title: 'Flight mode',
+    group: 'App',
+    route: '/flights/live',
+    shell: true,
+    variants: ['airborne', 'ground', 'setup', 'emergency'],
+    render: ({ scenario, variant }) => <FlightModePreview scenario={scenario} variant={variant ?? 'airborne'} />,
   },
   {
     id: 'help',

@@ -712,6 +712,8 @@ export interface LogFlightScreenProps extends AsyncState {
   }) => void;
   onCancel: () => void;  /** Opens another screen (fixing a warning, adding the first aircraft); the form's input is discarded. */
   onOpen?: (href: string) => void;
+  /** Switches to flight mode (new flights only): a live timer that logs each sortie on site. */
+  onFlightMode?: () => void;
 }
 
 export interface ChecklistViewModel {
