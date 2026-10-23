@@ -73,6 +73,22 @@ const Env = z.object({
    * Generate with `openssl rand -base64 48`.
    */
   ARGUS_INGEST_TOKEN: z.string().min(32, 'ARGUS_INGEST_TOKEN must be at least 32 characters').optional(),
+  /**
+   * Live telemetry (DJI Cloud API). The worker's bridge connects to the MQTT message server at
+   * LIVE_MQTT_URL with the service account below; controllers connect to LIVE_MQTT_PUBLIC_URL
+   * (e.g. tcp://live.example.com:1883) with per-controller credentials Certa issues. The message
+   * server asks Certa to approve every connection and topic, sending LIVE_HOOK_SECRET.
+   * Unset LIVE_MQTT_PUBLIC_URL or the DJI app values: linking controllers is off.
+   */
+  LIVE_MQTT_URL: z.string().optional(),
+  LIVE_MQTT_PUBLIC_URL: z.string().regex(/^(tcp|ssl|mqtt|mqtts|ws|wss):\/\/[^\s]+$/, 'LIVE_MQTT_PUBLIC_URL must be tcp://, ssl://, ws:// or wss://').optional(),
+  LIVE_MQTT_USERNAME: z.string().default('certa-bridge'),
+  LIVE_MQTT_PASSWORD: z.string().min(24, 'LIVE_MQTT_PASSWORD must be at least 24 characters').optional(),
+  LIVE_HOOK_SECRET: z.string().min(32, 'LIVE_HOOK_SECRET must be at least 32 characters').optional(),
+  /** DJI developer app (developer.dji.com, Cloud API) that DJI Pilot 2 verifies before linking. */
+  DJI_APP_ID: z.coerce.number().int().positive().optional(),
+  DJI_APP_KEY: z.string().optional(),
+  DJI_APP_LICENSE: z.string().optional(),
 });
 
 export type Config = z.infer<typeof Env> & {

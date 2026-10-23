@@ -5905,7 +5905,7 @@ export interface paths {
                          *       "verify:read"
                          *     ]
                          */
-                        scopes?: "verify:read"[];
+                        scopes?: ("verify:read" | "live:write")[];
                         expiresInDays?: number;
                     };
                 };
@@ -7544,6 +7544,555 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Linked controllers and aircraft, flights in the air, and recent live sessions. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            djiEnabled: boolean;
+                            devices: {
+                                /** Format: uuid */
+                                id: string;
+                                sn: string;
+                                /** @enum {string} */
+                                kind: "gateway" | "aircraft";
+                                model: string | null;
+                                gatewaySn: string | null;
+                                pilotId: string | null;
+                                lastSeenAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                            }[];
+                            sessions: {
+                                /** Format: uuid */
+                                id: string;
+                                aircraftSn: string;
+                                model: string | null;
+                                aircraftId: string | null;
+                                pilotId: string | null;
+                                /** @enum {string} */
+                                status: "open" | "logged" | "needs_aircraft" | "discarded";
+                                /** Format: date-time */
+                                startedAt: string;
+                                /** Format: date-time */
+                                lastFrameAt: string;
+                                endedAt: string | null;
+                                timedOut: boolean;
+                                flightId: string | null;
+                                lastFrame: {
+                                    sn: string;
+                                    t: number;
+                                    lat: number | null;
+                                    lon: number | null;
+                                    heightM: number | null;
+                                    altM: number | null;
+                                    speedMps: number | null;
+                                    verticalSpeedMps: number | null;
+                                    headingDeg: number | null;
+                                    homeDistanceM: number | null;
+                                    batteryPct: number | null;
+                                    remainingFlightSec: number | null;
+                                    packs: {
+                                        sn: string | null;
+                                        pct: number | null;
+                                        voltageV: number | null;
+                                        tempC: number | null;
+                                        cycles: number | null;
+                                    }[];
+                                    gpsSats: number | null;
+                                    windMps: number | null;
+                                    mode: number | null;
+                                    modeLabel: string | null;
+                                    airborne: boolean;
+                                } | null;
+                                events: {
+                                    t: number;
+                                    /** @enum {string} */
+                                    level: "warning" | "error";
+                                    text: string;
+                                }[];
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/live/sessions/{sessionId}/track": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    sessionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            points: [
+                                number,
+                                number,
+                                number,
+                                number
+                            ][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/live/dji-setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What DJI Pilot 2 needs to link a controller to Certa. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            enabled: boolean;
+                            appId: number | null;
+                            appKey: string | null;
+                            license: string | null;
+                            mqttHost: string | null;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/live/devices/bind": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Link a DJI Pilot 2 controller (or dock): returns its message-server credential, shown once. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        gatewaySn: string;
+                        aircraftSn?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            deviceId: string;
+                            mqtt: {
+                                host: string;
+                                username: string;
+                                password: string;
+                            };
+                            /** Format: uuid */
+                            workspaceId: string;
+                            workspaceName: string;
+                        };
+                    };
+                };
+                /** @description Default Response */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message?: string;
+                            error: {
+                                code: string;
+                                message: string;
+                                requestId?: string;
+                                details?: unknown;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/live/devices/{deviceId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Unlink a controller or aircraft (its credential stops working at once). */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    deviceId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/live/sessions/{sessionId}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Log a finished live session that needed an aircraft or pilot. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    sessionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /** Format: uuid */
+                        aircraftId: string;
+                        /** Format: uuid */
+                        pilotId: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            aircraftSn: string;
+                            model: string | null;
+                            aircraftId: string | null;
+                            pilotId: string | null;
+                            /** @enum {string} */
+                            status: "open" | "logged" | "needs_aircraft" | "discarded";
+                            /** Format: date-time */
+                            startedAt: string;
+                            /** Format: date-time */
+                            lastFrameAt: string;
+                            endedAt: string | null;
+                            timedOut: boolean;
+                            flightId: string | null;
+                            lastFrame: {
+                                sn: string;
+                                t: number;
+                                lat: number | null;
+                                lon: number | null;
+                                heightM: number | null;
+                                altM: number | null;
+                                speedMps: number | null;
+                                verticalSpeedMps: number | null;
+                                headingDeg: number | null;
+                                homeDistanceM: number | null;
+                                batteryPct: number | null;
+                                remainingFlightSec: number | null;
+                                packs: {
+                                    sn: string | null;
+                                    pct: number | null;
+                                    voltageV: number | null;
+                                    tempC: number | null;
+                                    cycles: number | null;
+                                }[];
+                                gpsSats: number | null;
+                                windMps: number | null;
+                                mode: number | null;
+                                modeLabel: string | null;
+                                airborne: boolean;
+                            } | null;
+                            events: {
+                                t: number;
+                                /** @enum {string} */
+                                level: "warning" | "error";
+                                text: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orgs/{orgId}/live/sessions/{sessionId}/discard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    sessionId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            aircraftSn: string;
+                            model: string | null;
+                            aircraftId: string | null;
+                            pilotId: string | null;
+                            /** @enum {string} */
+                            status: "open" | "logged" | "needs_aircraft" | "discarded";
+                            /** Format: date-time */
+                            startedAt: string;
+                            /** Format: date-time */
+                            lastFrameAt: string;
+                            endedAt: string | null;
+                            timedOut: boolean;
+                            flightId: string | null;
+                            lastFrame: {
+                                sn: string;
+                                t: number;
+                                lat: number | null;
+                                lon: number | null;
+                                heightM: number | null;
+                                altM: number | null;
+                                speedMps: number | null;
+                                verticalSpeedMps: number | null;
+                                headingDeg: number | null;
+                                homeDistanceM: number | null;
+                                batteryPct: number | null;
+                                remainingFlightSec: number | null;
+                                packs: {
+                                    sn: string | null;
+                                    pct: number | null;
+                                    voltageV: number | null;
+                                    tempC: number | null;
+                                    cycles: number | null;
+                                }[];
+                                gpsSats: number | null;
+                                windMps: number | null;
+                                mode: number | null;
+                                modeLabel: string | null;
+                                airborne: boolean;
+                            } | null;
+                            events: {
+                                t: number;
+                                /** @enum {string} */
+                                level: "warning" | "error";
+                                text: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/live/frames": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send live frames from another bridge (MAVLink forwarder, Skydio, Autel). Bearer API key with live:write. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        model?: string | null;
+                        frames: {
+                            sn: string;
+                            t: number;
+                            lat: number | null;
+                            lon: number | null;
+                            heightM: number | null;
+                            altM: number | null;
+                            speedMps: number | null;
+                            verticalSpeedMps: number | null;
+                            headingDeg: number | null;
+                            homeDistanceM: number | null;
+                            batteryPct: number | null;
+                            remainingFlightSec: number | null;
+                            packs: {
+                                sn: string | null;
+                                pct: number | null;
+                                voltageV: number | null;
+                                tempC: number | null;
+                                cycles: number | null;
+                            }[];
+                            gpsSats: number | null;
+                            windMps: number | null;
+                            mode: number | null;
+                            modeLabel: string | null;
+                            airborne: boolean;
+                        }[];
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;

@@ -9,6 +9,7 @@ import { runExpiryAlerts } from './jobs/expiry-alerts.js';
 import { createQueue } from './jobs/queue.js';
 import { smtpMailer } from './lib/mailer.js';
 import { createPusher } from './lib/push.js';
+import { startLiveBridge } from './lib/live-bridge.js';
 
 const config = loadConfig();
 const log = pino({ level: config.LOG_LEVEL, base: { service: 'worker' } });
@@ -30,9 +31,12 @@ await boss.schedule('expiry-alerts', '0 7 * * *', null, { tz: 'America/Denver' }
 await boss.work('expiry-alerts', async () => {
   await runExpiryAlerts({ pool, mailer, pusher, publicUrl: config.PUBLIC_URL.replace(/\/+$/, ''), log });
 });
+// Live telemetry from linked DJI controllers and docks (off unless LIVE_MQTT_URL is set).
+const live = startLiveBridge(config, pool, log);
 log.info('worker started');
 
 const shutdown = async () => {
+  await live?.stop();
   await boss.stop({ graceful: true, timeout: 20_000 });
   await pool.end();
   process.exit(0);

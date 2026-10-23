@@ -428,6 +428,7 @@ export function toAuditEventViewModel(e: AuditEvent & { actorName: string | null
 const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; requires: Action; group: NavItem['group'] }[] = [
   { id: 'today', label: 'Today', href: '/', icon: 'today', requires: 'org.read', group: 'operations' },
   { id: 'flights', label: 'Flights', href: '/flights', icon: 'flights', requires: 'flights.read', group: 'operations' },
+  { id: 'live', label: 'Live', href: '/live', icon: 'flights', requires: 'flights.read', group: 'operations' },
   { id: 'missions', label: 'Missions', href: '/missions', icon: 'missions', requires: 'missions.read', group: 'operations' },
   { id: 'pilots', label: 'Pilots', href: '/pilots', icon: 'pilots', requires: 'pilots.read', group: 'fleet' },
   { id: 'aircraft', label: 'Aircraft', href: '/aircraft', icon: 'aircraft', requires: 'aircraft.read', group: 'fleet' },
@@ -471,7 +472,7 @@ export function buildNavigation(role: Role, activeHref: string, badges: Record<s
 }
 
 /** Shortcuts: "G" then a letter jumps to a page; single letters start an action. */
-const GOTO_KEYS: Record<string, string> = { today: 'G T', flights: 'G F', pilots: 'G P', aircraft: 'G A', batteries: 'G B', maintenance: 'G M', insurance: 'G I', settings: 'G S' };
+const GOTO_KEYS: Record<string, string> = { today: 'G T', flights: 'G F', live: 'G L', pilots: 'G P', aircraft: 'G A', batteries: 'G B', maintenance: 'G M', insurance: 'G I', settings: 'G S' };
 
 export function buildCommands(role: Role, platformAdmin = false): CommandItem[] {
   const actions: (CommandItem & { requires: Action })[] = [

@@ -492,7 +492,7 @@ export type PublicPacketResponse = z.infer<typeof PublicPacketResponse>;
 
 // ---------- API keys and machine verification (Argus) ----------
 
-export const API_KEY_SCOPES = ['verify:read'] as const;
+export const API_KEY_SCOPES = ['verify:read', 'live:write'] as const;
 export const ApiKeyScope = z.enum(API_KEY_SCOPES);
 
 export const CreateApiKeyRequest = z.object({
@@ -889,3 +889,97 @@ export const PlatformExportQuery = z
   .object({ from: IsoDate.optional(), to: IsoDate.optional(), orgId: Id.optional(), pilotId: Id.optional() })
   .refine((q) => !q.from || !q.to || q.from <= q.to, { message: '“From” must be on or before “to”', path: ['to'] })
   .refine((q) => !q.pilotId || q.orgId, { message: 'A pilot needs their organization', path: ['orgId'] });
+
+// ---------- Live telemetry ----------
+
+export const LiveFrame = z.object({
+  sn: z.string().regex(/^[A-Za-z0-9]{6,40}$/),
+  t: z.number().int().positive(),
+  lat: z.number().min(-90).max(90).nullable(),
+  lon: z.number().min(-180).max(180).nullable(),
+  heightM: z.number().min(-1000).max(20000).nullable(),
+  altM: z.number().nullable(),
+  speedMps: z.number().min(0).max(200).nullable(),
+  verticalSpeedMps: z.number().nullable(),
+  headingDeg: z.number().nullable(),
+  homeDistanceM: z.number().min(0).nullable(),
+  batteryPct: z.number().min(0).max(100).nullable(),
+  remainingFlightSec: z.number().nullable(),
+  packs: z.array(z.object({ sn: z.string().max(60).nullable(), pct: z.number().nullable(), voltageV: z.number().nullable(), tempC: z.number().nullable(), cycles: z.number().nullable() })).max(4),
+  gpsSats: z.number().nullable(),
+  windMps: z.number().nullable(),
+  mode: z.number().int().nullable(),
+  modeLabel: z.string().max(60).nullable(),
+  airborne: z.boolean(),
+});
+export type LiveFrame = z.infer<typeof LiveFrame>;
+
+export const LiveDjiSetup = z.object({
+  enabled: z.boolean(),
+  appId: z.number().int().nullable(),
+  appKey: z.string().nullable(),
+  license: z.string().nullable(),
+  mqttHost: z.string().nullable(),
+});
+export type LiveDjiSetup = z.infer<typeof LiveDjiSetup>;
+
+export const LiveBindRequest = z.object({
+  gatewaySn: z.string().regex(/^[A-Za-z0-9]{6,40}$/),
+  aircraftSn: z.string().regex(/^[A-Za-z0-9]{6,40}$/).nullable().optional(),
+});
+export const LiveBindResponse = z.object({
+  deviceId: Id,
+  mqtt: z.object({ host: z.string(), username: z.string(), password: z.string() }),
+  workspaceId: Id,
+  workspaceName: z.string(),
+});
+export type LiveBindResponse = z.infer<typeof LiveBindResponse>;
+
+export const LiveDevice = z.object({
+  id: Id,
+  sn: z.string(),
+  kind: z.enum(['gateway', 'aircraft']),
+  model: z.string().nullable(),
+  gatewaySn: z.string().nullable(),
+  pilotId: Id.nullable(),
+  lastSeenAt: IsoDateTime.nullable(),
+  createdAt: IsoDateTime,
+});
+export type LiveDevice = z.infer<typeof LiveDevice>;
+
+export const LiveSession = z.object({
+  id: Id,
+  aircraftSn: z.string(),
+  model: z.string().nullable(),
+  aircraftId: Id.nullable(),
+  pilotId: Id.nullable(),
+  status: z.enum(['open', 'logged', 'needs_aircraft', 'discarded']),
+  startedAt: IsoDateTime,
+  lastFrameAt: IsoDateTime,
+  endedAt: IsoDateTime.nullable(),
+  timedOut: z.boolean(),
+  flightId: Id.nullable(),
+  lastFrame: LiveFrame.nullable(),
+  events: z.array(z.object({ t: z.number(), level: z.enum(['warning', 'error']), text: z.string() })),
+});
+export type LiveSession = z.infer<typeof LiveSession>;
+
+export const LiveOverview = z.object({
+  /** Linking from DJI Pilot 2 is configured on this server. */
+  djiEnabled: z.boolean(),
+  devices: z.array(LiveDevice),
+  sessions: z.array(LiveSession),
+});
+export type LiveOverview = z.infer<typeof LiveOverview>;
+
+export const LiveSessionTrack = z.object({ points: z.array(z.tuple([z.number(), z.number(), z.number(), z.number()])) });
+export type LiveSessionTrack = z.infer<typeof LiveSessionTrack>;
+
+export const LiveAssignRequest = z.object({ aircraftId: Id, pilotId: Id });
+
+/** Frames from another bridge (MAVLink forwarder, Skydio, Autel), sent with a live:write API key. */
+export const LiveFramesRequest = z.object({ model: z.string().max(120).nullable().optional(), frames: z.array(LiveFrame).min(1).max(600) });
+
+export const MqttAuthRequest = z.object({ clientid: z.string().max(200).optional(), username: z.string().max(200), password: z.string().max(400) });
+export const MqttAclRequest = z.object({ clientid: z.string().max(200).optional(), username: z.string().max(200), topic: z.string().max(400), action: z.enum(['publish', 'subscribe', 'all']).default('all') });
+export const MqttDecision = z.object({ result: z.enum(['allow', 'deny']), is_superuser: z.boolean().optional() });

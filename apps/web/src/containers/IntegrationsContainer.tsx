@@ -23,8 +23,8 @@ export function IntegrationsContainer() {
     queryFn: async () => unwrap(await api.GET('/api/v1/orgs/{orgId}/api-keys', { params: { path: { orgId } } })).keys,
   });
   const create = useMutation({
-    mutationFn: async (v: { name: string; expiresInDays: number | null }) =>
-      unwrap(await api.POST('/api/v1/orgs/{orgId}/api-keys', { params: { path: { orgId } }, body: { name: v.name, scopes: ['verify:read'], ...(v.expiresInDays ? { expiresInDays: v.expiresInDays } : {}) } })),
+    mutationFn: async (v: { name: string; expiresInDays: number | null; scopes: ('verify:read' | 'live:write')[] }) =>
+      unwrap(await api.POST('/api/v1/orgs/{orgId}/api-keys', { params: { path: { orgId } }, body: { name: v.name, scopes: v.scopes, ...(v.expiresInDays ? { expiresInDays: v.expiresInDays } : {}) } })),
     onSuccess: (k) => {
       setCreatedKey(k.key);
       void qc.invalidateQueries({ queryKey: key });

@@ -13951,6 +13951,7 @@ paths:
                     type: string
                     enum:
                       - verify:read
+                      - live:write
                 expiresInDays:
                   type: integer
                   minimum: 1
@@ -16729,6 +16730,1198 @@ paths:
                 required:
                   - announcements
                 additionalProperties: false
+  /api/v1/orgs/{orgId}/live:
+    get:
+      summary: Linked controllers and aircraft, flights in the air, and recent live sessions.
+      tags:
+        - live
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  djiEnabled:
+                    type: boolean
+                  devices:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        sn:
+                          type: string
+                        kind:
+                          type: string
+                          enum:
+                            - gateway
+                            - aircraft
+                        model:
+                          type:
+                            - string
+                            - "null"
+                        gatewaySn:
+                          type:
+                            - string
+                            - "null"
+                        pilotId:
+                          anyOf:
+                            - type: string
+                              format: uuid
+                              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                            - type: "null"
+                        lastSeenAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        createdAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      required:
+                        - id
+                        - sn
+                        - kind
+                        - model
+                        - gatewaySn
+                        - pilotId
+                        - lastSeenAt
+                        - createdAt
+                      additionalProperties: false
+                  sessions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        aircraftSn:
+                          type: string
+                        model:
+                          type:
+                            - string
+                            - "null"
+                        aircraftId:
+                          anyOf:
+                            - type: string
+                              format: uuid
+                              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                            - type: "null"
+                        pilotId:
+                          anyOf:
+                            - type: string
+                              format: uuid
+                              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                            - type: "null"
+                        status:
+                          type: string
+                          enum:
+                            - open
+                            - logged
+                            - needs_aircraft
+                            - discarded
+                        startedAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        lastFrameAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        endedAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        timedOut:
+                          type: boolean
+                        flightId:
+                          anyOf:
+                            - type: string
+                              format: uuid
+                              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                            - type: "null"
+                        lastFrame:
+                          anyOf:
+                            - type: object
+                              properties:
+                                sn:
+                                  type: string
+                                  pattern: ^[A-Za-z0-9]{6,40}$
+                                t:
+                                  type: integer
+                                  exclusiveMinimum: 0
+                                  maximum: 9007199254740991
+                                lat:
+                                  anyOf:
+                                    - type: number
+                                      minimum: -90
+                                      maximum: 90
+                                    - type: "null"
+                                lon:
+                                  anyOf:
+                                    - type: number
+                                      minimum: -180
+                                      maximum: 180
+                                    - type: "null"
+                                heightM:
+                                  anyOf:
+                                    - type: number
+                                      minimum: -1000
+                                      maximum: 20000
+                                    - type: "null"
+                                altM:
+                                  type:
+                                    - number
+                                    - "null"
+                                speedMps:
+                                  anyOf:
+                                    - type: number
+                                      minimum: 0
+                                      maximum: 200
+                                    - type: "null"
+                                verticalSpeedMps:
+                                  type:
+                                    - number
+                                    - "null"
+                                headingDeg:
+                                  type:
+                                    - number
+                                    - "null"
+                                homeDistanceM:
+                                  anyOf:
+                                    - type: number
+                                      minimum: 0
+                                    - type: "null"
+                                batteryPct:
+                                  anyOf:
+                                    - type: number
+                                      minimum: 0
+                                      maximum: 100
+                                    - type: "null"
+                                remainingFlightSec:
+                                  type:
+                                    - number
+                                    - "null"
+                                packs:
+                                  maxItems: 4
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      sn:
+                                        anyOf:
+                                          - type: string
+                                            maxLength: 60
+                                          - type: "null"
+                                      pct:
+                                        type:
+                                          - number
+                                          - "null"
+                                      voltageV:
+                                        type:
+                                          - number
+                                          - "null"
+                                      tempC:
+                                        type:
+                                          - number
+                                          - "null"
+                                      cycles:
+                                        type:
+                                          - number
+                                          - "null"
+                                    required:
+                                      - sn
+                                      - pct
+                                      - voltageV
+                                      - tempC
+                                      - cycles
+                                    additionalProperties: false
+                                gpsSats:
+                                  type:
+                                    - number
+                                    - "null"
+                                windMps:
+                                  type:
+                                    - number
+                                    - "null"
+                                mode:
+                                  anyOf:
+                                    - type: integer
+                                      minimum: -9007199254740991
+                                      maximum: 9007199254740991
+                                    - type: "null"
+                                modeLabel:
+                                  anyOf:
+                                    - type: string
+                                      maxLength: 60
+                                    - type: "null"
+                                airborne:
+                                  type: boolean
+                              required:
+                                - sn
+                                - t
+                                - lat
+                                - lon
+                                - heightM
+                                - altM
+                                - speedMps
+                                - verticalSpeedMps
+                                - headingDeg
+                                - homeDistanceM
+                                - batteryPct
+                                - remainingFlightSec
+                                - packs
+                                - gpsSats
+                                - windMps
+                                - mode
+                                - modeLabel
+                                - airborne
+                              additionalProperties: false
+                            - type: "null"
+                        events:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              t:
+                                type: number
+                              level:
+                                type: string
+                                enum:
+                                  - warning
+                                  - error
+                              text:
+                                type: string
+                            required:
+                              - t
+                              - level
+                              - text
+                            additionalProperties: false
+                      required:
+                        - id
+                        - aircraftSn
+                        - model
+                        - aircraftId
+                        - pilotId
+                        - status
+                        - startedAt
+                        - lastFrameAt
+                        - endedAt
+                        - timedOut
+                        - flightId
+                        - lastFrame
+                        - events
+                      additionalProperties: false
+                required:
+                  - djiEnabled
+                  - devices
+                  - sessions
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/live/sessions/{sessionId}/track:
+    get:
+      tags:
+        - live
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: sessionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  points:
+                    type: array
+                    items:
+                      type: array
+                      prefixItems:
+                        - type: number
+                        - type: number
+                        - type: number
+                        - type: number
+                      items: false
+                      minItems: 4
+                      maxItems: 4
+                required:
+                  - points
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/live/dji-setup:
+    get:
+      summary: What DJI Pilot 2 needs to link a controller to Certa.
+      tags:
+        - live
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  enabled:
+                    type: boolean
+                  appId:
+                    anyOf:
+                      - type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                      - type: "null"
+                  appKey:
+                    type:
+                      - string
+                      - "null"
+                  license:
+                    type:
+                      - string
+                      - "null"
+                  mqttHost:
+                    type:
+                      - string
+                      - "null"
+                required:
+                  - enabled
+                  - appId
+                  - appKey
+                  - license
+                  - mqttHost
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/live/devices/bind:
+    post:
+      summary: "Link a DJI Pilot 2 controller (or dock): returns its message-server credential, shown once."
+      tags:
+        - live
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                gatewaySn:
+                  type: string
+                  pattern: ^[A-Za-z0-9]{6,40}$
+                aircraftSn:
+                  anyOf:
+                    - type: string
+                      pattern: ^[A-Za-z0-9]{6,40}$
+                    - type: "null"
+              required:
+                - gatewaySn
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deviceId:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  mqtt:
+                    type: object
+                    properties:
+                      host:
+                        type: string
+                      username:
+                        type: string
+                      password:
+                        type: string
+                    required:
+                      - host
+                      - username
+                      - password
+                    additionalProperties: false
+                  workspaceId:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  workspaceName:
+                    type: string
+                required:
+                  - deviceId
+                  - mqtt
+                  - workspaceId
+                  - workspaceName
+                additionalProperties: false
+        "409":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                      message:
+                        type: string
+                      requestId:
+                        type: string
+                      details: {}
+                    required:
+                      - code
+                      - message
+                    additionalProperties: false
+                required:
+                  - error
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/live/devices/{deviceId}:
+    delete:
+      summary: Unlink a controller or aircraft (its credential stops working at once).
+      tags:
+        - live
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: deviceId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+  /api/v1/orgs/{orgId}/live/sessions/{sessionId}/assign:
+    post:
+      summary: Log a finished live session that needed an aircraft or pilot.
+      tags:
+        - live
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                aircraftId:
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                pilotId:
+                  type: string
+                  format: uuid
+                  pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+              required:
+                - aircraftId
+                - pilotId
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: sessionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  aircraftSn:
+                    type: string
+                  model:
+                    type:
+                      - string
+                      - "null"
+                  aircraftId:
+                    anyOf:
+                      - type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      - type: "null"
+                  pilotId:
+                    anyOf:
+                      - type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      - type: "null"
+                  status:
+                    type: string
+                    enum:
+                      - open
+                      - logged
+                      - needs_aircraft
+                      - discarded
+                  startedAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  lastFrameAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  endedAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  timedOut:
+                    type: boolean
+                  flightId:
+                    anyOf:
+                      - type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      - type: "null"
+                  lastFrame:
+                    anyOf:
+                      - type: object
+                        properties:
+                          sn:
+                            type: string
+                            pattern: ^[A-Za-z0-9]{6,40}$
+                          t:
+                            type: integer
+                            exclusiveMinimum: 0
+                            maximum: 9007199254740991
+                          lat:
+                            anyOf:
+                              - type: number
+                                minimum: -90
+                                maximum: 90
+                              - type: "null"
+                          lon:
+                            anyOf:
+                              - type: number
+                                minimum: -180
+                                maximum: 180
+                              - type: "null"
+                          heightM:
+                            anyOf:
+                              - type: number
+                                minimum: -1000
+                                maximum: 20000
+                              - type: "null"
+                          altM:
+                            type:
+                              - number
+                              - "null"
+                          speedMps:
+                            anyOf:
+                              - type: number
+                                minimum: 0
+                                maximum: 200
+                              - type: "null"
+                          verticalSpeedMps:
+                            type:
+                              - number
+                              - "null"
+                          headingDeg:
+                            type:
+                              - number
+                              - "null"
+                          homeDistanceM:
+                            anyOf:
+                              - type: number
+                                minimum: 0
+                              - type: "null"
+                          batteryPct:
+                            anyOf:
+                              - type: number
+                                minimum: 0
+                                maximum: 100
+                              - type: "null"
+                          remainingFlightSec:
+                            type:
+                              - number
+                              - "null"
+                          packs:
+                            maxItems: 4
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                sn:
+                                  anyOf:
+                                    - type: string
+                                      maxLength: 60
+                                    - type: "null"
+                                pct:
+                                  type:
+                                    - number
+                                    - "null"
+                                voltageV:
+                                  type:
+                                    - number
+                                    - "null"
+                                tempC:
+                                  type:
+                                    - number
+                                    - "null"
+                                cycles:
+                                  type:
+                                    - number
+                                    - "null"
+                              required:
+                                - sn
+                                - pct
+                                - voltageV
+                                - tempC
+                                - cycles
+                              additionalProperties: false
+                          gpsSats:
+                            type:
+                              - number
+                              - "null"
+                          windMps:
+                            type:
+                              - number
+                              - "null"
+                          mode:
+                            anyOf:
+                              - type: integer
+                                minimum: -9007199254740991
+                                maximum: 9007199254740991
+                              - type: "null"
+                          modeLabel:
+                            anyOf:
+                              - type: string
+                                maxLength: 60
+                              - type: "null"
+                          airborne:
+                            type: boolean
+                        required:
+                          - sn
+                          - t
+                          - lat
+                          - lon
+                          - heightM
+                          - altM
+                          - speedMps
+                          - verticalSpeedMps
+                          - headingDeg
+                          - homeDistanceM
+                          - batteryPct
+                          - remainingFlightSec
+                          - packs
+                          - gpsSats
+                          - windMps
+                          - mode
+                          - modeLabel
+                          - airborne
+                        additionalProperties: false
+                      - type: "null"
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        t:
+                          type: number
+                        level:
+                          type: string
+                          enum:
+                            - warning
+                            - error
+                        text:
+                          type: string
+                      required:
+                        - t
+                        - level
+                        - text
+                      additionalProperties: false
+                required:
+                  - id
+                  - aircraftSn
+                  - model
+                  - aircraftId
+                  - pilotId
+                  - status
+                  - startedAt
+                  - lastFrameAt
+                  - endedAt
+                  - timedOut
+                  - flightId
+                  - lastFrame
+                  - events
+                additionalProperties: false
+  /api/v1/orgs/{orgId}/live/sessions/{sessionId}/discard:
+    post:
+      tags:
+        - live
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: sessionId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  aircraftSn:
+                    type: string
+                  model:
+                    type:
+                      - string
+                      - "null"
+                  aircraftId:
+                    anyOf:
+                      - type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      - type: "null"
+                  pilotId:
+                    anyOf:
+                      - type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      - type: "null"
+                  status:
+                    type: string
+                    enum:
+                      - open
+                      - logged
+                      - needs_aircraft
+                      - discarded
+                  startedAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  lastFrameAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  endedAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  timedOut:
+                    type: boolean
+                  flightId:
+                    anyOf:
+                      - type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      - type: "null"
+                  lastFrame:
+                    anyOf:
+                      - type: object
+                        properties:
+                          sn:
+                            type: string
+                            pattern: ^[A-Za-z0-9]{6,40}$
+                          t:
+                            type: integer
+                            exclusiveMinimum: 0
+                            maximum: 9007199254740991
+                          lat:
+                            anyOf:
+                              - type: number
+                                minimum: -90
+                                maximum: 90
+                              - type: "null"
+                          lon:
+                            anyOf:
+                              - type: number
+                                minimum: -180
+                                maximum: 180
+                              - type: "null"
+                          heightM:
+                            anyOf:
+                              - type: number
+                                minimum: -1000
+                                maximum: 20000
+                              - type: "null"
+                          altM:
+                            type:
+                              - number
+                              - "null"
+                          speedMps:
+                            anyOf:
+                              - type: number
+                                minimum: 0
+                                maximum: 200
+                              - type: "null"
+                          verticalSpeedMps:
+                            type:
+                              - number
+                              - "null"
+                          headingDeg:
+                            type:
+                              - number
+                              - "null"
+                          homeDistanceM:
+                            anyOf:
+                              - type: number
+                                minimum: 0
+                              - type: "null"
+                          batteryPct:
+                            anyOf:
+                              - type: number
+                                minimum: 0
+                                maximum: 100
+                              - type: "null"
+                          remainingFlightSec:
+                            type:
+                              - number
+                              - "null"
+                          packs:
+                            maxItems: 4
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                sn:
+                                  anyOf:
+                                    - type: string
+                                      maxLength: 60
+                                    - type: "null"
+                                pct:
+                                  type:
+                                    - number
+                                    - "null"
+                                voltageV:
+                                  type:
+                                    - number
+                                    - "null"
+                                tempC:
+                                  type:
+                                    - number
+                                    - "null"
+                                cycles:
+                                  type:
+                                    - number
+                                    - "null"
+                              required:
+                                - sn
+                                - pct
+                                - voltageV
+                                - tempC
+                                - cycles
+                              additionalProperties: false
+                          gpsSats:
+                            type:
+                              - number
+                              - "null"
+                          windMps:
+                            type:
+                              - number
+                              - "null"
+                          mode:
+                            anyOf:
+                              - type: integer
+                                minimum: -9007199254740991
+                                maximum: 9007199254740991
+                              - type: "null"
+                          modeLabel:
+                            anyOf:
+                              - type: string
+                                maxLength: 60
+                              - type: "null"
+                          airborne:
+                            type: boolean
+                        required:
+                          - sn
+                          - t
+                          - lat
+                          - lon
+                          - heightM
+                          - altM
+                          - speedMps
+                          - verticalSpeedMps
+                          - headingDeg
+                          - homeDistanceM
+                          - batteryPct
+                          - remainingFlightSec
+                          - packs
+                          - gpsSats
+                          - windMps
+                          - mode
+                          - modeLabel
+                          - airborne
+                        additionalProperties: false
+                      - type: "null"
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        t:
+                          type: number
+                        level:
+                          type: string
+                          enum:
+                            - warning
+                            - error
+                        text:
+                          type: string
+                      required:
+                        - t
+                        - level
+                        - text
+                      additionalProperties: false
+                required:
+                  - id
+                  - aircraftSn
+                  - model
+                  - aircraftId
+                  - pilotId
+                  - status
+                  - startedAt
+                  - lastFrameAt
+                  - endedAt
+                  - timedOut
+                  - flightId
+                  - lastFrame
+                  - events
+                additionalProperties: false
+  /api/v1/integrations/live/frames:
+    post:
+      summary: Send live frames from another bridge (MAVLink forwarder, Skydio, Autel). Bearer API key with live:write.
+      tags:
+        - live
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  anyOf:
+                    - type: string
+                      maxLength: 120
+                    - type: "null"
+                frames:
+                  minItems: 1
+                  maxItems: 600
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      sn:
+                        type: string
+                        pattern: ^[A-Za-z0-9]{6,40}$
+                      t:
+                        type: integer
+                        exclusiveMinimum: 0
+                        maximum: 9007199254740991
+                      lat:
+                        anyOf:
+                          - type: number
+                            minimum: -90
+                            maximum: 90
+                          - type: "null"
+                      lon:
+                        anyOf:
+                          - type: number
+                            minimum: -180
+                            maximum: 180
+                          - type: "null"
+                      heightM:
+                        anyOf:
+                          - type: number
+                            minimum: -1000
+                            maximum: 20000
+                          - type: "null"
+                      altM:
+                        type:
+                          - number
+                          - "null"
+                      speedMps:
+                        anyOf:
+                          - type: number
+                            minimum: 0
+                            maximum: 200
+                          - type: "null"
+                      verticalSpeedMps:
+                        type:
+                          - number
+                          - "null"
+                      headingDeg:
+                        type:
+                          - number
+                          - "null"
+                      homeDistanceM:
+                        anyOf:
+                          - type: number
+                            minimum: 0
+                          - type: "null"
+                      batteryPct:
+                        anyOf:
+                          - type: number
+                            minimum: 0
+                            maximum: 100
+                          - type: "null"
+                      remainingFlightSec:
+                        type:
+                          - number
+                          - "null"
+                      packs:
+                        maxItems: 4
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            sn:
+                              anyOf:
+                                - type: string
+                                  maxLength: 60
+                                - type: "null"
+                            pct:
+                              type:
+                                - number
+                                - "null"
+                            voltageV:
+                              type:
+                                - number
+                                - "null"
+                            tempC:
+                              type:
+                                - number
+                                - "null"
+                            cycles:
+                              type:
+                                - number
+                                - "null"
+                          required:
+                            - sn
+                            - pct
+                            - voltageV
+                            - tempC
+                            - cycles
+                      gpsSats:
+                        type:
+                          - number
+                          - "null"
+                      windMps:
+                        type:
+                          - number
+                          - "null"
+                      mode:
+                        anyOf:
+                          - type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          - type: "null"
+                      modeLabel:
+                        anyOf:
+                          - type: string
+                            maxLength: 60
+                          - type: "null"
+                      airborne:
+                        type: boolean
+                    required:
+                      - sn
+                      - t
+                      - lat
+                      - lon
+                      - heightM
+                      - altM
+                      - speedMps
+                      - verticalSpeedMps
+                      - headingDeg
+                      - homeDistanceM
+                      - batteryPct
+                      - remainingFlightSec
+                      - packs
+                      - gpsSats
+                      - windMps
+                      - mode
+                      - modeLabel
+                      - airborne
+              required:
+                - frames
+      responses:
+        "200":
+          description: Default Response
 security:
   - session: []
   - bearer: []

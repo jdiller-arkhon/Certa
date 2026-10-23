@@ -92,6 +92,13 @@
       "when": 1791840000000,
       "tag": "0012_flight_telemetry",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791850000000,
+      "tag": "0013_live_telemetry",
+      "breakpoints": true
     }
   ]
 }

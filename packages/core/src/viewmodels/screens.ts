@@ -776,7 +776,7 @@ export interface IntegrationsScreenProps extends AsyncState {
   canManage: boolean;
   /** API base URL for the example request, e.g. https://arkhonindustries.com/certa/api/v1 */
   apiBaseUrl: string;
-  onCreateKey: (input: { name: string; expiresInDays: number | null }) => void;
+  onCreateKey: (input: { name: string; expiresInDays: number | null; scopes: ('verify:read' | 'live:write')[] }) => void;
   onRevokeKey: (keyId: string) => void;
   onDismissKey: () => void;
 }

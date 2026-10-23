@@ -1,3 +1,4 @@
+import { liveRoutes } from './routes/live.js';
 import cookie from '@fastify/cookie';
 import rateLimit from '@fastify/rate-limit';
 import swagger from '@fastify/swagger';
@@ -195,6 +196,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(pushRoutes(ctx), { prefix: v1 });
   await app.register(modelRoutes(ctx), { prefix: v1 });
   await app.register(platformRoutes(ctx), { prefix: v1 });
+  await app.register(liveRoutes(ctx), { prefix: v1 });
 
   return app;
 }

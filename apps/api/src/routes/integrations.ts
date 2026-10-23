@@ -40,7 +40,7 @@ interface KeyContext {
 }
 
 /** Authenticates `Authorization: Bearer ck_…` and checks the scope. */
-async function authenticateKey(ctx: AppContext, req: FastifyRequest, scope: string): Promise<KeyContext> {
+export async function authenticateKey(ctx: AppContext, req: FastifyRequest, scope: string): Promise<KeyContext> {
   const header = req.headers.authorization ?? '';
   const m = KEY.exec(header.replace(/^Bearer\s+/i, '').trim());
   if (!m) throw unauthorizedKey();

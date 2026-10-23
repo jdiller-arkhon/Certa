@@ -22,6 +22,7 @@ export function IntegrationsScreen(props: IntegrationsScreenProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('Argus');
   const [lifetime, setLifetime] = useState('365');
+  const [use, setUse] = useState<'verify:read' | 'live:write'>('verify:read');
   const [revoking, setRevoking] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const revokingKey = props.keys.find((k) => k.id === revoking);
@@ -95,7 +96,7 @@ export function IntegrationsScreen(props: IntegrationsScreenProps) {
         open={open}
         onClose={() => setOpen(false)}
         title="Create API key"
-        description="Read-only: it can verify pilots and aircraft, nothing else."
+        description={use === 'verify:read' ? 'Read-only: it can verify pilots and aircraft, nothing else.' : 'Send-only: it can stream drone telemetry to the Live page, nothing else.'}
         footer={
           <>
             <Button variant="secondary" onClick={() => setOpen(false)}>Cancel</Button>
@@ -108,11 +109,19 @@ export function IntegrationsScreen(props: IntegrationsScreenProps) {
           className="space-y-4"
           onSubmit={(e) => {
             e.preventDefault();
-            props.onCreateKey({ name: name.trim(), expiresInDays: lifetime ? Number(lifetime) : null });
+            props.onCreateKey({ name: name.trim(), expiresInDays: lifetime ? Number(lifetime) : null, scopes: [use] });
             setOpen(false);
           }}
         >
           <Field label="Name" hint="Where it’s used, e.g. “Argus production”">{(a) => <Input {...a} required maxLength={100} value={name} onChange={(e) => setName(e.target.value)} />}</Field>
+          <Field label="Used for">
+            {(a) => (
+              <Select {...a} value={use} onChange={(e) => setUse(e.target.value as typeof use)}>
+                <option value="verify:read">Verifying pilots and aircraft (Argus, clients)</option>
+                <option value="live:write">Streaming live drone telemetry (a bridge)</option>
+              </Select>
+            )}
+          </Field>
           <Field label="Expires">
             {(a) => (
               <Select {...a} value={lifetime} onChange={(e) => setLifetime(e.target.value)}>

@@ -11,6 +11,7 @@ export const PARSER_LABEL: Record<string, string> = {
   kml: 'KML track',
   'ardupilot-bin': 'ArduPilot log',
   'px4-ulog': 'PX4 log',
+  'dji-cloud-live': 'DJI live link',
 };
 
 export interface TelemetryViewModel {

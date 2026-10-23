@@ -1,4 +1,4 @@
-import { api, checklistComplete, goNoGo, Id, newId, withCheck, type GeoPoint, type TrackPoint } from '@certa/core';
+import { api, checklistComplete, goNoGo, Id, newId, withCheck, type TrackPoint } from '@certa/core';
 import {
   aircraft,
   and,
@@ -26,15 +26,13 @@ import { z } from 'zod';
 import type { AppContext } from '../app.js';
 import { authorize, inOrg, resolveOrg } from '../lib/context.js';
 import { badRequest, conflict, notFound } from '../lib/errors.js';
+import { ewkt, lineZM } from '../lib/geo.js';
 import { flightSelection, loadFleet, orgMapContext, recomputeDerived, toFlights, type FlightSelectRow } from '../lib/fleet.js';
 import { OrgParams } from './orgs.js';
 
 const FlightParams = OrgParams.extend({ flightId: Id });
 
-const ewkt = (p: GeoPoint | null | undefined) => (p ? sql`ST_GeogFromText(${`SRID=4326;POINT(${p.lon} ${p.lat})`})` : null);
-/** Imported track as a geography line: lon/lat, Z = height above takeoff, M = epoch seconds. Points are schema-validated numbers. */
-const lineZM = (pts: TrackPoint[] | null | undefined) =>
-  pts && pts.length >= 2 ? sql`ST_GeogFromText(${`SRID=4326;LINESTRING ZM(${pts.map(([x, y, z, m]) => `${x} ${y} ${z} ${m}`).join(',')})`})` : null;
+
 
 const encodeCursor = (takeoffAt: string, id: string) => Buffer.from(`${takeoffAt}|${id}`).toString('base64url');
 function decodeCursor(c: string): { takeoffAt: string; id: string } {

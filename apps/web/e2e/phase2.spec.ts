@@ -192,7 +192,7 @@ test('inspector packet: share a read-only link that works without an account', a
   await page.getByRole('button', { name: 'Done' }).click();
   await page.getByRole('button', { name: 'Share with inspector' }).click();
   await page.getByRole('button', { name: 'Revoke' }).click();
-  await expect(page.getByText('Revoked')).toBeVisible();
+  await expect(page.getByText('Revoked', { exact: true })).toBeVisible();
   await g.reload();
   await expect(g.getByRole('heading', { name: 'Link not available' })).toBeVisible();
   await guest.close();
@@ -542,4 +542,40 @@ test('drone logs: a CSV log links to the aircraft by serial and the flight shows
   await expect(page.getByText(/lowest cell 3\.4\d V/)).toBeVisible();
   await expect(page.getByText('Strong wind')).toBeVisible();
   await expect(page.getByRole('img', { name: 'Flight track' })).toBeVisible();
+});
+
+test('live: a streaming drone shows in the air, then lands and is logged after review', async ({ page }) => {
+  await signUp(page, 'Live Ops');
+  const origin = new URL(page.url()).origin;
+  const me = await (await page.request.get(`${origin}/certa/api/v1/me`)).json();
+  const org = me.memberships[0].orgId;
+  const post = (path: string, data: object) => page.request.post(`${origin}/certa/api/v1/orgs/${org}${path}`, { data, headers: { origin } });
+  expect((await post('/aircraft', { nickname: 'Osprey 4', make: 'DJI', model: 'Matrice 30T', serialNumber: '1581F5BKD225D00' })).status()).toBe(201);
+  await page.reload();
+  const key = await (await post('/api-keys', { name: 'Bridge', scopes: ['live:write'] })).json();
+  const send = (frames: object[]) =>
+    page.request.post(`${origin}/certa/api/v1/integrations/live/frames`, { data: { model: 'DJI Matrice 30T', frames }, headers: { authorization: `Bearer ${key.key}` } });
+  const frame = (t: number, airborne: boolean, i: number) => ({
+    sn: '1581F5BKD225D00', t, lat: 39.65 + i * 0.00005, lon: -104.85, heightM: airborne ? 40 : 0, altM: null, speedMps: airborne ? 6 : 0, verticalSpeedMps: 0, headingDeg: 90,
+    homeDistanceM: i * 5.5, batteryPct: 90 - i, remainingFlightSec: null, packs: [{ sn: null, pct: 90 - i, voltageV: 48.1, tempC: 31, cycles: null }], gpsSats: 22, windMps: 3, mode: 5, modeLabel: 'Manual', airborne,
+  });
+  const now = Date.now();
+  expect((await send(Array.from({ length: 30 }, (_, i) => frame(now - 60_000 + i * 2000, i > 0, i)))).status()).toBe(202);
+
+  await go(page, 'Live');
+  await expect(page.getByRole('heading', { name: 'Live', level: 1 })).toBeVisible();
+  const air = page.getByRole('region', { name: /In the air/ });
+  await expect(air.getByText('Osprey 4')).toBeVisible();
+  await expect(air.getByText(/Maya Thornton|Manual/).first()).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Live track' })).toBeVisible();
+
+  // Landing: 25 s on the ground ends the flight. No pilot came with the frames, so it waits for review.
+  expect((await send(Array.from({ length: 13 }, (_, i) => frame(now + 1000 + i * 2000, false, 30)))).status()).toBe(202);
+  await expect(page.getByRole('heading', { name: 'Needs review' })).toBeVisible({ timeout: 20_000 });
+  await page.getByLabel('Pilot for Osprey 4').selectOption({ index: 1 });
+  await page.getByRole('main').getByRole('button', { name: 'Log flight' }).click();
+  await expect(page.getByRole('heading', { name: 'Logged automatically this week' })).toBeVisible({ timeout: 20_000 });
+  await page.getByRole('region', { name: /Logged automatically/ }).getByRole('button', { name: /Osprey 4/ }).click();
+  await expect(page.getByRole('heading', { name: 'Flight data' })).toBeVisible();
+  await expect(page.getByText('From the aircraft’s log (DJI live link)')).toBeVisible();
 });

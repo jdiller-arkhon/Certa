@@ -46,6 +46,15 @@ export const large = {
         "group": "operations"
       },
       {
+        "id": "live",
+        "label": "Live",
+        "href": "/live",
+        "icon": "flights",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
         "id": "missions",
         "label": "Missions",
         "href": "/missions",
@@ -269,6 +278,13 @@ export const large = {
         "shortcut": "G F"
       },
       {
+        "id": "go-live",
+        "label": "Live",
+        "href": "/live",
+        "section": "Go to",
+        "shortcut": "G L"
+      },
+      {
         "id": "go-missions",
         "label": "Missions",
         "href": "/missions",
@@ -407,6 +423,15 @@ export const large = {
         "id": "flights",
         "label": "Flights",
         "href": "/flights",
+        "icon": "flights",
+        "active": false,
+        "badge": null,
+        "group": "operations"
+      },
+      {
+        "id": "live",
+        "label": "Live",
+        "href": "/live",
         "icon": "flights",
         "active": false,
         "badge": null,
@@ -640,6 +665,13 @@ export const large = {
         "href": "/flights",
         "section": "Go to",
         "shortcut": "G F"
+      },
+      {
+        "id": "go-live",
+        "label": "Live",
+        "href": "/live",
+        "section": "Go to",
+        "shortcut": "G L"
       },
       {
         "id": "go-missions",
