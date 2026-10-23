@@ -6662,6 +6662,761 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/platform/overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Platform metrics across every organization (Arkhon admins) */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: date-time */
+                            generatedAt: string;
+                            period: {
+                                /** Format: date */
+                                from: string;
+                                /** Format: date */
+                                to: string;
+                                flights: number;
+                                flightSeconds: number;
+                                pilotsFlown: number;
+                                argusFlights: number;
+                                newPilots: number;
+                            };
+                            totals: {
+                                organizations: number;
+                                pilots: number;
+                                activePilots30d: number;
+                                aircraft: number;
+                                flights: number;
+                                flightSeconds: number;
+                                arkhonLinked: number;
+                                discordLinked: number;
+                                neverSignedIn: number;
+                            };
+                            readiness: {
+                                green: number;
+                                amber: number;
+                                red: number;
+                            };
+                            pilotsNeedingHelp: number;
+                            dueIn30Days: number;
+                            monthly: {
+                                month: string;
+                                flights: number;
+                                flightSeconds: number;
+                                pilotsFlown: number;
+                                argusFlights: number;
+                                newPilots: number;
+                            }[];
+                            topPilots: {
+                                /** Format: uuid */
+                                orgId: string;
+                                /** Format: uuid */
+                                pilotId: string;
+                                name: string;
+                                orgName: string;
+                                flights: number;
+                                flightSeconds: number;
+                            }[];
+                            organizations: {
+                                /** Format: uuid */
+                                orgId: string;
+                                name: string;
+                                pilots: number;
+                                aircraft: number;
+                                flights: number;
+                                flightSeconds: number;
+                                readiness: {
+                                    green: number;
+                                    amber: number;
+                                    red: number;
+                                };
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/pilots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every pilot in every organization, with readiness and help flags */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            pilots: {
+                                /** Format: uuid */
+                                orgId: string;
+                                orgName: string;
+                                /** Format: uuid */
+                                pilotId: string;
+                                name: string;
+                                email: string | null;
+                                role: ("owner" | "admin" | "chief_pilot" | "pilot" | "maintenance_tech" | "viewer" | "auditor") | null;
+                                active: boolean;
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                reason: string | null;
+                                certificateOnFile: boolean;
+                                recurrentDueOn: string | null;
+                                flights: number;
+                                flightSeconds: number;
+                                last90DaysFlights: number;
+                                lastFlightAt: string | null;
+                                argusWaiting: number;
+                                /** @enum {string} */
+                                account: "active" | "invited" | "no_account";
+                                lastSignInAt: string | null;
+                                arkhonLinked: boolean;
+                                arkhonAdminUrl: string | null;
+                                discordLinked: boolean;
+                                helpFlags: ("recurrent_overdue" | "no_certificate" | "not_cleared" | "recurrent_due_soon" | "never_signed_in" | "argus_waiting" | "inactive_90d")[];
+                            }[];
+                            /** Format: date-time */
+                            generatedAt: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/pilots/{orgId}/{pilotId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One pilot: readiness items, recent flights, monthly hours, account */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            pilot: {
+                                /** Format: uuid */
+                                orgId: string;
+                                orgName: string;
+                                /** Format: uuid */
+                                pilotId: string;
+                                name: string;
+                                email: string | null;
+                                role: ("owner" | "admin" | "chief_pilot" | "pilot" | "maintenance_tech" | "viewer" | "auditor") | null;
+                                active: boolean;
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                reason: string | null;
+                                certificateOnFile: boolean;
+                                recurrentDueOn: string | null;
+                                flights: number;
+                                flightSeconds: number;
+                                last90DaysFlights: number;
+                                lastFlightAt: string | null;
+                                argusWaiting: number;
+                                /** @enum {string} */
+                                account: "active" | "invited" | "no_account";
+                                lastSignInAt: string | null;
+                                arkhonLinked: boolean;
+                                arkhonAdminUrl: string | null;
+                                discordLinked: boolean;
+                                helpFlags: ("recurrent_overdue" | "no_certificate" | "not_cleared" | "recurrent_due_soon" | "never_signed_in" | "argus_waiting" | "inactive_90d")[];
+                            };
+                            items: {
+                                kind: string;
+                                label: string;
+                                dueOn: string | null;
+                                daysRemaining: number | null;
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                reason: string;
+                            }[];
+                            recentFlights: {
+                                /** Format: uuid */
+                                id: string;
+                                /** @enum {string} */
+                                source: "certa" | "argus";
+                                /** Format: date-time */
+                                takeoffAt: string;
+                                durationSeconds: number;
+                                aircraft: string | null;
+                                locationName: string | null;
+                            }[];
+                            monthly: {
+                                month: string;
+                                flights: number;
+                                flightSeconds: number;
+                                pilotsFlown: number;
+                                argusFlights: number;
+                                newPilots: number;
+                            }[];
+                            otherOrganizations: {
+                                /** Format: uuid */
+                                orgId: string;
+                                name: string;
+                                /** @enum {string} */
+                                role: "owner" | "admin" | "chief_pilot" | "pilot" | "maintenance_tech" | "viewer" | "auditor";
+                            }[];
+                            history: {
+                                /** Format: date-time */
+                                at: string;
+                                action: string;
+                                actor: string | null;
+                                detail: string | null;
+                            }[];
+                            viewerIsMember: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/remind": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Email pilots what needs attention in their records */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        pilots: {
+                            /** Format: uuid */
+                            orgId: string;
+                            /** Format: uuid */
+                            pilotId: string;
+                        }[];
+                        note?: string | null;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            sent: number;
+                            skipped: {
+                                /** Format: uuid */
+                                pilotId: string;
+                                name: string;
+                                reason: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/pilots/{orgId}/{pilotId}/invite": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Re-send sign-in instructions to a pilot who hasn’t signed in */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    orgId: string;
+                    pilotId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            sent: number;
+                            skipped: {
+                                /** Format: uuid */
+                                pilotId: string;
+                                name: string;
+                                reason: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/compliance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Everything overdue or coming due across every organization */
+        get: {
+            parameters: {
+                query?: {
+                    windowDays?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            items: {
+                                /** Format: uuid */
+                                orgId: string;
+                                orgName: string;
+                                /** @enum {string} */
+                                subjectType: "pilot" | "aircraft" | "organization";
+                                subjectId: string;
+                                subject: string;
+                                pilotId: string | null;
+                                kind: string;
+                                label: string;
+                                dueOn: string | null;
+                                daysRemaining: number | null;
+                                /** @enum {string} */
+                                level: "green" | "amber" | "red";
+                                reason: string;
+                            }[];
+                            windowDays: number;
+                            /** Format: date-time */
+                            generatedAt: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/exports/{dataset}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download a metrics dataset as CSV */
+        get: {
+            parameters: {
+                query?: {
+                    from?: string;
+                    to?: string;
+                    orgId?: string;
+                    pilotId?: string;
+                };
+                header?: never;
+                path: {
+                    dataset: "flights" | "pilots" | "pilot-hours" | "monthly" | "organizations" | "aircraft" | "compliance";
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description text/csv */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Announcements, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            announcements: {
+                                /** Format: uuid */
+                                id: string;
+                                title: string;
+                                body: string;
+                                /** @enum {string} */
+                                audience: "everyone" | "pilots" | "managers";
+                                /** @enum {string} */
+                                level: "info" | "important";
+                                /** Format: date-time */
+                                startsAt: string;
+                                endsAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                createdBy: string | null;
+                                emailed: number;
+                                pushed: number;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Post an announcement in the app, optionally by email and push */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        title: string;
+                        body: string;
+                        /** @enum {string} */
+                        audience: "everyone" | "pilots" | "managers";
+                        /**
+                         * @default info
+                         * @enum {string}
+                         */
+                        level?: "info" | "important";
+                        endsAt?: string | null;
+                        /** @default false */
+                        email?: boolean;
+                        /** @default false */
+                        push?: boolean;
+                    };
+                };
+            };
+            responses: {
+                /** @description Default Response */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            title: string;
+                            body: string;
+                            /** @enum {string} */
+                            audience: "everyone" | "pilots" | "managers";
+                            /** @enum {string} */
+                            level: "info" | "important";
+                            /** Format: date-time */
+                            startsAt: string;
+                            endsAt: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            createdBy: string | null;
+                            emailed: number;
+                            pushed: number;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/announcements/{announcementId}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stop showing an announcement */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    announcementId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** Format: uuid */
+                            id: string;
+                            title: string;
+                            body: string;
+                            /** @enum {string} */
+                            audience: "everyone" | "pilots" | "managers";
+                            /** @enum {string} */
+                            level: "info" | "important";
+                            /** Format: date-time */
+                            startsAt: string;
+                            endsAt: string | null;
+                            /** Format: date-time */
+                            createdAt: string;
+                            createdBy: string | null;
+                            emailed: number;
+                            pushed: number;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** What platform admins did, newest first */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            events: {
+                                /** Format: uuid */
+                                id: string;
+                                /** Format: date-time */
+                                at: string;
+                                actor: string | null;
+                                action: string;
+                                orgName: string | null;
+                                target: string | null;
+                                detail: string | null;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/announcements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Current announcements for the signed-in user */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Default Response */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            announcements: {
+                                /** Format: uuid */
+                                id: string;
+                                title: string;
+                                body: string;
+                                /** @enum {string} */
+                                audience: "everyone" | "pilots" | "managers";
+                                /** @enum {string} */
+                                level: "info" | "important";
+                                /** Format: date-time */
+                                startsAt: string;
+                                endsAt: string | null;
+                                /** Format: date-time */
+                                createdAt: string;
+                                createdBy: string | null;
+                                emailed: number;
+                                pushed: number;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {

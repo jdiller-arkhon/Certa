@@ -78,6 +78,13 @@
       "when": 1791820000000,
       "tag": "0010_external_flights",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791830000000,
+      "tag": "0011_platform_console",
+      "breakpoints": true
     }
   ]
 }

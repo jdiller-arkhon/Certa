@@ -90,7 +90,7 @@ export interface NavItem {
   /** e.g. count of red items; null hides the badge. */
   badge: { text: string; level: ReadinessLevel } | null;
   /** Top-bar grouping: `operations` items sit in the bar; the others open as menus. */
-  group: 'operations' | 'fleet' | 'upkeep' | 'admin';
+  group: 'operations' | 'fleet' | 'upkeep' | 'admin' | 'platform';
 }
 
 /** One entry in the command palette (⌘K): go somewhere or start something. */

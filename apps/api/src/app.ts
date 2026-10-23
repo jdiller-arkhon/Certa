@@ -32,6 +32,7 @@ import { shareRoutes } from './routes/share.js';
 import { integrationRoutes } from './routes/integrations.js';
 import { argusRoutes } from './routes/argus.js';
 import { conditionsRoutes } from './routes/conditions.js';
+import { platformRoutes } from './routes/platform.js';
 import { pushRoutes } from './routes/push.js';
 import { modelRoutes } from './routes/models.js';
 import { healthRoutes } from './routes/health.js';
@@ -193,6 +194,7 @@ export async function buildApp(deps: AppDeps, opts: { logger?: boolean } = {}) {
   await app.register(conditionsRoutes(ctx), { prefix: v1 });
   await app.register(pushRoutes(ctx), { prefix: v1 });
   await app.register(modelRoutes(ctx), { prefix: v1 });
+  await app.register(platformRoutes(ctx), { prefix: v1 });
 
   return app;
 }

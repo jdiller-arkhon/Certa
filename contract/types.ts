@@ -100,6 +100,24 @@ export type {
   RecordsScreenProps,
   AnalyticsScreenProps,
   AssistantScreenProps,
+  // Arkhon platform console
+  PlatformOverviewScreenProps,
+  PlatformKpiVM,
+  PlatformChartMonthVM,
+  PlatformPeriodVM,
+  PlatformPeriodPreset,
+  PlatformPilotsScreenProps,
+  PlatformPilotsFilter,
+  PlatformPilotRowVM,
+  HelpFlagVM,
+  PlatformPilotDetailScreenProps,
+  PlatformComplianceScreenProps,
+  PlatformComplianceRowVM,
+  PlatformReportsScreenProps,
+  PlatformAnnouncementsScreenProps,
+  AnnouncementVM,
+  AnnouncementDraft,
+  PlatformActivityScreenProps,
 } from '@certa/core';
 
 export { COMPLIANCE_NOTICE } from '@certa/core';

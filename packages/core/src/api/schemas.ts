@@ -4,7 +4,7 @@
  */
 import { z } from 'zod';
 import { Aircraft, AuditEvent, Authorization, Mission, ChecklistSection, ChecklistTemplate, Battery, BatteryRetirementThresholds, Credential, Flight, FlightBatteryUse, GeoPoint, IanaTimeZone, Id, InsurancePolicy, IsoDate, IsoDateTime, MaintenanceEvent, MaintenanceSchedule, Membership, Organization, Pilot, PriorExperience, ExternalFlight, TrainingRecord, User, WeatherSnapshot } from '../domain/entities.js';
-import { AirspaceClass, AuthorizationKind, MissionStatus, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
+import { AirspaceClass, AuthorizationKind, MissionStatus, BatteryChemistry, ChecklistKind, BatteryStatus, JurisdictionId, OperationType, PlanTier, ReadinessLevel, RemoteIdMethod, Role, UnitsPreference } from '../domain/enums.js';
 import { FleetSnapshot, GoNoGoResult } from '../fleet/fleet.js';
 import { InspectorPacket } from '../fleet/packet.js';
 import { FlightVerificationResult, VerificationResult } from '../fleet/verify.js';
@@ -665,3 +665,212 @@ export const UpdateMissionRequest = z
   .refine(windowOk, { message: 'The end must be after the start', path: ['plannedEnd'] });
 export type UpdateMissionRequest = z.infer<typeof UpdateMissionRequest>;
 export const MissionListResponse = z.object({ missions: z.array(MissionRecord) });
+
+// ---------- Platform console (Arkhon admins, across every organization) ----------
+
+/** Reasons a pilot might need a hand, worst first. */
+export const PilotHelpFlag = z.enum([
+  'recurrent_overdue',
+  'no_certificate',
+  'not_cleared',
+  'recurrent_due_soon',
+  'never_signed_in',
+  'argus_waiting',
+  'inactive_90d',
+]);
+export type PilotHelpFlag = z.infer<typeof PilotHelpFlag>;
+
+export const PlatformPilotRow = z.object({
+  orgId: Id,
+  orgName: z.string(),
+  pilotId: Id,
+  name: z.string(),
+  email: z.string().nullable(),
+  role: Role.nullable(),
+  active: z.boolean(),
+  level: ReadinessLevel,
+  /** The most pressing reason the pilot isn't green, if any. */
+  reason: z.string().nullable(),
+  certificateOnFile: z.boolean(),
+  recurrentDueOn: IsoDate.nullable(),
+  flights: z.number().int().nonnegative(),
+  flightSeconds: z.number().int().nonnegative(),
+  last90DaysFlights: z.number().int().nonnegative(),
+  lastFlightAt: IsoDateTime.nullable(),
+  /** Argus mission flights still waiting for the pilot to pick an aircraft. */
+  argusWaiting: z.number().int().nonnegative(),
+  account: z.enum(['active', 'invited', 'no_account']),
+  lastSignInAt: IsoDateTime.nullable(),
+  arkhonLinked: z.boolean(),
+  /** Arkhon admin page for this person's account, when they have one. */
+  arkhonAdminUrl: z.string().nullable(),
+  discordLinked: z.boolean(),
+  helpFlags: z.array(PilotHelpFlag),
+});
+export type PlatformPilotRow = z.infer<typeof PlatformPilotRow>;
+export const PlatformPilotListResponse = z.object({ pilots: z.array(PlatformPilotRow), generatedAt: IsoDateTime });
+export type PlatformPilotListResponse = z.infer<typeof PlatformPilotListResponse>;
+
+export const PlatformMonth = z.object({
+  /** Calendar month in UTC, YYYY-MM. */
+  month: z.string(),
+  flights: z.number().int().nonnegative(),
+  flightSeconds: z.number().int().nonnegative(),
+  pilotsFlown: z.number().int().nonnegative(),
+  argusFlights: z.number().int().nonnegative(),
+  newPilots: z.number().int().nonnegative(),
+});
+export type PlatformMonth = z.infer<typeof PlatformMonth>;
+
+export const PlatformComplianceItem = z.object({
+  orgId: Id,
+  orgName: z.string(),
+  subjectType: z.enum(['pilot', 'aircraft', 'organization']),
+  subjectId: z.string(),
+  subject: z.string(),
+  /** The pilot to remind (their own item, or the pilot named on an authorization). */
+  pilotId: Id.nullable(),
+  kind: z.string(),
+  label: z.string(),
+  dueOn: IsoDate.nullable(),
+  daysRemaining: z.number().int().nullable(),
+  level: ReadinessLevel,
+  reason: z.string(),
+});
+export type PlatformComplianceItem = z.infer<typeof PlatformComplianceItem>;
+export const PlatformComplianceQuery = z.object({ windowDays: z.coerce.number().int().min(0).max(365).default(60) });
+export const PlatformComplianceResponse = z.object({ items: z.array(PlatformComplianceItem), windowDays: z.number().int(), generatedAt: IsoDateTime });
+export type PlatformComplianceResponse = z.infer<typeof PlatformComplianceResponse>;
+
+export const PlatformPeriodQuery = z
+  .object({ from: IsoDate.optional(), to: IsoDate.optional() })
+  .refine((q) => !q.from || !q.to || q.from <= q.to, { message: '“From” must be on or before “to”', path: ['to'] });
+export type PlatformPeriodQuery = z.infer<typeof PlatformPeriodQuery>;
+
+export const PlatformOverviewResponse = z.object({
+  generatedAt: IsoDateTime,
+  /** Inclusive dates (UTC) the period figures cover. */
+  period: z.object({
+    from: IsoDate,
+    to: IsoDate,
+    flights: z.number().int().nonnegative(),
+    flightSeconds: z.number().int().nonnegative(),
+    pilotsFlown: z.number().int().nonnegative(),
+    argusFlights: z.number().int().nonnegative(),
+    newPilots: z.number().int().nonnegative(),
+  }),
+  totals: z.object({
+    organizations: z.number().int().nonnegative(),
+    pilots: z.number().int().nonnegative(),
+    activePilots30d: z.number().int().nonnegative(),
+    aircraft: z.number().int().nonnegative(),
+    flights: z.number().int().nonnegative(),
+    flightSeconds: z.number().int().nonnegative(),
+    arkhonLinked: z.number().int().nonnegative(),
+    discordLinked: z.number().int().nonnegative(),
+    neverSignedIn: z.number().int().nonnegative(),
+  }),
+  readiness: z.object({ green: z.number().int().nonnegative(), amber: z.number().int().nonnegative(), red: z.number().int().nonnegative() }),
+  /** Pilots with at least one help flag. */
+  pilotsNeedingHelp: z.number().int().nonnegative(),
+  /** Compliance items overdue or due within 30 days. */
+  dueIn30Days: z.number().int().nonnegative(),
+  monthly: z.array(PlatformMonth),
+  topPilots: z.array(z.object({ orgId: Id, pilotId: Id, name: z.string(), orgName: z.string(), flights: z.number().int(), flightSeconds: z.number().int() })),
+  organizations: z.array(
+    z.object({
+      orgId: Id,
+      name: z.string(),
+      pilots: z.number().int(),
+      aircraft: z.number().int(),
+      flights: z.number().int(),
+      flightSeconds: z.number().int(),
+      readiness: z.object({ green: z.number().int(), amber: z.number().int(), red: z.number().int() }),
+    }),
+  ),
+});
+export type PlatformOverviewResponse = z.infer<typeof PlatformOverviewResponse>;
+
+export const PlatformPilotDetail = z.object({
+  pilot: PlatformPilotRow,
+  items: z.array(
+    z.object({ kind: z.string(), label: z.string(), dueOn: IsoDate.nullable(), daysRemaining: z.number().int().nullable(), level: ReadinessLevel, reason: z.string() }),
+  ),
+  recentFlights: z.array(
+    z.object({
+      id: Id,
+      source: z.enum(['certa', 'argus']),
+      takeoffAt: IsoDateTime,
+      durationSeconds: z.number().int().nonnegative(),
+      aircraft: z.string().nullable(),
+      locationName: z.string().nullable(),
+    }),
+  ),
+  monthly: z.array(PlatformMonth),
+  /** Other organizations the same account belongs to. */
+  otherOrganizations: z.array(z.object({ orgId: Id, name: z.string(), role: Role })),
+  /** Platform-admin actions about this pilot, newest first. */
+  history: z.array(z.object({ at: IsoDateTime, action: z.string(), actor: z.string().nullable(), detail: z.string().nullable() })),
+  /** Whether the admin viewing this is a member of the pilot's organization (can open it in Certa). */
+  viewerIsMember: z.boolean(),
+});
+export type PlatformPilotDetail = z.infer<typeof PlatformPilotDetail>;
+export const PlatformPilotParams = z.object({ orgId: Id, pilotId: Id });
+
+export const PlatformRemindRequest = z.object({
+  pilots: z.array(z.object({ orgId: Id, pilotId: Id })).min(1).max(500),
+  /** Optional personal note added above the list. */
+  note: opt(z.string().max(1000)),
+});
+export type PlatformRemindRequest = z.infer<typeof PlatformRemindRequest>;
+export const PlatformActionResult = z.object({
+  sent: z.number().int().nonnegative(),
+  skipped: z.array(z.object({ pilotId: Id, name: z.string(), reason: z.string() })),
+});
+export type PlatformActionResult = z.infer<typeof PlatformActionResult>;
+
+export const AnnouncementAudience = z.enum(['everyone', 'pilots', 'managers']);
+export const Announcement = z.object({
+  id: Id,
+  title: z.string(),
+  body: z.string(),
+  audience: AnnouncementAudience,
+  level: z.enum(['info', 'important']),
+  startsAt: IsoDateTime,
+  endsAt: IsoDateTime.nullable(),
+  createdAt: IsoDateTime,
+  createdBy: z.string().nullable(),
+  emailed: z.number().int().nonnegative(),
+  pushed: z.number().int().nonnegative(),
+});
+export type Announcement = z.infer<typeof Announcement>;
+export const CreateAnnouncementRequest = z
+  .object({
+    title: z.string().trim().min(1).max(120),
+    body: z.string().trim().min(1).max(4000),
+    audience: AnnouncementAudience,
+    level: z.enum(['info', 'important']).default('info'),
+    endsAt: IsoDateTime.nullable().optional(),
+    email: z.boolean().default(false),
+    push: z.boolean().default(false),
+  })
+  .refine((a) => !a.endsAt || Date.parse(a.endsAt) > Date.now(), { message: 'The end must be in the future', path: ['endsAt'] });
+export type CreateAnnouncementRequest = z.infer<typeof CreateAnnouncementRequest>;
+export const AnnouncementListResponse = z.object({ announcements: z.array(Announcement) });
+export type AnnouncementListResponse = z.infer<typeof AnnouncementListResponse>;
+export const AnnouncementParams = z.object({ announcementId: Id });
+
+export const PlatformActivityResponse = z.object({
+  events: z.array(
+    z.object({ id: Id, at: IsoDateTime, actor: z.string().nullable(), action: z.string(), orgName: z.string().nullable(), target: z.string().nullable(), detail: z.string().nullable() }),
+  ),
+});
+export type PlatformActivityResponse = z.infer<typeof PlatformActivityResponse>;
+
+export const PLATFORM_EXPORTS = ['flights', 'pilots', 'pilot-hours', 'monthly', 'organizations', 'aircraft', 'compliance'] as const;
+export const PlatformExportParams = z.object({ dataset: z.enum(PLATFORM_EXPORTS) });
+/** A period, optionally narrowed to one organization or one pilot (e.g. a pilot's logbook). */
+export const PlatformExportQuery = z
+  .object({ from: IsoDate.optional(), to: IsoDate.optional(), orgId: Id.optional(), pilotId: Id.optional() })
+  .refine((q) => !q.from || !q.to || q.from <= q.to, { message: '“From” must be on or before “to”', path: ['to'] })
+  .refine((q) => !q.pilotId || q.orgId, { message: 'A pilot needs their organization', path: ['orgId'] });

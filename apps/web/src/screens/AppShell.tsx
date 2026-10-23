@@ -3,6 +3,10 @@
 import type { AppShellProps, NavItem, ThemeName } from '@certa/contract';
 import {
   BatteryMedium,
+  CalendarClock,
+  FileDown,
+  LayoutDashboard,
+  Megaphone,
   BookOpenCheck,
   Briefcase,
   Check,
@@ -47,7 +51,17 @@ import { Avatar } from '@/components/ui/avatar';
 import { Segmented } from '@/components/ui/segmented';
 import { LEVEL_COLOR } from '@/components/ui/status';
 
-const BY_ID: Record<string, LucideIcon> = { rules: BookOpenCheck, members: UserCog, audit: History, integrations: KeyRound };
+const BY_ID: Record<string, LucideIcon> = {
+  rules: BookOpenCheck,
+  members: UserCog,
+  audit: History,
+  integrations: KeyRound,
+  platform: LayoutDashboard,
+  'platform-compliance': CalendarClock,
+  'platform-reports': FileDown,
+  'platform-announcements': Megaphone,
+  'platform-activity': History,
+};
 const BY_ICON: Record<NavItem['icon'], LucideIcon> = {
   today: Radar,
   flights: Route,
@@ -113,20 +127,20 @@ function OrgSwitcher(props: AppShellProps) {
           aria-expanded={multiple ? t['aria-expanded'] : undefined}
           aria-haspopup={multiple ? 'menu' : undefined}
           className={cn(
-            'flex h-11 w-full max-w-[260px] items-center gap-2.5 rounded-full border border-[var(--certa-border)] bg-[var(--certa-surface)] py-1.5 pr-3 pl-1.5 text-left transition-colors',
+            'flex h-11 w-full max-w-[260px] items-center gap-2.5 rounded-full border border-[var(--certa-border)] bg-[var(--certa-surface)] py-1.5 pr-3 pl-1.5 text-left transition-colors lg:w-auto lg:pr-1.5 xl:w-full xl:pr-3',
             multiple && 'hover:bg-[var(--certa-inset)]',
           )}
         >
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--certa-action)] text-[13px] font-bold text-[var(--certa-onAction)]">
             {props.organization.name.slice(0, 1).toUpperCase()}
           </span>
-          <span className="min-w-0 flex-1">
+          <span className="min-w-0 flex-1 lg:sr-only xl:not-sr-only">
             <span data-testid="org-name" className="block truncate text-[13px] leading-tight font-semibold">
               {props.organization.name}
             </span>
             <span className="block truncate text-[11px] leading-tight text-[var(--certa-muted)]">{props.user.roleLabel}</span>
           </span>
-          {multiple && <ChevronsUpDown aria-hidden className="size-4 text-[var(--certa-muted)]" />}
+          {multiple && <ChevronsUpDown aria-hidden className="size-4 text-[var(--certa-muted)] lg:hidden xl:block" />}
         </button>
       )}
       className="w-72"
@@ -250,7 +264,7 @@ function UserMenu(props: AppShellProps & { side?: 'top' | 'bottom'; align?: 'sta
 }
 
 const TAB_IDS = ['today', 'flights', 'aircraft'];
-const GROUP_LABEL: Record<NavItem['group'], string> = { operations: '', fleet: 'Fleet', upkeep: 'Upkeep', admin: 'Admin' };
+const GROUP_LABEL: Record<NavItem['group'], string> = { operations: '', fleet: 'Fleet', upkeep: 'Upkeep', admin: 'Admin', platform: 'Arkhon' };
 
 function TopLink({ item, basePath, onNavigate }: { item: NavItem } & Pick<AppShellProps, 'basePath' | 'onNavigate'>) {
   return (
@@ -262,7 +276,7 @@ function TopLink({ item, basePath, onNavigate }: { item: NavItem } & Pick<AppShe
         e.preventDefault();
         onNavigate(item.href);
       }}
-      className={cn('relative flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[15px] transition-colors duration-200', item.active ? 'font-semibold text-[var(--certa-text)]' : 'text-[var(--certa-muted)] hover:text-[var(--certa-text)]')}
+      className={cn('relative flex h-9 items-center gap-1.5 rounded-full px-2.5 text-[15px] transition-colors duration-200 xl:px-3.5', item.active ? 'font-semibold text-[var(--certa-text)]' : 'text-[var(--certa-muted)] hover:text-[var(--certa-text)]')}
     >
       {item.label}
       {item.badge && <span className="rounded-full px-1.5 py-px text-[11px] font-bold" style={{ background: LEVEL_COLOR[item.badge.level], color: 'var(--certa-canvas)' }}>{item.badge.text}</span>}
@@ -282,7 +296,7 @@ function GroupMenu({ label, items, basePath, onNavigate }: { label: string; item
           onClick={t.toggle}
           aria-expanded={t['aria-expanded']}
           aria-haspopup="true"
-          className={cn('flex h-9 items-center gap-1 rounded-full px-3.5 text-[15px] transition-colors duration-200', active ? 'font-semibold text-[var(--certa-text)]' : 'text-[var(--certa-muted)] hover:text-[var(--certa-text)]')}
+          className={cn('flex h-9 items-center gap-1 rounded-full px-2.5 text-[15px] transition-colors duration-200 xl:px-3.5', active ? 'font-semibold text-[var(--certa-text)]' : 'text-[var(--certa-muted)] hover:text-[var(--certa-text)]')}
         >
           {label}
           <ChevronDown aria-hidden className={cn('size-4 transition-transform duration-200', t.open && 'rotate-180')} />
@@ -351,7 +365,7 @@ function SearchPill({ onOpen }: { onOpen: () => void }) {
       type="button"
       onClick={onOpen}
       aria-label="Search and commands"
-      className="hidden h-11 w-52 items-center gap-2.5 rounded-full border border-[var(--certa-border)] bg-[var(--certa-surface)] pr-2 pl-4 text-[14px] text-[var(--certa-muted)] transition-colors hover:border-[color-mix(in_srgb,var(--certa-text)_35%,var(--certa-border))] xl:flex"
+      className="hidden h-11 w-52 items-center gap-2.5 rounded-full border border-[var(--certa-border)] bg-[var(--certa-surface)] pr-2 pl-4 text-[14px] text-[var(--certa-muted)] transition-colors hover:border-[color-mix(in_srgb,var(--certa-text)_35%,var(--certa-border))] 2xl:flex"
     >
       <Search aria-hidden className="size-4" />
       <span className="flex-1 text-left">Search</span>
@@ -367,7 +381,7 @@ export function AppShell(props: AppShellProps & { children: ReactNode }) {
   useShortcuts({ commands: props.commands, onPalette: openPalette, onNavigate: props.onNavigate });
   const active = props.navigation.find((n) => n.active);
   const ops = props.navigation.filter((n) => n.group === 'operations');
-  const groups = (['fleet', 'upkeep', 'admin'] as const).map((g) => ({ g, items: props.navigation.filter((n) => n.group === g) })).filter((x) => x.items.length);
+  const groups = (['fleet', 'upkeep', 'admin', 'platform'] as const).map((g) => ({ g, items: props.navigation.filter((n) => n.group === g) })).filter((x) => x.items.length);
   const siblings = active && active.group !== 'operations' ? props.navigation.filter((n) => n.group === active.group) : [];
   const canLog = props.commands.some((c) => c.id === 'log-flight');
   const tabs = TAB_IDS.map((id) => props.navigation.find((n) => n.id === id)).filter((n): n is NavItem => !!n);
@@ -397,7 +411,7 @@ export function AppShell(props: AppShellProps & { children: ReactNode }) {
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <SearchPill onOpen={openPalette} />
-            <button type="button" onClick={openPalette} aria-label="Search" className="flex size-10 items-center justify-center rounded-full text-[var(--certa-muted)] hover:bg-[var(--certa-inset)] hover:text-[var(--certa-text)] xl:hidden">
+            <button type="button" onClick={openPalette} aria-label="Search" className="flex size-10 items-center justify-center rounded-full text-[var(--certa-muted)] hover:bg-[var(--certa-inset)] hover:text-[var(--certa-text)] 2xl:hidden">
               <Search className="size-5" aria-hidden />
             </button>
             <SyncChip sync={props.sync} onSyncNow={props.onSyncNow} />
@@ -406,9 +420,10 @@ export function AppShell(props: AppShellProps & { children: ReactNode }) {
                 type="button"
                 whileTap={{ scale: 0.97 }}
                 onClick={() => props.onNavigate('/flights/new')}
-                className="hidden h-11 items-center gap-2 rounded-full bg-[var(--certa-action)] px-5 text-[15px] font-semibold whitespace-nowrap text-[var(--certa-onAction)] shadow-[var(--certa-shadow)] transition-opacity hover:opacity-90 lg:inline-flex"
+                aria-label="Log flight"
+                className="hidden h-11 items-center gap-2 rounded-full bg-[var(--certa-action)] px-3.5 text-[15px] font-semibold whitespace-nowrap text-[var(--certa-onAction)] shadow-[var(--certa-shadow)] transition-opacity hover:opacity-90 lg:inline-flex xl:px-5"
               >
-                <Plus className="size-4" aria-hidden /> Log flight
+                <Plus className="size-4" aria-hidden /> <span className="hidden xl:inline">Log flight</span>
               </motion.button>
             )}
             <div className="w-11">

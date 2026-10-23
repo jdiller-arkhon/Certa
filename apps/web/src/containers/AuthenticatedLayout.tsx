@@ -13,6 +13,7 @@ import { flushOutbox, setOutboxUser, useOutbox, useOutboxAutoFlush } from '@/lib
 import { AppShell } from '@/screens';
 import { ClientHomeContainer } from './ClientHomeContainer';
 import { InstallNudge } from '@/components/install-nudge';
+import { Announcements } from '@/components/announcements';
 
 export function AuthenticatedLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -105,6 +106,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
     theme,
     sync,
     search,
+    platformAdmin: me.data.arkhon?.platformAdmin ?? false,
   });
 
   // Palette search runs on the cached fleet snapshot (works offline) plus any loaded flights.
@@ -143,6 +145,7 @@ export function AuthenticatedLayout({ children }: { children: ReactNode }) {
       >
         {/* Only on Today, so it never sits on top of a form in the field. */}
         {pathname === '/' && <InstallNudge />}
+        <Announcements />
         {children}
       </AppShell>
     </CurrentOrgContext.Provider>

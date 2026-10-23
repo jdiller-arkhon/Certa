@@ -93,7 +93,7 @@ async function orgIds(pool: pg.Pool): Promise<string[]> {
  * Waivers, airspace authorizations, COAs and LAANC approvals with an end date: last valid day is
  * the end date in the org's time zone. Managers hear about all of them; a pilot about their own.
  */
-async function authorizationItems(db: Db, timeZone: string, today: string, policy: ReadinessPolicy) {
+export async function authorizationItems(db: Db, timeZone: string, today: string, policy: ReadinessPolicy) {
   const rows = await db
     .select({ id: authorizations.id, kind: authorizations.kind, reference: authorizations.reference, title: authorizations.title, validTo: authorizations.validTo, pilotId: authorizations.pilotId })
     .from(authorizations)

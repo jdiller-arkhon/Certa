@@ -120,6 +120,14 @@ export function FlightDetailContainer({ flightId }: { flightId: string }) {
   const q = useFlight(f.orgId, flightId);
   const auths = useAuthorizations(f.orgId);
   const local = outbox.items.find((i) => i.id === flightId);
+  // Once its upload lands the queued copy disappears, possibly before the refetch does: a 404
+  // from before the upload must not read as "not found" then.
+  const wasQueued = useRef(false);
+  if (local) wasQueued.current = true;
+  const justSynced = !local && wasQueued.current && q.error instanceof CertaApiError && q.error.status === 404;
+  useEffect(() => {
+    if (justSynced) void q.refetch();
+  }, [justSynced, q]);
   const remove = useFleetMutation(f.orgId, async () => ensureOk(await api.DELETE('/api/v1/orgs/{orgId}/flights/{flightId}', { params: { path: { orgId: f.orgId, flightId } } })), {
     flights: true,
     onSuccess: () => router.replace('/flights'),
@@ -134,7 +142,7 @@ export function FlightDetailContainer({ flightId }: { flightId: string }) {
       {...data}
       // Unsynced flights can't be edited or deleted on the server yet.
       canEdit={data.canEdit && !!q.data}
-      loading={(q.isLoading && !local) || remove.isPending}
+      loading={(q.isLoading && !local) || justSynced || remove.isPending}
       error={remove.error ?? (q.error && !local && !notFound ? 'We couldn’t load this flight.' : null)}
       onEdit={() => router.push(`/flights/${flightId}/edit`)}
       onDelete={() => remove.mutate(undefined)}

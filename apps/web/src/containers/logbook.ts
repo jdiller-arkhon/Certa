@@ -1,16 +1,9 @@
 'use client';
 
-import { fleetNames, OPERATION_TYPE_LABEL, type api as apiTypes, type BuildInput } from '@certa/core';
+import { fleetNames, OPERATION_TYPE_LABEL, toCsv, csvCell, type api as apiTypes, type BuildInput } from '@certa/core';
 import { unwrap } from '@certa/sdk';
 import { api } from '@/lib/api';
 import { download } from './_fleet';
-
-export const csvCell = (v: unknown) => {
-  const s = v == null ? '' : String(v);
-  // Quote everything; neutralize spreadsheet formula injection.
-  const safe = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
-  return `"${safe.replace(/"/g, '""')}"`;
-};
 
 /** Every flight matching the filter, as a CSV logbook download. */
 export async function exportLogbook(orgId: string, bi: BuildInput, filter: { pilotId?: string; aircraftId?: string }, name: string) {
@@ -26,7 +19,7 @@ export async function exportLogbook(orgId: string, bi: BuildInput, filter: { pil
   download(`certa-logbook-${slug}-${bi.ctx.today}.csv`, toCsv(rows));
 }
 
-export const toCsv = (rows: unknown[][]) => rows.map((r) => r.map(csvCell).join(',')).join('\r\n');
+export { csvCell, toCsv };
 
 export function flightsCsvRows(bi: BuildInput, flights: apiTypes.FlightListResponse['items']): unknown[][] {
   const n = fleetNames(bi.snapshot);

@@ -14855,6 +14855,1458 @@ paths:
       responses:
         "204":
           description: Default Response
+  /api/v1/platform/overview:
+    get:
+      summary: Platform metrics across every organization (Arkhon admins)
+      tags:
+        - platform
+      parameters:
+        - schema:
+            type: string
+            format: date
+            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+          in: query
+          name: from
+          required: false
+        - schema:
+            type: string
+            format: date
+            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+          in: query
+          name: to
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  generatedAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  period:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                        format: date
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                      to:
+                        type: string
+                        format: date
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                      flights:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      flightSeconds:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      pilotsFlown:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      argusFlights:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      newPilots:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                    required:
+                      - from
+                      - to
+                      - flights
+                      - flightSeconds
+                      - pilotsFlown
+                      - argusFlights
+                      - newPilots
+                    additionalProperties: false
+                  totals:
+                    type: object
+                    properties:
+                      organizations:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      pilots:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      activePilots30d:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      aircraft:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      flights:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      flightSeconds:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      arkhonLinked:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      discordLinked:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      neverSignedIn:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                    required:
+                      - organizations
+                      - pilots
+                      - activePilots30d
+                      - aircraft
+                      - flights
+                      - flightSeconds
+                      - arkhonLinked
+                      - discordLinked
+                      - neverSignedIn
+                    additionalProperties: false
+                  readiness:
+                    type: object
+                    properties:
+                      green:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      amber:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      red:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                    required:
+                      - green
+                      - amber
+                      - red
+                    additionalProperties: false
+                  pilotsNeedingHelp:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                  dueIn30Days:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                  monthly:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        month:
+                          type: string
+                        flights:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        flightSeconds:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        pilotsFlown:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        argusFlights:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        newPilots:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                      required:
+                        - month
+                        - flights
+                        - flightSeconds
+                        - pilotsFlown
+                        - argusFlights
+                        - newPilots
+                      additionalProperties: false
+                  topPilots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orgId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        pilotId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        name:
+                          type: string
+                        orgName:
+                          type: string
+                        flights:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        flightSeconds:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                      required:
+                        - orgId
+                        - pilotId
+                        - name
+                        - orgName
+                        - flights
+                        - flightSeconds
+                      additionalProperties: false
+                  organizations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orgId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        name:
+                          type: string
+                        pilots:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        aircraft:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        flights:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        flightSeconds:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        readiness:
+                          type: object
+                          properties:
+                            green:
+                              type: integer
+                              minimum: -9007199254740991
+                              maximum: 9007199254740991
+                            amber:
+                              type: integer
+                              minimum: -9007199254740991
+                              maximum: 9007199254740991
+                            red:
+                              type: integer
+                              minimum: -9007199254740991
+                              maximum: 9007199254740991
+                          required:
+                            - green
+                            - amber
+                            - red
+                          additionalProperties: false
+                      required:
+                        - orgId
+                        - name
+                        - pilots
+                        - aircraft
+                        - flights
+                        - flightSeconds
+                        - readiness
+                      additionalProperties: false
+                required:
+                  - generatedAt
+                  - period
+                  - totals
+                  - readiness
+                  - pilotsNeedingHelp
+                  - dueIn30Days
+                  - monthly
+                  - topPilots
+                  - organizations
+                additionalProperties: false
+  /api/v1/platform/pilots:
+    get:
+      summary: Every pilot in every organization, with readiness and help flags
+      tags:
+        - platform
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pilots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orgId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        orgName:
+                          type: string
+                        pilotId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        name:
+                          type: string
+                        email:
+                          type:
+                            - string
+                            - "null"
+                        role:
+                          anyOf:
+                            - type: string
+                              enum:
+                                - owner
+                                - admin
+                                - chief_pilot
+                                - pilot
+                                - maintenance_tech
+                                - viewer
+                                - auditor
+                            - type: "null"
+                        active:
+                          type: boolean
+                        level:
+                          type: string
+                          enum:
+                            - green
+                            - amber
+                            - red
+                        reason:
+                          type:
+                            - string
+                            - "null"
+                        certificateOnFile:
+                          type: boolean
+                        recurrentDueOn:
+                          anyOf:
+                            - type: string
+                              format: date
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                            - type: "null"
+                        flights:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        flightSeconds:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        last90DaysFlights:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        lastFlightAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        argusWaiting:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        account:
+                          type: string
+                          enum:
+                            - active
+                            - invited
+                            - no_account
+                        lastSignInAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        arkhonLinked:
+                          type: boolean
+                        arkhonAdminUrl:
+                          type:
+                            - string
+                            - "null"
+                        discordLinked:
+                          type: boolean
+                        helpFlags:
+                          type: array
+                          items:
+                            type: string
+                            enum:
+                              - recurrent_overdue
+                              - no_certificate
+                              - not_cleared
+                              - recurrent_due_soon
+                              - never_signed_in
+                              - argus_waiting
+                              - inactive_90d
+                      required:
+                        - orgId
+                        - orgName
+                        - pilotId
+                        - name
+                        - email
+                        - role
+                        - active
+                        - level
+                        - reason
+                        - certificateOnFile
+                        - recurrentDueOn
+                        - flights
+                        - flightSeconds
+                        - last90DaysFlights
+                        - lastFlightAt
+                        - argusWaiting
+                        - account
+                        - lastSignInAt
+                        - arkhonLinked
+                        - arkhonAdminUrl
+                        - discordLinked
+                        - helpFlags
+                      additionalProperties: false
+                  generatedAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                required:
+                  - pilots
+                  - generatedAt
+                additionalProperties: false
+  /api/v1/platform/pilots/{orgId}/{pilotId}:
+    get:
+      summary: "One pilot: readiness items, recent flights, monthly hours, account"
+      tags:
+        - platform
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: pilotId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pilot:
+                    type: object
+                    properties:
+                      orgId:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      orgName:
+                        type: string
+                      pilotId:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      name:
+                        type: string
+                      email:
+                        type:
+                          - string
+                          - "null"
+                      role:
+                        anyOf:
+                          - type: string
+                            enum:
+                              - owner
+                              - admin
+                              - chief_pilot
+                              - pilot
+                              - maintenance_tech
+                              - viewer
+                              - auditor
+                          - type: "null"
+                      active:
+                        type: boolean
+                      level:
+                        type: string
+                        enum:
+                          - green
+                          - amber
+                          - red
+                      reason:
+                        type:
+                          - string
+                          - "null"
+                      certificateOnFile:
+                        type: boolean
+                      recurrentDueOn:
+                        anyOf:
+                          - type: string
+                            format: date
+                            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                          - type: "null"
+                      flights:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      flightSeconds:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      last90DaysFlights:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      lastFlightAt:
+                        anyOf:
+                          - type: string
+                            format: date-time
+                            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                          - type: "null"
+                      argusWaiting:
+                        type: integer
+                        minimum: 0
+                        maximum: 9007199254740991
+                      account:
+                        type: string
+                        enum:
+                          - active
+                          - invited
+                          - no_account
+                      lastSignInAt:
+                        anyOf:
+                          - type: string
+                            format: date-time
+                            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                          - type: "null"
+                      arkhonLinked:
+                        type: boolean
+                      arkhonAdminUrl:
+                        type:
+                          - string
+                          - "null"
+                      discordLinked:
+                        type: boolean
+                      helpFlags:
+                        type: array
+                        items:
+                          type: string
+                          enum:
+                            - recurrent_overdue
+                            - no_certificate
+                            - not_cleared
+                            - recurrent_due_soon
+                            - never_signed_in
+                            - argus_waiting
+                            - inactive_90d
+                    required:
+                      - orgId
+                      - orgName
+                      - pilotId
+                      - name
+                      - email
+                      - role
+                      - active
+                      - level
+                      - reason
+                      - certificateOnFile
+                      - recurrentDueOn
+                      - flights
+                      - flightSeconds
+                      - last90DaysFlights
+                      - lastFlightAt
+                      - argusWaiting
+                      - account
+                      - lastSignInAt
+                      - arkhonLinked
+                      - arkhonAdminUrl
+                      - discordLinked
+                      - helpFlags
+                    additionalProperties: false
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        kind:
+                          type: string
+                        label:
+                          type: string
+                        dueOn:
+                          anyOf:
+                            - type: string
+                              format: date
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                            - type: "null"
+                        daysRemaining:
+                          anyOf:
+                            - type: integer
+                              minimum: -9007199254740991
+                              maximum: 9007199254740991
+                            - type: "null"
+                        level:
+                          type: string
+                          enum:
+                            - green
+                            - amber
+                            - red
+                        reason:
+                          type: string
+                      required:
+                        - kind
+                        - label
+                        - dueOn
+                        - daysRemaining
+                        - level
+                        - reason
+                      additionalProperties: false
+                  recentFlights:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        source:
+                          type: string
+                          enum:
+                            - certa
+                            - argus
+                        takeoffAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        durationSeconds:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        aircraft:
+                          type:
+                            - string
+                            - "null"
+                        locationName:
+                          type:
+                            - string
+                            - "null"
+                      required:
+                        - id
+                        - source
+                        - takeoffAt
+                        - durationSeconds
+                        - aircraft
+                        - locationName
+                      additionalProperties: false
+                  monthly:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        month:
+                          type: string
+                        flights:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        flightSeconds:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        pilotsFlown:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        argusFlights:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        newPilots:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                      required:
+                        - month
+                        - flights
+                        - flightSeconds
+                        - pilotsFlown
+                        - argusFlights
+                        - newPilots
+                      additionalProperties: false
+                  otherOrganizations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orgId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        name:
+                          type: string
+                        role:
+                          type: string
+                          enum:
+                            - owner
+                            - admin
+                            - chief_pilot
+                            - pilot
+                            - maintenance_tech
+                            - viewer
+                            - auditor
+                      required:
+                        - orgId
+                        - name
+                        - role
+                      additionalProperties: false
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        at:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        action:
+                          type: string
+                        actor:
+                          type:
+                            - string
+                            - "null"
+                        detail:
+                          type:
+                            - string
+                            - "null"
+                      required:
+                        - at
+                        - action
+                        - actor
+                        - detail
+                      additionalProperties: false
+                  viewerIsMember:
+                    type: boolean
+                required:
+                  - pilot
+                  - items
+                  - recentFlights
+                  - monthly
+                  - otherOrganizations
+                  - history
+                  - viewerIsMember
+                additionalProperties: false
+  /api/v1/platform/remind:
+    post:
+      summary: Email pilots what needs attention in their records
+      tags:
+        - platform
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pilots:
+                  minItems: 1
+                  maxItems: 500
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      orgId:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                      pilotId:
+                        type: string
+                        format: uuid
+                        pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                    required:
+                      - orgId
+                      - pilotId
+                note:
+                  anyOf:
+                    - type: string
+                      maxLength: 1000
+                    - type: "null"
+              required:
+                - pilots
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                  skipped:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        pilotId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        name:
+                          type: string
+                        reason:
+                          type: string
+                      required:
+                        - pilotId
+                        - name
+                        - reason
+                      additionalProperties: false
+                required:
+                  - sent
+                  - skipped
+                additionalProperties: false
+  /api/v1/platform/pilots/{orgId}/{pilotId}/invite:
+    post:
+      summary: Re-send sign-in instructions to a pilot who hasn’t signed in
+      tags:
+        - platform
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: orgId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: pilotId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                  skipped:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        pilotId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        name:
+                          type: string
+                        reason:
+                          type: string
+                      required:
+                        - pilotId
+                        - name
+                        - reason
+                      additionalProperties: false
+                required:
+                  - sent
+                  - skipped
+                additionalProperties: false
+  /api/v1/platform/compliance:
+    get:
+      summary: Everything overdue or coming due across every organization
+      tags:
+        - platform
+      parameters:
+        - schema:
+            default: 60
+            type: integer
+            minimum: 0
+            maximum: 365
+          in: query
+          name: windowDays
+          required: false
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        orgId:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        orgName:
+                          type: string
+                        subjectType:
+                          type: string
+                          enum:
+                            - pilot
+                            - aircraft
+                            - organization
+                        subjectId:
+                          type: string
+                        subject:
+                          type: string
+                        pilotId:
+                          anyOf:
+                            - type: string
+                              format: uuid
+                              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                            - type: "null"
+                        kind:
+                          type: string
+                        label:
+                          type: string
+                        dueOn:
+                          anyOf:
+                            - type: string
+                              format: date
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+                            - type: "null"
+                        daysRemaining:
+                          anyOf:
+                            - type: integer
+                              minimum: -9007199254740991
+                              maximum: 9007199254740991
+                            - type: "null"
+                        level:
+                          type: string
+                          enum:
+                            - green
+                            - amber
+                            - red
+                        reason:
+                          type: string
+                      required:
+                        - orgId
+                        - orgName
+                        - subjectType
+                        - subjectId
+                        - subject
+                        - pilotId
+                        - kind
+                        - label
+                        - dueOn
+                        - daysRemaining
+                        - level
+                        - reason
+                      additionalProperties: false
+                  windowDays:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                  generatedAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                required:
+                  - items
+                  - windowDays
+                  - generatedAt
+                additionalProperties: false
+  /api/v1/platform/exports/{dataset}:
+    get:
+      summary: Download a metrics dataset as CSV
+      tags:
+        - platform
+      parameters:
+        - schema:
+            type: string
+            format: date
+            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+          in: query
+          name: from
+          required: false
+        - schema:
+            type: string
+            format: date
+            pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))$
+          in: query
+          name: to
+          required: false
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: orgId
+          required: false
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: pilotId
+          required: false
+        - schema:
+            type: string
+            enum:
+              - flights
+              - pilots
+              - pilot-hours
+              - monthly
+              - organizations
+              - aircraft
+              - compliance
+          in: path
+          name: dataset
+          required: true
+      responses:
+        "200":
+          description: text/csv
+          content:
+            application/json:
+              schema:
+                type: string
+                description: text/csv
+  /api/v1/platform/announcements:
+    get:
+      summary: Announcements, newest first
+      tags:
+        - platform
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  announcements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        title:
+                          type: string
+                        body:
+                          type: string
+                        audience:
+                          type: string
+                          enum:
+                            - everyone
+                            - pilots
+                            - managers
+                        level:
+                          type: string
+                          enum:
+                            - info
+                            - important
+                        startsAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        endsAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        createdAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        createdBy:
+                          type:
+                            - string
+                            - "null"
+                        emailed:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        pushed:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                      required:
+                        - id
+                        - title
+                        - body
+                        - audience
+                        - level
+                        - startsAt
+                        - endsAt
+                        - createdAt
+                        - createdBy
+                        - emailed
+                        - pushed
+                      additionalProperties: false
+                required:
+                  - announcements
+                additionalProperties: false
+    post:
+      summary: Post an announcement in the app, optionally by email and push
+      tags:
+        - platform
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 120
+                body:
+                  type: string
+                  minLength: 1
+                  maxLength: 4000
+                audience:
+                  type: string
+                  enum:
+                    - everyone
+                    - pilots
+                    - managers
+                level:
+                  default: info
+                  type: string
+                  enum:
+                    - info
+                    - important
+                endsAt:
+                  anyOf:
+                    - type: string
+                      format: date-time
+                      pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                    - type: "null"
+                email:
+                  default: false
+                  type: boolean
+                push:
+                  default: false
+                  type: boolean
+              required:
+                - title
+                - body
+                - audience
+      responses:
+        "201":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  title:
+                    type: string
+                  body:
+                    type: string
+                  audience:
+                    type: string
+                    enum:
+                      - everyone
+                      - pilots
+                      - managers
+                  level:
+                    type: string
+                    enum:
+                      - info
+                      - important
+                  startsAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  endsAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  createdBy:
+                    type:
+                      - string
+                      - "null"
+                  emailed:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                  pushed:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                required:
+                  - id
+                  - title
+                  - body
+                  - audience
+                  - level
+                  - startsAt
+                  - endsAt
+                  - createdAt
+                  - createdBy
+                  - emailed
+                  - pushed
+                additionalProperties: false
+  /api/v1/platform/announcements/{announcementId}/end:
+    post:
+      summary: Stop showing an announcement
+      tags:
+        - platform
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: announcementId
+          required: true
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                  title:
+                    type: string
+                  body:
+                    type: string
+                  audience:
+                    type: string
+                    enum:
+                      - everyone
+                      - pilots
+                      - managers
+                  level:
+                    type: string
+                    enum:
+                      - info
+                      - important
+                  startsAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  endsAt:
+                    anyOf:
+                      - type: string
+                        format: date-time
+                        pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                      - type: "null"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                  createdBy:
+                    type:
+                      - string
+                      - "null"
+                  emailed:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                  pushed:
+                    type: integer
+                    minimum: 0
+                    maximum: 9007199254740991
+                required:
+                  - id
+                  - title
+                  - body
+                  - audience
+                  - level
+                  - startsAt
+                  - endsAt
+                  - createdAt
+                  - createdBy
+                  - emailed
+                  - pushed
+                additionalProperties: false
+  /api/v1/platform/activity:
+    get:
+      summary: What platform admins did, newest first
+      tags:
+        - platform
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        at:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        actor:
+                          type:
+                            - string
+                            - "null"
+                        action:
+                          type: string
+                        orgName:
+                          type:
+                            - string
+                            - "null"
+                        target:
+                          type:
+                            - string
+                            - "null"
+                        detail:
+                          type:
+                            - string
+                            - "null"
+                      required:
+                        - id
+                        - at
+                        - actor
+                        - action
+                        - orgName
+                        - target
+                        - detail
+                      additionalProperties: false
+                required:
+                  - events
+                additionalProperties: false
+  /api/v1/announcements:
+    get:
+      summary: Current announcements for the signed-in user
+      tags:
+        - platform
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  announcements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+                        title:
+                          type: string
+                        body:
+                          type: string
+                        audience:
+                          type: string
+                          enum:
+                            - everyone
+                            - pilots
+                            - managers
+                        level:
+                          type: string
+                          enum:
+                            - info
+                            - important
+                        startsAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        endsAt:
+                          anyOf:
+                            - type: string
+                              format: date-time
+                              pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                            - type: "null"
+                        createdAt:
+                          type: string
+                          format: date-time
+                          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d+)?(?:Z|([+-](?:[01]\d|2[0-3]):[0-5]\d)))$
+                        createdBy:
+                          type:
+                            - string
+                            - "null"
+                        emailed:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                        pushed:
+                          type: integer
+                          minimum: 0
+                          maximum: 9007199254740991
+                      required:
+                        - id
+                        - title
+                        - body
+                        - audience
+                        - level
+                        - startsAt
+                        - endsAt
+                        - createdAt
+                        - createdBy
+                        - emailed
+                        - pushed
+                      additionalProperties: false
+                required:
+                  - announcements
+                additionalProperties: false
 security:
   - session: []
   - bearer: []

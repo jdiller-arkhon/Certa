@@ -115,6 +115,21 @@ Quick log flight notes (phone, installed app, under 30 seconds):
 
 Flight detail: `path` is GeoJSON (`LineString`, coordinates `[lon, lat, altMslM]`), and `altitudeProfile` uses `t` in seconds from takeoff and `altitude` in display units. The host supplies the map component and tile source (MapLibre). The screen just renders it.
 
+### Arkhon platform console (Arkhon admins only)
+
+Shown under the **Arkhon** menu when `me.arkhon.platformAdmin` is true. Every endpoint behind
+these screens re-checks the admin role with Arkhon on each request.
+
+| Screen | Route | Props |
+|---|---|---|
+| Overview | `/platform` | `PlatformOverviewScreenProps` |
+| All pilots | `/platform/pilots` | `PlatformPilotsScreenProps` |
+| Pilot (console) | `/platform/pilots/:orgId/:pilotId` | `PlatformPilotDetailScreenProps` |
+| Compliance | `/platform/compliance` | `PlatformComplianceScreenProps` |
+| Reports & exports | `/platform/reports` | `PlatformReportsScreenProps` |
+| Announcements | `/platform/announcements` | `PlatformAnnouncementsScreenProps` |
+| Admin activity | `/platform/activity` | `PlatformActivityScreenProps` |
+
 ### Later phases — draft
 
 | Screen | Phase | Route | Props |

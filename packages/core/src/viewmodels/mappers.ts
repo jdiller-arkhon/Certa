@@ -443,22 +443,37 @@ const NAV: { id: string; label: string; href: string; icon: NavItem['icon']; req
   { id: 'settings', label: 'Settings', href: '/settings/organization', icon: 'settings', requires: 'org.read', group: 'admin' },
 ];
 
-export function buildNavigation(role: Role, activeHref: string, badges: Record<string, NavItem['badge']> = {}): NavItem[] {
-  return NAV.filter((n) => can(role, n.requires)).map((n) => ({
-    id: n.id,
-    label: n.label,
-    href: n.href,
-    icon: n.icon,
-    active: n.href === '/' ? activeHref === '/' : activeHref.startsWith(n.href),
-    badge: badges[n.id] ?? null,
-    group: n.group,
-  }));
+/** The Arkhon platform console, for Arkhon admins only (whatever their role in the org). */
+const PLATFORM_NAV: { id: string; label: string; href: string; icon: NavItem['icon'] }[] = [
+  { id: 'platform', label: 'Overview', href: '/platform', icon: 'analytics' },
+  { id: 'platform-pilots', label: 'All pilots', href: '/platform/pilots', icon: 'pilots' },
+  { id: 'platform-compliance', label: 'Compliance', href: '/platform/compliance', icon: 'records' },
+  { id: 'platform-reports', label: 'Reports & exports', href: '/platform/reports', icon: 'analytics' },
+  { id: 'platform-announcements', label: 'Announcements', href: '/platform/announcements', icon: 'admin' },
+  { id: 'platform-activity', label: 'Admin activity', href: '/platform/activity', icon: 'records' },
+];
+
+const isActive = (href: string, activeHref: string) => (href === '/' || href === '/platform' ? activeHref === href : activeHref === href || activeHref.startsWith(`${href}/`));
+
+export function buildNavigation(role: Role, activeHref: string, badges: Record<string, NavItem['badge']> = {}, platformAdmin = false): NavItem[] {
+  return [
+    ...NAV.filter((n) => can(role, n.requires)).map((n) => ({
+      id: n.id,
+      label: n.label,
+      href: n.href,
+      icon: n.icon,
+      active: isActive(n.href, activeHref),
+      badge: badges[n.id] ?? null,
+      group: n.group,
+    })),
+    ...(platformAdmin ? PLATFORM_NAV.map((n) => ({ ...n, active: isActive(n.href, activeHref), badge: badges[n.id] ?? null, group: 'platform' as const })) : []),
+  ];
 }
 
 /** Shortcuts: "G" then a letter jumps to a page; single letters start an action. */
 const GOTO_KEYS: Record<string, string> = { today: 'G T', flights: 'G F', pilots: 'G P', aircraft: 'G A', batteries: 'G B', maintenance: 'G M', insurance: 'G I', settings: 'G S' };
 
-export function buildCommands(role: Role): CommandItem[] {
+export function buildCommands(role: Role, platformAdmin = false): CommandItem[] {
   const actions: (CommandItem & { requires: Action })[] = [
     { id: 'log-flight', label: 'Log a flight', href: '/flights/new', section: 'Actions', shortcut: 'L', requires: 'flights.log' },
     { id: 'add-pilot', label: 'Add a pilot', href: '/pilots/new', section: 'Actions', shortcut: null, requires: 'pilots.manage' },
@@ -469,6 +484,7 @@ export function buildCommands(role: Role): CommandItem[] {
   return [
     ...actions.filter((a) => can(role, a.requires)).map(({ requires: _r, ...c }) => c),
     ...NAV.filter((n) => can(role, n.requires)).map((n) => ({ id: `go-${n.id}`, label: n.label, href: n.href, section: 'Go to' as const, shortcut: GOTO_KEYS[n.id] ?? null })),
+    ...(platformAdmin ? PLATFORM_NAV.map((n) => ({ id: `go-${n.id}`, label: `Arkhon: ${n.label}`, href: n.href, section: 'Go to' as const, shortcut: null })) : []),
   ];
 }
 
@@ -491,18 +507,20 @@ export function buildShell(input: {
   navBadges?: Record<string, NavItem['badge']>;
   basePath?: string;
   search?: AppShellViewModel['search'];
+  /** Arkhon admin: adds the platform console menu. */
+  platformAdmin?: boolean;
 }): AppShellViewModel {
   return {
     basePath: input.basePath ?? '',
     user: { ...userChip(input.user.id, input.user.name), email: input.user.email, roleLabel: ROLE_LABELS[input.role] },
     organization: input.organization,
     orgOptions: input.memberships.map((m) => ({ orgId: m.orgId, name: m.orgName, role: m.role, current: m.orgId === input.organization.id })),
-    navigation: buildNavigation(input.role, input.activeHref, input.navBadges),
+    navigation: buildNavigation(input.role, input.activeHref, input.navBadges, input.platformAdmin),
     permissions: allowedActions(input.role),
     complianceNotice: COMPLIANCE_NOTICE,
     sync: input.sync ?? WEB_SYNC_STATE,
     theme: input.theme ?? 'light',
-    commands: buildCommands(input.role),
+    commands: buildCommands(input.role, input.platformAdmin),
     search: input.search ?? { query: '', results: [] },
   };
 }

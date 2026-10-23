@@ -3,6 +3,21 @@
 The contract (`types.ts`, `openapi.yaml`, `SCREENS.md`, `fixtures/`) is versioned with semver.
 Every change lists the screens affected so the frontend knows what to update.
 
+## 0.14.0 — 2026-10-21
+
+The Arkhon platform console: every organization's pilots, compliance and metrics in one place,
+for Arkhon admins only (checked live with Arkhon on every request).
+
+- **Added** `GET /platform/overview?from&to` (fleet-wide figures, the period's activity, 12 months of flight hours, top pilots, organizations), `GET /platform/pilots` (`PlatformPilotRow` with readiness, recurrent due date, totals, account state and `helpFlags`), `GET /platform/pilots/{orgId}/{pilotId}`, `GET /platform/compliance?windowDays`.
+- **Added** pilot help: `POST /platform/remind { pilots, note? }` emails (and pushes) each pilot what needs attention; `POST /platform/pilots/{orgId}/{pilotId}/invite` re-sends sign-in instructions to invited pilots who never signed in; links to the pilot's Arkhon account page.
+- **Added** `GET /platform/exports/{dataset}?from&to&orgId&pilotId` CSV: `flights`, `pilots`, `pilot-hours`, `monthly`, `organizations`, `aircraft`, `compliance` (formula-safe cells, UTF-8 BOM). A pilot's logbook is `flights` with `orgId` and `pilotId`.
+- **Added** announcements: `GET/POST /platform/announcements`, `POST /platform/announcements/{id}/end`, and `GET /announcements` (current ones for the signed-in user, shown as a dismissible banner). Audience: everyone, pilots or managers; optional email and push.
+- **Added** `GET /platform/activity`: append-only log of platform-admin actions (reminders, invites, exports, announcements).
+- **Added** screens under `/platform` (see SCREENS.md) and their view-models; `NavItem.group` gains `platform` (the **Arkhon** menu); `buildShell({ platformAdmin })`.
+- **Changed** **App shell**: the top bar fits from 1024 px (compact org switcher, nav and Log flight below 1280 px; search pill from 1536 px).
+
+Screens affected: **App shell**, new **Arkhon console** screens.
+
 ## 0.13.0 — 2026-10-18
 
 Argus mission flights count toward Certa flight time.
